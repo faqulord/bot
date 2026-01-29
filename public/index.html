@@ -3,252 +3,308 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>CyberCore</title>
+    <title>Dark Tycoon</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        /* --- CYBERPUNK STÍLUS --- */
-        :root { --bg: #050505; --card: #151515; --neon: #00ffcc; --gold: #ffd700; --danger: #ff0055; }
-        body { background: var(--bg); color: #fff; font-family: 'Segoe UI', sans-serif; margin: 0; padding-bottom: 90px; user-select: none; -webkit-tap-highlight-color: transparent; overflow: hidden; }
-        
-        /* FŐ KÉPERNYŐ (Bányász) */
-        .miner-area { 
-            height: 70vh; display: flex; flex-direction: column; align-items: center; justify-content: center; 
-            background: radial-gradient(circle at center, #1a1a1a 0%, #000 70%);
-        }
-        
-        .score-display { font-size: 48px; font-weight: 800; color: #fff; text-shadow: 0 0 20px rgba(255,255,255,0.3); margin-bottom: 20px; }
-        .score-label { font-size: 14px; color: #888; letter-spacing: 2px; text-transform: uppercase; }
+        /* --- DARK TYCOON DESIGN --- */
+        :root { --bg: #0b0b0f; --card: #1c1c24; --accent: #7b2cbf; --gold: #ffcc00; --green: #00ff88; --danger: #ff3366; }
+        body { background: var(--bg); color: #fff; font-family: 'Segoe UI', Roboto, sans-serif; margin: 0; padding-bottom: 90px; user-select: none; overflow: hidden; }
 
-        /* A NAGY GOMB (CORE) */
-        .core-btn {
-            width: 240px; height: 240px;
-            background: url('https://cdn-icons-png.flaticon.com/512/2091/2091665.png'); /* Ideiglenes ikon */
-            background-size: cover;
-            border-radius: 50%;
-            box-shadow: 0 0 50px var(--neon);
-            transition: transform 0.1s;
-            cursor: pointer;
-            position: relative;
+        /* HEADER */
+        .header { padding: 15px; background: rgba(28,28,36,0.9); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; }
+        .balance-box { display: flex; flex-direction: column; }
+        .balance-val { font-size: 20px; font-weight: bold; color: var(--gold); }
+        .profit-per-hour { font-size: 11px; color: var(--green); display: flex; align-items: center; gap: 4px; }
+
+        /* FŐ GOMB */
+        .clicker-zone { height: 50vh; display: flex; align-items: center; justify-content: center; position: relative; }
+        .main-btn { 
+            width: 220px; height: 220px; 
+            background: radial-gradient(circle, #3a0ca3, #10002b);
+            border: 4px solid var(--accent);
+            border-radius: 50%; 
+            box-shadow: 0 0 30px var(--accent);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 50px; cursor: pointer; transition: 0.1s;
         }
-        .core-btn:active { transform: scale(0.95); box-shadow: 0 0 20px var(--neon); }
+        .main-btn:active { transform: scale(0.95); }
         
-        /* LEBEGŐ SZÁMOK (Kattintáskor) */
-        .click-text {
-            position: absolute; color: var(--neon); font-weight: bold; font-size: 24px;
-            pointer-events: none; animation: floatUp 1s ease-out forwards;
+        /* ÚSZÓ SZÁMOK */
+        .float-num { position: absolute; color: #fff; font-weight: bold; font-size: 24px; animation: floatUp 0.8s forwards; pointer-events: none; }
+        @keyframes floatUp { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-80px); } }
+
+        /* ENERGIA & REKLÁM */
+        .controls { padding: 0 20px; }
+        .energy-bar-bg { width: 100%; height: 8px; background: #333; border-radius: 4px; overflow: hidden; margin-bottom: 5px; }
+        .energy-fill { height: 100%; background: var(--accent); width: 100%; transition: width 0.2s; }
+        .ad-btn { 
+            background: linear-gradient(90deg, #ff0055, #ff5500); color: white; border: none; 
+            padding: 12px; width: 100%; border-radius: 10px; font-weight: bold; margin-top: 10px;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
         }
-        @keyframes floatUp { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-50px); } }
 
-        /* ENERGIA SÁV */
-        .energy-bar-container { width: 80%; height: 10px; background: #222; border-radius: 10px; margin-top: 30px; overflow: hidden; }
-        .energy-bar { width: 100%; height: 100%; background: var(--neon); transition: width 0.2s; }
-        .energy-text { margin-top: 5px; font-size: 12px; color: #aaa; }
-
-        /* OLDALAK (Shop, Profil) */
-        .page { display: none; padding: 20px; animation: fadeIn 0.2s; height: 100vh; overflow-y: auto; }
+        /* OLDALAK */
+        .page { display: none; padding: 15px; height: 100vh; overflow-y: auto; padding-bottom: 120px; }
         .page.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        .card { background: var(--card); padding: 15px; border-radius: 15px; margin-bottom: 15px; border: 1px solid #333; }
-        .shop-item { display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 15px; }
-        .shop-icon { font-size: 30px; margin-right: 15px; }
-        .buy-btn { background: var(--gold); color: black; border: none; padding: 8px 16px; border-radius: 8px; font-weight: bold; }
-
-        /* PROFIL */
-        .profile-header { text-align: center; margin-bottom: 20px; }
-        .avatar { width: 80px; height: 80px; background: #333; border-radius: 50%; margin: 0 auto 10px; display: flex; align-items: center; justify-content: center; font-size: 30px; border: 2px solid var(--neon); }
-        .stat-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #333; font-size: 14px; }
-
-        /* ALSÓ MENÜ */
-        .bottom-nav {
-            position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(20,20,20,0.95);
-            backdrop-filter: blur(10px); display: flex; justify-content: space-around; padding: 15px 0 30px 0;
-            border-top: 1px solid #333; z-index: 100;
+        /* KÁRTYÁK (UPGRADES) */
+        .upgrade-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .upgrade-card { background: var(--card); padding: 10px; border-radius: 10px; border: 1px solid #333; text-align: center; }
+        .upgrade-img { font-size: 30px; margin-bottom: 5px; }
+        .upgrade-title { font-size: 13px; font-weight: bold; }
+        .upgrade-cost { font-size: 11px; color: var(--gold); margin: 5px 0; }
+        .upgrade-profit { font-size: 10px; color: var(--green); }
+        .btn-buy { background: #333; color: white; border: 1px solid #555; padding: 5px 10px; border-radius: 5px; width: 100%; margin-top: 5px; font-size: 12px; }
+        
+        /* SZERENCSEKERÉK */
+        .wheel-container { text-align: center; margin-top: 20px; }
+        .wheel { 
+            width: 250px; height: 250px; border-radius: 50%; border: 5px solid var(--gold); 
+            margin: 0 auto; position: relative; overflow: hidden; 
+            background: conic-gradient(#ff0055 0 25%, #00ff88 25% 50%, #3a0ca3 50% 75%, #ffcc00 75% 100%);
+            transition: transform 3s ease-out;
         }
-        .nav-item { color: #666; text-align: center; font-size: 10px; flex: 1; transition: 0.2s; }
-        .nav-item i { font-size: 24px; margin-bottom: 5px; display: block; }
-        .nav-item.active { color: var(--neon); transform: translateY(-5px); }
+        .pointer { width: 0; height: 0; border-left: 10px solid transparent; border-right: 10px solid transparent; border-top: 20px solid white; position: absolute; top: 0; left: 50%; transform: translateX(-50%); z-index: 10; }
+        
+        /* ALSÓ MENÜ */
+        .bottom-nav { 
+            position: fixed; bottom: 0; left: 0; width: 100%; background: #15151a; 
+            border-top: 1px solid #333; display: flex; justify-content: space-around; padding: 10px 0 25px 0; z-index: 99;
+        }
+        .nav-item { text-align: center; color: #666; font-size: 10px; flex: 1; }
+        .nav-item.active { color: var(--accent); }
+        .nav-item i { font-size: 22px; margin-bottom: 4px; display: block; }
 
-        /* BEFIZETÉS MODAL */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; align-items: center; justify-content: center; }
-        .modal-content { background: #1a1a1a; padding: 20px; border-radius: 15px; width: 80%; text-align: center; border: 1px solid var(--gold); }
     </style>
 </head>
 <body>
 
-    <div id="page-game" class="page active" style="padding: 0; overflow: hidden;">
-        <div class="miner-area">
-            <div class="score-label">EGYENLEG</div>
-            <div class="score-display" id="score">0</div>
-            
-            <div class="core-btn" id="click-btn"></div>
-            
-            <div class="energy-bar-container">
-                <div class="energy-bar" id="energy-bar"></div>
-            </div>
-            <div class="energy-text">⚡ <span id="energy">1000</span> / 1000</div>
+    <div class="header">
+        <div class="balance-box">
+            <div class="balance-val">💎 <span id="balance">0</span></div>
+            <div class="profit-per-hour">⚡ <span id="pph">0</span> / óra (Passzív)</div>
+        </div>
+        <div style="background:#333; padding:5px 10px; border-radius:20px; font-size:12px;">
+            <i class="fas fa-user"></i> <span id="username">User</span>
         </div>
     </div>
 
-    <div id="page-shop" class="page">
-        <h2 style="color:var(--gold);">BOOST SHOP 🚀</h2>
-        <p style="color:#888; font-size:12px; margin-bottom:20px;">Vegyél fejlesztéseket valódi kriptóért, hogy gyorsabban bányássz!</p>
+    <div id="page-home" class="page active">
+        <div class="clicker-zone">
+            <div class="main-btn" id="click-btn">💻</div>
+        </div>
 
-        <div class="card">
-            <div class="shop-item">
-                <div style="display:flex; align-items:center;">
-                    <div class="shop-icon">👆</div>
-                    <div>
-                        <div style="font-weight:bold;">Multitap X2</div>
-                        <div style="font-size:12px; color:#888;">Dupla pont kattintásonként</div>
-                    </div>
-                </div>
-                <button class="buy-btn" onclick="openDepositModal(10, 'Multitap X2')">$10</button>
+        <div class="controls">
+            <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:5px;">
+                <span>Energia</span>
+                <span><span id="energy">1000</span>/1000</span>
             </div>
+            <div class="energy-bar-bg"><div class="energy-fill" id="energy-fill"></div></div>
+            
+            <button class="ad-btn" onclick="watchAd()">
+                <i class="fas fa-play-circle"></i> Reklám nézése (+500 Energia)
+            </button>
+        </div>
+    </div>
 
-            <div class="shop-item">
-                <div style="display:flex; align-items:center;">
-                    <div class="shop-icon">🤖</div>
-                    <div>
-                        <div style="font-weight:bold;">Auto-Bot</div>
-                        <div style="font-size:12px; color:#888;">Bányászik amíg alszol (12ó)</div>
-                    </div>
-                </div>
-                <button class="buy-btn" onclick="openDepositModal(25, 'Auto-Bot')">$25</button>
+    <div id="page-upgrade" class="page">
+        <h3 style="color:var(--accent);">Szerver Fejlesztések</h3>
+        <p style="font-size:12px; color:#888;">Vegyél eszközöket, amik akkor is termelnek, ha alszol!</p>
+        
+        <div class="upgrade-grid">
+            <div class="upgrade-card">
+                <div class="upgrade-img">🐭</div>
+                <div class="upgrade-title">Alap Egér</div>
+                <div class="upgrade-profit">+100 / óra</div>
+                <div class="upgrade-cost">💰 500</div>
+                <button class="btn-buy" onclick="buyUpgrade('egér', 500, 100)">MEGVESZ</button>
+            </div>
+            <div class="upgrade-card">
+                <div class="upgrade-img">🖥️</div>
+                <div class="upgrade-title">Gamer PC</div>
+                <div class="upgrade-profit">+500 / óra</div>
+                <div class="upgrade-cost">💰 2000</div>
+                <button class="btn-buy" onclick="buyUpgrade('pc', 2000, 500)">MEGVESZ</button>
+            </div>
+            <div class="upgrade-card">
+                <div class="upgrade-img">📡</div>
+                <div class="upgrade-title">Szerver Farm</div>
+                <div class="upgrade-profit">+2000 / óra</div>
+                <div class="upgrade-cost">💰 10000</div>
+                <button class="btn-buy" onclick="buyUpgrade('server', 10000, 2000)">MEGVESZ</button>
+            </div>
+            <div class="upgrade-card">
+                <div class="upgrade-img">🕵️</div>
+                <div class="upgrade-title">Hacker Bérlése</div>
+                <div class="upgrade-profit">+10000 / óra</div>
+                <div class="upgrade-cost">💰 50000</div>
+                <button class="btn-buy" onclick="buyUpgrade('hacker', 50000, 10000)">MEGVESZ</button>
             </div>
         </div>
     </div>
 
-    <div id="page-profile" class="page">
-        <div class="profile-header">
-            <div class="avatar">👤</div>
-            <h2 id="username">Felhasználó</h2>
-            <div style="color:#888; font-size:12px;">ID: <span id="userid">...</span></div>
-        </div>
+    <div id="page-casino" class="page">
+        <h3 style="color:var(--gold); text-align:center;">Napi Szerencsekerék 🎰</h3>
+        <p style="text-align:center; font-size:12px; color:#aaa;">Pörgess naponta egyszer ingyen, vagy vegyél pörgetést kriptóért!</p>
 
-        <div class="card">
-            <div class="stat-row">
-                <span>Összes kattintás</span>
-                <span style="color:var(--neon);" id="stat-clicks">0</span>
+        <div class="wheel-container">
+            <div style="position:relative; width:250px; margin:0 auto;">
+                <div class="pointer"></div>
+                <div class="wheel" id="wheel"></div>
             </div>
-            <div class="stat-row">
-                <span>Szint</span>
-                <span style="color:var(--gold);">Novice (Lvl 1)</span>
-            </div>
-            <div class="stat-row">
-                <span>Csatlakozva</span>
-                <span>2026.01.30.</span>
-            </div>
+            <button id="spin-btn" class="ad-btn" style="background:var(--gold); color:black; margin-top:20px;" onclick="spinWheel()">
+                PÖRGETÉS
+            </button>
+            
+            <button class="ad-btn" style="background:#333; margin-top:10px; border:1px solid var(--gold);" onclick="buySpin()">
+                Extra pörgetés vétel (0.1 LTC)
+            </button>
         </div>
+    </div>
 
-        <button onclick="localStorage.clear(); location.reload();" style="width:100%; padding:15px; background:#333; color:#fff; border:none; border-radius:10px;">
-            ⚠️ Adatok törlése (Reset)
-        </button>
+    <div id="page-wallet" class="page">
+        <h3 style="color:white;">Pénzügyek</h3>
+        
+        <div style="background:#1c1c24; padding:20px; border-radius:15px; text-align:center; border:1px solid var(--gold);">
+            <div style="font-size:12px; color:#888;">BEFIZETÉS (LTC)</div>
+            <p>Vásárolj boostokat vagy pörgetést Litecoinnal.</p>
+            
+            <div style="background:black; padding:10px; font-family:monospace; color:var(--gold); word-break:break-all; font-size:11px;">
+                ltc1qv5aape3pah2f954k5jjx9kgnrnkxzytm6f7an8
+            </div>
+
+            <input type="text" id="txid-input" placeholder="TXID ide..." style="width:90%; margin-top:10px; padding:10px; border-radius:5px; border:none;">
+            <button class="ad-btn" style="background:var(--green); color:black;" onclick="checkPayment()">ELLENŐRZÉS</button>
+        </div>
     </div>
 
     <div class="bottom-nav">
-        <div class="nav-item active" onclick="nav('game', this)"><i class="fas fa-hammer"></i>Bányász</div>
-        <div class="nav-item" onclick="nav('shop', this)"><i class="fas fa-rocket"></i>Boost</div>
-        <div class="nav-item" onclick="nav('profile', this)"><i class="fas fa-user"></i>Profil</div>
-    </div>
-
-    <div id="deposit-modal" class="modal">
-        <div class="modal-content">
-            <h3 style="color:var(--gold);">Fizetés LiteCoinnal</h3>
-            <p>Küldj <b id="pay-amount">0</b> USD értékű LTC-t erre a címre:</p>
-            
-            <div style="background:#000; padding:10px; font-family:monospace; font-size:10px; word-break:break-all; border-radius:5px; color:var(--neon); margin:10px 0;">
-                ltc1qv5aape3pah2f954k5jjx9kgnrnkxzytm6f7an8
-            </div>
-            
-            <input type="text" id="txid-input" placeholder="Másold be a TXID-t ide..." style="width:90%; padding:10px; margin-bottom:10px; background:#222; border:1px solid #444; color:white;">
-            
-            <button onclick="checkPayment()" style="width:100%; padding:10px; background:var(--gold); border:none; font-weight:bold; border-radius:5px;">ELLENŐRZÉS</button>
-            <button onclick="closeModal()" style="margin-top:10px; background:transparent; border:none; color:#888;">Mégsem</button>
-        </div>
+        <div class="nav-item active" onclick="nav('home', this)"><i class="fas fa-laptop-code"></i>Hacking</div>
+        <div class="nav-item" onclick="nav('upgrade', this)"><i class="fas fa-server"></i>Tycoon</div>
+        <div class="nav-item" onclick="nav('casino', this)"><i class="fas fa-dice"></i>Casino</div>
+        <div class="nav-item" onclick="nav('wallet', this)"><i class="fas fa-wallet"></i>Tárca</div>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        // ADATOK
-        let score = localStorage.getItem('score') ? parseInt(localStorage.getItem('score')) : 0;
+        // JÁTÉK ÁLLAPOT
+        let balance = localStorage.getItem('balance') ? parseInt(localStorage.getItem('balance')) : 0;
+        let pph = localStorage.getItem('pph') ? parseInt(localStorage.getItem('pph')) : 0; // Profit Per Hour
         let energy = 1000;
-        let clickValue = 1; // Alap kattintás érték
-        let totalClicks = localStorage.getItem('totalClicks') ? parseInt(localStorage.getItem('totalClicks')) : 0;
-
-        // UI Frissítés
-        const scoreEl = document.getElementById('score');
+        
+        // UI elemek
+        const balEl = document.getElementById('balance');
+        const pphEl = document.getElementById('pph');
         const energyEl = document.getElementById('energy');
-        const barEl = document.getElementById('energy-bar');
+        const energyFill = document.getElementById('energy-fill');
 
-        // Felhasználó betöltése
+        // Init
         const user = tg.initDataUnsafe.user;
-        if (user) {
-            document.getElementById('username').innerText = user.first_name;
-            document.getElementById('userid').innerText = user.id;
-        }
-
+        if(user) document.getElementById('username').innerText = user.first_name;
         updateUI();
 
-        // KATTINTÁS LOGIKA
-        document.getElementById('click-btn').addEventListener('touchstart', (e) => {
-            e.preventDefault(); // Ne nagyítson rá
-            handleClick(e.touches[0].clientX, e.touches[0].clientY);
-        });
-
-        document.getElementById('click-btn').addEventListener('click', (e) => {
-            handleClick(e.clientX, e.clientY);
-        });
-
-        function handleClick(x, y) {
-            if (energy > 0) {
-                // Pont hozzáadása
-                score += clickValue;
-                energy -= 1;
-                totalClicks += 1;
-                
-                // Mentés
-                localStorage.setItem('score', score);
-                localStorage.setItem('totalClicks', totalClicks);
-
-                updateUI();
-                showFloatingText(x, y);
-
-                // Gomb animáció
-                const btn = document.getElementById('click-btn');
-                btn.style.transform = "scale(0.95)";
-                setTimeout(() => btn.style.transform = "scale(1)", 100);
-            }
-        }
-
-        function showFloatingText(x, y) {
-            const el = document.createElement('div');
-            el.className = 'click-text';
-            el.innerText = '+' + clickValue;
-            el.style.left = x + 'px';
-            el.style.top = y + 'px';
-            document.body.appendChild(el);
-            setTimeout(() => el.remove(), 1000);
-        }
-
-        // ENERGIA TÖLTÉS
+        // PASSZÍV JÖVEDELEM (Minden másodpercben jön a pénz)
         setInterval(() => {
-            if (energy < 1000) {
-                energy += 5; // 5 energia / mp
+            if(pph > 0) {
+                let perSec = Math.floor(pph / 3600);
+                if(perSec < 1) perSec = 1; // Minimum 1 ha van pph
+                balance += perSec;
                 updateUI();
             }
         }, 1000);
 
+        // ENERGIA REGEN
+        setInterval(() => {
+            if(energy < 1000) { energy += 2; updateEnergy(); }
+        }, 1000);
+
+        // KATTINTÁS
+        document.getElementById('click-btn').addEventListener('click', (e) => {
+            if(energy > 0) {
+                balance += 1; // + kattintás erő
+                energy -= 1;
+                
+                showFloat(e.clientX, e.clientY);
+                updateUI();
+                updateEnergy();
+                
+                // Animáció
+                const btn = document.getElementById('click-btn');
+                btn.style.transform = "scale(0.95)";
+                setTimeout(()=> btn.style.transform = "scale(1)", 100);
+            }
+        });
+
+        function showFloat(x, y) {
+            const el = document.createElement('div');
+            el.className = 'float-num';
+            el.innerText = "+1";
+            el.style.left = x + 'px'; el.style.top = y + 'px';
+            document.body.appendChild(el);
+            setTimeout(()=> el.remove(), 800);
+        }
+
         function updateUI() {
-            scoreEl.innerText = score.toLocaleString();
-            energyEl.innerText = energy;
-            barEl.style.width = (energy / 10) + "%";
+            balEl.innerText = balance.toLocaleString();
+            pphEl.innerText = pph.toLocaleString();
+            localStorage.setItem('balance', balance);
+            localStorage.setItem('pph', pph);
+        }
+
+        function updateEnergy() {
+            energyEl.innerText = Math.floor(energy);
+            energyFill.style.width = (energy / 10) + "%";
+        }
+
+        // VÁSÁRLÁS (UPGRADE)
+        function buyUpgrade(type, cost, profit) {
+            if(balance >= cost) {
+                balance -= cost;
+                pph += profit;
+                updateUI();
+                tg.showAlert(`Sikeres vétel! Profitod nőtt: +${profit}/óra`);
+            } else {
+                tg.showAlert("Nincs elég pénzed! Kattints többet vagy nézz reklámot.");
+            }
+        }
+
+        // REKLÁM NÉZÉS (Szimuláció)
+        function watchAd() {
+            tg.showConfirm("Megnézel egy reklámot +500 energiáért?", (ok) => {
+                if(ok) {
+                    // Itt indulna a reklám API
+                    tg.showAlert("Reklám betöltése... (Képzeld ide)");
+                    setTimeout(() => {
+                        energy = Math.min(energy + 500, 1000);
+                        updateEnergy();
+                        tg.showAlert("Köszönjük! +500 Energia jóváírva.");
+                    }, 2000);
+                }
+            });
+        }
+
+        // SZERENCSEKERÉK
+        function spinWheel() {
+            const wheel = document.getElementById('wheel');
+            const deg = Math.floor(5000 + Math.random() * 5000); // Pörögjön sokat
+            wheel.style.transform = `rotate(${deg}deg)`;
             
-            // Profil stat
-            document.getElementById('stat-clicks').innerText = totalClicks;
+            setTimeout(() => {
+                const reward = Math.floor(Math.random() * 1000);
+                balance += reward;
+                updateUI();
+                tg.showAlert(`Nyereményed: ${reward} 💎!`);
+            }, 3000);
+        }
+
+        function buySpin() {
+            tg.showPopup({
+                title: 'Extra Pörgetés',
+                message: 'Utalj 0.1 LTC-t a Tárca menüpontban lévő címre!',
+            });
         }
 
         // NAVIGÁCIÓ
@@ -259,28 +315,14 @@
             btn.classList.add('active');
         }
 
-        // FIZETÉS (SHOP)
-        function openDepositModal(price, itemName) {
-            document.getElementById('deposit-modal').style.display = 'flex';
-            document.getElementById('pay-amount').innerText = price;
-            // Itt elmenthetnénk, mit akar venni
-        }
-
-        function closeModal() {
-            document.getElementById('deposit-modal').style.display = 'none';
-        }
-
+        // FIZETÉS ELLENŐRZÉS (Backend hívás helye)
         async function checkPayment() {
             const txid = document.getElementById('txid-input').value;
-            // Itt ugyanazt a logikát hívjuk meg, mint előbb (/api/verify)
-            // Most csak szimuláljuk a sikert a DEMO kedvéért:
-            
             if(txid.length > 5) {
-                tg.showAlert("Ellenőrzés folyamatban... (Ez a valóságban a backendet hívná)");
-                closeModal();
-                // Ha sikerülne: clickValue *= 2; (Dupla kattintás aktiválása)
+                 // Itt hívnád a /api/verify.js-t
+                 tg.showAlert("Ellenőrzés folyamatban...");
             } else {
-                tg.showAlert("Hibás TXID!");
+                tg.showAlert("Hibás TXID");
             }
         }
     </script>
