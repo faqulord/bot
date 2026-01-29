@@ -3,334 +3,276 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SkyShop</title>
+    <title>Premium Shop</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        /* --- ALAP BEÁLLÍTÁSOK --- */
+        /* --- PREMIUM GOLD DESIGN --- */
         :root {
-            --bg-color: #0d1117;
-            --card-bg: #161b22;
-            --blue-gradient: linear-gradient(135deg, #2b5876 0%, #4e4376 100%);
-            --sky-blue: #3b82f6;
+            --bg-color: #000000;
+            --card-bg: #121212;
+            --gold: #D4AF37;
+            --gold-gradient: linear-gradient(135deg, #D4AF37 0%, #AA8A2E 100%);
             --text-main: #ffffff;
-            --text-sec: #8b949e;
+            --text-sec: #888888;
+            --danger: #ff4444;
         }
 
         body {
             background-color: var(--bg-color);
             color: var(--text-main);
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            padding-bottom: 90px; /* Hely az alsó menünek */
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            margin: 0; padding: 0;
+            padding-bottom: 90px;
             user-select: none;
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* --- BIZTONSÁGI BLOKKOLÓ (Ha nem Telegram) --- */
+        /* BIZTONSÁG */
         #blocker-screen {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: black;
-            color: red;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            z-index: 9999;
-            text-align: center;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: black; color: red; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; z-index: 9999;
         }
         .hidden { display: none !important; }
 
-        /* --- STÍLUSOK (SkyHigh Design) --- */
+        /* KÖZÖS STÍLUSOK */
+        .container { padding: 15px; animation: fadeIn 0.3s; }
+        .section-title { color: var(--gold); font-size: 14px; font-weight: bold; margin: 20px 0 10px 0; text-transform: uppercase; letter-spacing: 1px; }
         
-        /* 1. KÉK EGYENLEG KÁRTYA */
-        .wallet-card {
-            background: linear-gradient(135deg, #3b82f6, #2563eb);
-            margin: 15px;
+        /* 1. KÁRTYA DESIGN */
+        .gold-card {
+            background: var(--card-bg);
+            border: 1px solid #333;
+            border-left: 4px solid var(--gold);
+            border-radius: 12px;
             padding: 20px;
-            border-radius: 20px;
-            color: white;
             position: relative;
-            overflow: hidden;
-            box-shadow: 0 10px 20px rgba(37, 99, 235, 0.3);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+            margin-bottom: 15px;
         }
-        /* Díszítő elem a háttérben */
-        .wallet-card::after {
-            content: '';
-            position: absolute;
-            top: -20px; right: -20px;
-            width: 150px; height: 150px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 50%;
-        }
-        
-        .card-header { font-size: 12px; opacity: 0.9; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; }
-        .balance-huge { font-size: 36px; font-weight: 800; margin: 10px 0; }
-        .card-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 20px; font-size: 13px; opacity: 0.9; }
+        .balance-label { font-size: 12px; color: var(--text-sec); }
+        .balance-amount { font-size: 32px; font-weight: bold; color: var(--text-main); margin: 5px 0; }
+        .user-id-badge { background: #222; padding: 4px 8px; border-radius: 5px; font-size: 11px; color: var(--gold); font-family: monospace; }
 
-        /* 2. BEFIZETÉS SZEKCIÓ */
-        .section-title {
-            margin: 20px 15px 10px 15px;
-            font-size: 14px;
-            color: var(--text-sec);
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+        /* 2. BEFIZETÉS MEZŐ */
+        .crypto-box {
+            background: #1a1a1a; padding: 15px; border-radius: 10px; border: 1px solid #333;
+            display: flex; justify-content: space-between; align-items: center;
         }
+        .crypto-address { font-family: monospace; font-size: 13px; color: #ccc; word-break: break-all; width: 80%; }
+        .copy-icon { color: var(--gold); font-size: 18px; padding: 10px; cursor: pointer; }
 
-        .input-box {
-            background: var(--card-bg);
-            margin: 0 15px;
-            padding: 15px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border: 1px solid #30363d;
-        }
-        .crypto-address {
-            font-family: monospace;
-            font-size: 14px;
-            color: var(--text-main);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            max-width: 80%;
-        }
-        .copy-btn {
-            background: #21262d;
-            border: 1px solid #30363d;
-            color: var(--sky-blue);
-            padding: 8px;
-            border-radius: 8px;
-            cursor: pointer;
-        }
-
-        /* 3. MONITORING (Figyelő) */
-        .monitor-box {
-            background: var(--card-bg);
-            margin: 15px;
-            padding: 15px;
-            border-radius: 12px;
-            border: 1px solid #30363d;
-        }
-        .monitor-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .status-badge {
-            background: rgba(16, 185, 129, 0.1);
-            color: #10b981; /* Zöld */
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 12px;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-        .spinner {
-            width: 10px; height: 10px;
-            border: 2px solid #10b981;
-            border-top: 2px solid transparent;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-        /* 4. TERMÉKEK (Ha a Shop fülön vagyunk) */
-        .product-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            padding: 15px;
-        }
+        /* 3. TERMÉKEK (SHOP) */
+        .product-list { display: flex; flex-direction: column; gap: 15px; }
         .product-item {
-            background: var(--card-bg);
-            border-radius: 12px;
-            overflow: hidden;
-            text-align: center;
+            background: var(--card-bg); border-radius: 12px; padding: 15px;
+            display: flex; align-items: center; gap: 15px; border: 1px solid #222;
         }
-        .p-img { height: 100px; background: #21262d; display: flex; align-items: center; justify-content: center; font-size: 30px;}
-        .p-info { padding: 10px; }
-        .btn-buy-sm {
-            background: var(--sky-blue);
-            color: white;
-            border: none;
-            width: 100%;
-            padding: 8px;
-            border-radius: 6px;
-            margin-top: 5px;
-            font-weight: bold;
+        .p-icon { 
+            width: 50px; height: 50px; background: #222; border-radius: 10px; 
+            display: flex; align-items: center; justify-content: center; font-size: 24px; color: var(--gold); 
+        }
+        .p-details { flex: 1; }
+        .p-title { font-weight: bold; font-size: 15px; }
+        .p-price { color: var(--gold); font-weight: bold; font-size: 14px; margin-top: 4px; }
+        .btn-buy {
+            background: var(--gold-gradient); color: black; border: none;
+            padding: 8px 15px; border-radius: 20px; font-weight: bold; font-size: 12px;
         }
 
-        /* 5. ALSÓ MENÜ (Fixed Bottom Nav) */
+        /* 4. HÍREK / JUTALMAK / PROFIL */
+        .info-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #222; font-size: 14px; }
+        .reward-box { text-align: center; padding: 30px; background: #111; border-radius: 15px; border: 1px dashed var(--gold); }
+
+        /* 5. ALSÓ MENÜ */
         .bottom-nav {
-            position: fixed;
-            bottom: 0; left: 0; width: 100%;
-            background: #0d1117;
-            border-top: 1px solid #30363d;
-            display: flex;
-            justify-content: space-around;
-            padding: 10px 0;
-            padding-bottom: 20px; /* iPhone home bar miatt */
-            z-index: 100;
+            position: fixed; bottom: 0; left: 0; width: 100%;
+            background: rgba(10, 10, 10, 0.95); backdrop-filter: blur(10px);
+            border-top: 1px solid #333;
+            display: flex; justify-content: space-around; padding: 12px 0 25px 0; z-index: 100;
         }
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            color: var(--text-sec);
-            font-size: 10px;
-            gap: 4px;
-        }
-        .nav-item i { font-size: 20px; margin-bottom: 2px; }
-        .nav-item.active { color: var(--sky-blue); }
+        .nav-item { color: #555; text-align: center; font-size: 10px; flex: 1; transition: 0.2s; }
+        .nav-item i { font-size: 20px; margin-bottom: 4px; display: block; }
+        .nav-item.active { color: var(--gold); transform: translateY(-2px); }
 
-        /* OLDAL VÁLTÁS */
-        .page { display: none; animation: fadeIn 0.2s; }
+        /* OLDAL KEZELÉS */
+        .page { display: none; }
         .page.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
     </style>
 </head>
 <body>
 
-    <div id="blocker-screen">
-        <h1 style="font-size: 50px;">🚫</h1>
-        <h2>HOZZÁFÉRÉS MEGTAGADVA</h2>
-        <p>Ez az oldal csak Telegramról érhető el.</p>
-    </div>
+    <div id="blocker-screen"><h1>⚠️</h1><p>Csak Telegramról!</p></div>
 
     <div id="app-content" class="hidden">
-        
-        <div id="page-wallet" class="page active">
+
+        <div id="page-wallet" class="page active container">
+            <div class="gold-card">
+                <div class="balance-label">TELJES EGYENLEG</div>
+                <div class="balance-amount"><span id="balance">0</span> Ft</div>
+                <span class="user-id-badge" id="userid">ID: Betöltés...</span>
+            </div>
+
+            <div class="section-title">Egyenleg Feltöltés</div>
+            <p style="font-size: 12px; color: #888;">Utalj bármennyi Litecoint (LTC) az alábbi címre. Az egyenleged 10-30 perc alatt jóváíródik.</p>
             
-            <div class="wallet-card">
-                <div class="card-header">
-                    <i class="fas fa-credit-card"></i> SAJÁT EGYENLEG
-                </div>
-                <div class="balance-huge">
-                    <span id="balance-display">0</span> HUF
-                </div>
-                <div class="card-footer">
-                    <span>Elérhető</span>
-                    <span>ID: <span id="user-id">...</span></span>
-                </div>
+            <div class="crypto-box">
+                <div class="crypto-address" id="my-address">ltc1q...SAJÁT_CÍMED_HELYE...</div>
+                <div class="copy-icon" onclick="copyAddr()"><i class="far fa-copy"></i></div>
             </div>
 
-            <div class="section-title">
-                <i class="fas fa-wallet"></i> LITECOIN (LTC) BEFIZETÉS
-            </div>
-            <div style="font-size: 12px; color: #8b949e; margin: 0 15px 10px 15px;">
-                Csak LTC-t küldj erre a címre! Más eszköz elveszik.
-            </div>
-
-            <div class="input-box">
-                <div class="crypto-address" id="ltc-address">ltc1qa0pvhw5dhz05zp5as... (DEMO)</div>
-                <div class="copy-btn" onclick="copyAddress()">
-                    <i class="far fa-copy"></i>
-                </div>
-            </div>
-
-            <div class="section-title">
-                <i class="fas fa-satellite-dish"></i> BEFIZETÉS FIGYELŐ
-            </div>
-            <div class="monitor-box">
-                <div class="monitor-row">
-                    <span style="font-size: 12px; color: #8b949e;">Állapot:</span>
-                    <div class="status-badge">
-                        <div class="spinner"></div> FIGYELÉS AKTÍV
-                    </div>
-                </div>
-                <div style="font-size: 13px; margin-top: 5px;">
-                    LTC árfolyam: <span style="color: #10b981;">34,500 HUF</span>
-                </div>
-                <div style="font-size: 10px; color: #8b949e; margin-top: 5px;">
-                    Utolsó frissítés: Épp most
-                </div>
-            </div>
-
+            <button onclick="Telegram.WebApp.showAlert('Ellenőrzés elküldve az adminnak!')" style="width:100%; margin-top:15px; padding:15px; background:#222; border:1px solid #444; color:white; border-radius:10px;">
+                🔄 Befizetés Ellenőrzése
+            </button>
         </div>
 
-        <div id="page-shop" class="page">
-            <div class="section-title">TERMÉKEK</div>
-            <div class="product-grid">
+        <div id="page-shop" class="page container">
+            <div class="section-title">Elérhető Csomagok</div>
+            <div class="product-list">
                 <div class="product-item">
-                    <div class="p-img">📦</div>
-                    <div class="p-info">
-                        <div style="font-weight:bold; font-size:13px;">Mystery Box</div>
-                        <div style="color:#10b981; font-weight:bold;">5,000 Ft</div>
-                        <button class="btn-buy-sm" onclick="alert('Nincs elég egyenleged!')">VÁSÁRLÁS</button>
+                    <div class="p-icon">📦</div>
+                    <div class="p-details">
+                        <div class="p-title">Bronz Csomag</div>
+                        <div class="p-price">5,000 Ft</div>
                     </div>
+                    <button class="btn-buy" onclick="buy(5000)">Vétel</button>
                 </div>
                 <div class="product-item">
-                    <div class="p-img">📍</div>
-                    <div class="p-info">
-                        <div style="font-weight:bold; font-size:13px;">GPS Drop</div>
-                        <div style="color:#10b981; font-weight:bold;">15,000 Ft</div>
-                        <button class="btn-buy-sm" onclick="alert('Nincs elég egyenleged!')">VÁSÁRLÁS</button>
+                    <div class="p-icon">🥈</div>
+                    <div class="p-details">
+                        <div class="p-title">Ezüst Csomag</div>
+                        <div class="p-price">15,000 Ft</div>
                     </div>
+                    <button class="btn-buy" onclick="buy(15000)">Vétel</button>
+                </div>
+                 <div class="product-item">
+                    <div class="p-icon">🥇</div>
+                    <div class="p-details">
+                        <div class="p-title">Gold VIP</div>
+                        <div class="p-price">30,000 Ft</div>
+                    </div>
+                    <button class="btn-buy" onclick="buy(30000)">Vétel</button>
                 </div>
             </div>
         </div>
 
-        <div class="bottom-nav">
-            <div class="nav-item" onclick="switchPage('shop', this)">
-                <i class="fas fa-store"></i> Bolt
-            </div>
-            <div class="nav-item active" onclick="switchPage('wallet', this)">
-                <i class="fas fa-wallet"></i> Pénztárca
-            </div>
-            <div class="nav-item">
-                <i class="fas fa-gift"></i> Jutalmak
-            </div>
-            <div class="nav-item">
-                <i class="fas fa-newspaper"></i> Hírek
-            </div>
-            <div class="nav-item">
-                <i class="fas fa-user"></i> Profil
+        <div id="page-rewards" class="page container">
+            <div class="section-title">Napi Jutalmak</div>
+            <div class="reward-box">
+                <div style="font-size: 40px;">🎁</div>
+                <h3>Napi Bónusz</h3>
+                <p style="color:#888; font-size:12px;">Gyere vissza 24 óra múlva!</p>
+                <button class="btn-buy" style="margin-top:10px;">Igénylés (+100 Ft)</button>
             </div>
         </div>
 
+        <div id="page-news" class="page container">
+            <div class="section-title">Hírek & Frissítések</div>
+            <div class="gold-card" style="padding:15px;">
+                <div style="font-weight:bold; margin-bottom:5px;">🚀 Új helyszínek!</div>
+                <div style="font-size:12px; color:#aaa;">Ma 5 új csomagot rejtettünk el a belvárosban. Siess, mert hamar elviszik!</div>
+                <div style="font-size:10px; color:#555; margin-top:10px;">2026.01.29.</div>
+            </div>
+            <div class="gold-card" style="padding:15px;">
+                <div style="font-weight:bold; margin-bottom:5px;">⚠️ Rendszerkarbantartás</div>
+                <div style="font-size:12px; color:#aaa;">A szerverek éjjel frissülnek. A befizetések zavartalanok.</div>
+            </div>
+        </div>
+
+        <div id="page-profile" class="page container">
+            <div class="section-title">Fiókom</div>
+            <div style="text-align:center; margin-bottom:20px;">
+                <div style="width:80px; height:80px; background:#222; border-radius:50%; margin:0 auto; display:flex; align-items:center; justify-content:center; border:2px solid var(--gold);">
+                    <i class="fas fa-user" style="font-size:30px; color:var(--gold);"></i>
+                </div>
+                <h3 id="username-display" style="margin:10px 0 5px 0;">Felhasználó</h3>
+                <span style="background:#222; color:#888; padding:3px 10px; border-radius:10px; font-size:12px;">Standard Tag</span>
+            </div>
+
+            <div class="info-row">
+                <span>Vásárlások száma</span>
+                <span style="color:var(--gold);">0 db</span>
+            </div>
+            <div class="info-row">
+                <span>Regisztráció</span>
+                <span>2026.01.29.</span>
+            </div>
+            <div class="info-row">
+                <span>Nyelv</span>
+                <span>Magyar 🇭🇺</span>
+            </div>
+            
+            <button onclick="Telegram.WebApp.close()" style="width:100%; margin-top:30px; padding:15px; background:transparent; border:1px solid #333; color:#ff4444; border-radius:10px;">
+                Kilépés
+            </button>
+        </div>
+
+    </div>
+
+    <div class="bottom-nav">
+        <div class="nav-item active" onclick="nav('wallet', this)">
+            <i class="fas fa-wallet"></i> Tárca
+        </div>
+        <div class="nav-item" onclick="nav('shop', this)">
+            <i class="fas fa-shopping-bag"></i> Bolt
+        </div>
+        <div class="nav-item" onclick="nav('rewards', this)">
+            <i class="fas fa-gift"></i> Jutalmak
+        </div>
+        <div class="nav-item" onclick="nav('news', this)">
+            <i class="fas fa-newspaper"></i> Hírek
+        </div>
+        <div class="nav-item" onclick="nav('profile', this)">
+            <i class="fas fa-user"></i> Profil
+        </div>
     </div>
 
     <script>
-        // TELEGRAM INICIALIZÁLÁS
         const tg = window.Telegram.WebApp;
-        tg.expand(); 
+        tg.expand();
 
-        // BIZTONSÁGI ELLENŐRZÉS (BLOKKOLÓ)
-        // Ha nincs Telegram platform, akkor tiltjuk a hozzáférést.
-        if (tg.platform === 'unknown' && !tg.initData) {
-            // Ez egy böngésző (vagy nincs telegram adat) -> Hagyjuk a blokkolót
-        } else {
-            // Ez Telegram -> Eltüntetjük a blokkolót és mutatjuk az Appot
+        // BIZTONSÁG: Ha nem Telegram, blokkolunk
+        if (tg.platform !== 'unknown' || tg.initData) {
             document.getElementById('blocker-screen').classList.add('hidden');
             document.getElementById('app-content').classList.remove('hidden');
         }
 
-        // ADATOK BEÁLLÍTÁSA
-        document.getElementById('user-id').innerText = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : 'GUEST';
-        
-        // CÍM MÁSOLÁSA
-        function copyAddress() {
-            const text = document.getElementById('ltc-address').innerText;
-            navigator.clipboard.writeText(text).then(() => {
-                tg.showAlert("Cím másolva!");
-            });
+        // ADATOK KITÖLTÉSE
+        const user = tg.initDataUnsafe.user;
+        if (user) {
+            document.getElementById('userid').innerText = "ID: " + user.id;
+            document.getElementById('username-display').innerText = user.first_name;
         }
 
-        // MENÜ VÁLTÁS
-        function switchPage(pageId, btn) {
-            // Minden oldalt elrejt
-            document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+        // NAVIGÁCIÓ KEZELÉS
+        function nav(pageId, btn) {
+            // Elrejtjük az összes oldalt
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            // Levesszük az aktív jelzést a gombokról
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             
-            // Kiválasztottat mutat
+            // Megjelenítjük a kért oldalt
             document.getElementById('page-' + pageId).classList.add('active');
+            // Aktívvá tesszük a gombot
             btn.classList.add('active');
         }
 
+        // CÍM MÁSOLÁSA
+        function copyAddr() {
+            const addr = document.getElementById('my-address').innerText;
+            navigator.clipboard.writeText(addr);
+            tg.showAlert("Cím másolva! Erre utalj a tárcádból.");
+        }
+
+        // VÁSÁRLÁS TESZT
+        function buy(amount) {
+            tg.showConfirm("Megveszed ezt a csomagot?", (ok) => {
+                if(ok) tg.showAlert("Nincs elég egyenleged! Előbb töltsd fel.");
+            });
+        }
     </script>
 </body>
 </html>
