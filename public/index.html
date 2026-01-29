@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="hu">
 <head>
@@ -8,13 +7,13 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        /* --- PREMIUM BLACK & GOLD DESIGN --- */
+        /* --- DESIGN (Fekete & Arany) --- */
         :root { --bg: #000; --card: #111; --gold: #D4AF37; --text: #fff; }
         body { background: var(--bg); color: var(--text); font-family: sans-serif; padding-bottom: 90px; margin: 0; user-select: none; }
         .hidden { display: none !important; }
         .container { padding: 15px; }
 
-        /* KÁRTYA */
+        /* KÁRTYA STÍLUS */
         .gold-card { 
             background: linear-gradient(135deg, #1a1a1a, #000); 
             border: 1px solid #333; border-left: 4px solid var(--gold); 
@@ -25,7 +24,7 @@
         /* BEFIZETÉS DOBOZ */
         .deposit-box { background: #1a1a1a; padding: 15px; border-radius: 10px; border: 1px solid #333; margin-top: 10px;}
         .crypto-address { 
-            font-family: monospace; font-size: 12px; color: var(--gold); 
+            font-family: monospace; font-size: 11px; color: var(--gold); 
             word-break: break-all; background: #000; padding: 10px; border-radius: 5px; 
             text-align: center; margin-bottom: 10px;
         }
@@ -67,7 +66,7 @@
         <div class="deposit-box">
             <p style="font-size:12px; color:#aaa; text-align:center;">1. Utalj Litecoint erre a címre:</p>
             
-            <div class="crypto-address" id="my-address">ltc1q...IDE_MASOLD_A_SAJAT_CIMED...</div>
+            <div class="crypto-address" id="my-address">ltc1qv5aape3pah2f954k5jjx9kgnrnkxzytm6f7an8</div>
             
             <button class="btn-copy" onclick="copyAddr()">Cím Másolása</button>
 
@@ -87,7 +86,7 @@
                 <div style="font-weight:bold;">Mystery Box</div>
                 <div style="color:var(--gold);">5,000 Ft</div>
             </div>
-            <button class="btn-gold" style="width:auto; padding: 5px 15px;" onclick="alert('Előbb tölts fel pénzt!')">Vétel</button>
+            <button class="btn-gold" style="width:auto; padding: 5px 15px;" onclick="buyItem(5000)">Vétel</button>
         </div>
     </div>
 
@@ -105,7 +104,7 @@
         const user = tg.initDataUnsafe.user;
         if (user) document.getElementById('userid').innerText = "ID: " + user.id;
 
-        // Egyenleg betöltése (Helyi tárolóból szimulálva)
+        // Egyenleg kezelése
         let currentBalance = localStorage.getItem('balance') ? parseInt(localStorage.getItem('balance')) : 0;
         updateDisplay();
 
@@ -126,7 +125,22 @@
             navigator.clipboard.writeText(addr).then(() => tg.showAlert("Cím másolva!"));
         }
 
-        // --- FIZETÉS ELLENŐRZÉS (A LÉNYEG) ---
+        function buyItem(price) {
+            if (currentBalance >= price) {
+                tg.showConfirm("Megveszed?", (ok) => {
+                    if(ok) {
+                        currentBalance -= price;
+                        localStorage.setItem('balance', currentBalance);
+                        updateDisplay();
+                        tg.showAlert("Vásárlás sikeres! (A koordinátákat a bot küldi)");
+                    }
+                });
+            } else {
+                tg.showAlert("Nincs elég pénzed! Töltsd fel a tárcádat.");
+            }
+        }
+
+        // --- FIZETÉS ELLENŐRZÉS ---
         async function checkPayment() {
             const txid = document.getElementById('txid-input').value.trim();
             const myAddr = document.getElementById('my-address').innerText;
@@ -139,7 +153,6 @@
             tg.MainButton.show();
 
             try {
-                // Küldjük az adatokat a backendnek
                 const response = await fetch('/api/verify', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
@@ -150,16 +163,15 @@
                 tg.MainButton.hide();
 
                 if (data.success) {
-                    // SIKER!
-                    const addedMoney = data.huf;
+                    const addedMoney = data.amount_huf;
                     currentBalance += addedMoney;
-                    localStorage.setItem('balance', currentBalance); // Mentés
+                    localStorage.setItem('balance', currentBalance);
                     updateDisplay();
                     
-                    tg.showAlert(`Sikeres jóváírás!\n+${addedMoney} Ft érkezett.`);
-                    document.getElementById('txid-input').value = ""; // Törlés
+                    tg.showAlert(`✅ SIKERES BEFIZETÉS!\n+${addedMoney} Ft jóváírva.`);
+                    document.getElementById('txid-input').value = ""; 
                 } else {
-                    tg.showAlert("Hiba: " + data.error);
+                    tg.showAlert("❌ Hiba: " + data.error);
                 }
 
             } catch (e) {
