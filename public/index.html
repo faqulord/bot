@@ -21,27 +21,33 @@
     <div id="app">
         
         <div class="header">
-            <div class="user-info">
-                <i class="fas fa-user-astronaut"></i> <span id="username">User</span>
-                <span class="badge-vip vip-0" id="vip-display"><i class="fas fa-lock"></i> VIP 0</span>
+            <div class="header-left">
+                <div class="tut-btn" onclick="openModal('guide')">
+                    <i class="fas fa-book-open"></i> <span data-lang="guide">Guide</span>
+                </div>
             </div>
-            <div class="lang-switch"><i class="fas fa-globe-europe"></i> Global</div>
+            <div class="header-right">
+                <div class="lang-switch" onclick="toggleLanguage()">
+                    <i class="fas fa-globe"></i> <span id="current-lang">EN</span>
+                </div>
+            </div>
         </div>
 
         <div class="hero-card">
-            <div class="hero-label">Total Assets (USDT) <i class="fas fa-info-circle"></i></div>
-            <div class="hero-balance">$<span id="main-balance">5.00</span></div>
-            <div class="hero-profit">
-                Today's Profit: <span style="color:#00ff88">+$0.00</span>
-                <span style="float:right; font-size:10px; color:#ff4d4d;" id="withdrawal-status">🔒 Locked (VIP0)</span>
+            <div class="hero-top">
+                <div class="user-badge">
+                    <i class="fas fa-user-astronaut"></i> <span id="username">User</span>
+                    <span class="vip-tag" id="vip-display">VIP 0</span>
+                </div>
             </div>
-            
+            <div class="hero-label" data-lang="total_assets">Total Assets (USDT)</div>
+            <div class="hero-balance">$<span id="main-balance">5.00</span></div>
             <div class="hero-actions">
                 <button class="action-btn dep" onclick="openModal('deposit')">
-                    <i class="fas fa-plus-circle"></i> Deposit
+                    <i class="fas fa-plus-circle"></i> <span data-lang="deposit">Deposit</span>
                 </button>
                 <button class="action-btn with" onclick="openWithdrawModal()">
-                    <i class="fas fa-arrow-circle-down"></i> Withdraw
+                    <i class="fas fa-arrow-circle-down"></i> <span data-lang="withdraw">Withdraw</span>
                 </button>
             </div>
         </div>
@@ -49,81 +55,89 @@
         <div class="marquee-container">
             <div class="marquee-icon"><i class="fas fa-bullhorn"></i></div>
             <div class="marquee-wrapper">
-                <div class="marquee-content">
-                    🚀 Welcome to SkyTech Quantum! New users get $5 Experience Bonus. Activate VIP1 to unlock withdrawals. Instant LTC deposits! 🔥 Regional Agents wanted: Earn up to $150 daily salary!
+                <div class="marquee-content" id="marquee-text">
+                    🚀 SkyTech Quantum v2.0 Live! New users get $5 Bonus. Invite friends to earn Salary! Minimum Deposit: $10.
                 </div>
             </div>
         </div>
 
         <div id="page-home" class="page active">
             <div class="section-header">
-                <h3>Investment Hall (VIP)</h3>
-                <span onclick="tg.showAlert('Buy a node to become VIP and unlock withdrawals.')">Help <i class="fas fa-question-circle"></i></span>
+                <h3 data-lang="shop_title">Investment Hall</h3>
+                <span class="status-dot"></span> <small style="color:#00ff88">System Online</small>
+            </div>
+            <div id="machine-list"></div> <div class="partners">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/1/12/Binance_logo.svg" style="opacity:0.4; height:15px;">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Coinbase_logo.png" style="opacity:0.4; height:15px;">
+                <span style="font-size:9px; color:#555;"><i class="fas fa-lock"></i> SSL Secure</span>
+            </div>
+        </div>
+
+        <div id="page-miners" class="page">
+            <div class="section-header">
+                <h3 data-lang="my_miners">My Active Miners</h3>
+                <button class="refresh-btn" onclick="renderMyMiners()"><i class="fas fa-sync"></i></button>
+            </div>
+            <div id="my-miners-list">
+                <div class="empty-state">
+                    <i class="fas fa-server"></i>
+                    <p data-lang="no_miners">No active miners.</p>
+                    <button onclick="nav('home', document.querySelectorAll('.nav-item')[0])" data-lang="buy_now">Buy Now</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="page-task" class="page">
+            <div class="section-header"><h3 data-lang="task_center">Task Center</h3></div>
+            
+            <div class="task-card">
+                <div class="task-icon tg"><i class="fab fa-telegram-plane"></i></div>
+                <div class="task-info">
+                    <h4 data-lang="task_tg">Join Channel</h4>
+                    <p>Reward: <span style="color:#00ff88">$2.00</span></p>
+                </div>
+                <button class="task-btn" id="btn-task-1" onclick="doTask(1)">Claim</button>
             </div>
 
-            <div id="machine-list">
+            <div class="task-card">
+                <div class="task-icon tw"><i class="fab fa-twitter"></i></div>
+                <div class="task-info">
+                    <h4 data-lang="task_x">Follow on X</h4>
+                    <p>Reward: <span style="color:#00ff88">$2.00</span></p>
                 </div>
-            
-            <div class="trust-badges">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/1/12/Binance_logo.svg" alt="Binance" style="height:20px; opacity:0.5;">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Coinbase_logo.png" alt="Coinbase" style="height:20px; opacity:0.5;">
-                <span style="color:#555; font-size:10px;"><i class="fas fa-shield-alt"></i> Secured by CertiK</span>
+                <button class="task-btn" id="btn-task-2" onclick="doTask(2)">Claim</button>
             </div>
         </div>
 
         <div id="page-team" class="page">
             <div class="team-header">
-                <div class="team-total">
-                    <span>Team Size</span>
-                    <h3>0 Users</h3>
-                </div>
-                <div class="team-comm">
-                    <span>Total Commission</span>
-                    <h3 style="color:#00ff88">$0.00</h3>
-                </div>
+                <div><span data-lang="team_size">Team Size</span><h3>0</h3></div>
+                <div><span data-lang="team_comm">Commission</span><h3 style="color:#00ff88">$0.00</h3></div>
             </div>
 
             <div class="invite-box">
-                <p>Your Invitation Link <span style="color:#00ff88">(12% - 5% - 2%)</span></p>
+                <p data-lang="invite_link">Your Invite Link</p>
                 <div class="link-input">
                     <input type="text" id="ref-link" value="..." readonly>
-                    <button onclick="copyRef()"><i class="fas fa-copy"></i> Copy</button>
+                    <button onclick="copyRef()"><i class="fas fa-copy"></i></button>
                 </div>
-                <p style="font-size:10px; color:#888; margin-top:5px;">Share this link to build your empire!</p>
+                <div class="levels">LVL1: 12% | LVL2: 5% | LVL3: 2%</div>
             </div>
 
             <div class="salary-section">
-                <h4><i class="fas fa-crown" style="color:#ffd700;"></i> Regional Agent Salary</h4>
-                <p style="font-size:11px; color:#aaa; margin-bottom:15px;">Invite active members (VIP1+) to earn daily fixed salary!</p>
-                
-                <div class="salary-table">
-                    <div class="st-row header">
-                        <div>Level</div>
-                        <div>Requirement (VIP1s)</div>
-                        <div>Daily Salary</div>
-                    </div>
-                    <div class="st-row">
-                        <div>Junior</div>
-                        <div>Invite 5</div>
-                        <div style="color:#00ff88;">$5 / Day</div>
-                    </div>
-                    <div class="st-row active-row">
-                        <div>Senior</div>
-                        <div>Invite 15</div>
-                        <div style="color:#00ff88; font-weight:bold;">$20 / Day</div>
-                    </div>
-                    <div class="st-row">
-                        <div>Director</div>
-                        <div>Invite 50</div>
-                        <div style="color:#00ff88; font-weight:bold;">$80 / Day</div>
-                    </div>
-                    <div class="st-row">
-                        <div>Partner</div>
-                        <div>Invite 150</div>
-                        <div style="color:#00ff88; font-weight:bold;">$200 / Day</div>
-                    </div>
+                <h4><i class="fas fa-gem"></i> <span data-lang="agent_salary">Agent Monthly Salary</span></h4>
+                <div class="salary-row">
+                    <span>Invite 5 VIP1</span>
+                    <span class="money">$5 / <span data-lang="day">Day</span></span>
                 </div>
-                <p style="text-align:center; font-size:10px; margin-top:10px; color:#888;">*Salary is paid automatically every 24h.</p>
+                <div class="salary-row highlight">
+                    <span>Invite 15 VIP1</span>
+                    <span class="money">$20 / <span data-lang="day">Day</span></span>
+                </div>
+                <div class="salary-row">
+                    <span>Invite 50 VIP1</span>
+                    <span class="money">$80 / <span data-lang="day">Day</span></span>
+                </div>
             </div>
         </div>
 
@@ -131,89 +145,84 @@
             <div class="profile-menu">
                 <div class="menu-item" onclick="openWithdrawModal()">
                     <i class="fas fa-wallet" style="color:#00ff88"></i>
-                    <span>Withdrawal</span>
-                    <i class="fas fa-chevron-right"></i>
+                    <span data-lang="menu_withdraw">Withdrawal</span>
                 </div>
-                <div class="menu-item" onclick="tg.showAlert('No transactions yet.')">
-                    <i class="fas fa-list-alt" style="color:#00bfff"></i>
-                    <span>Transaction Records</span>
-                    <i class="fas fa-chevron-right"></i>
+                <div class="menu-item" onclick="openModal('deposit')">
+                    <i class="fas fa-history" style="color:#00bfff"></i>
+                    <span data-lang="menu_history">History</span>
                 </div>
-                <div class="menu-item" onclick="tg.showAlert('Security is active. Your account is safe.')">
-                    <i class="fas fa-shield-alt" style="color:#ffcc00"></i>
-                    <span>Security Center</span>
-                    <i class="fas fa-chevron-right"></i>
-                </div>
-                <div class="menu-item" onclick="window.open('https://t.me/SkyTechAdmin', '_blank')">
-                    <i class="fas fa-headset" style="color:#ff0055"></i>
-                    <span>Online Support</span>
-                    <i class="fas fa-external-link-alt" style="font-size:10px;"></i>
-                </div>
-                 <div class="menu-item" onclick="tg.showAlert('App download coming soon for iOS/Android!')">
-                    <i class="fas fa-mobile-alt" style="color:#fff"></i>
-                    <span>Download App</span>
-                    <i class="fas fa-chevron-right"></i>
+                <div class="menu-item" onclick="window.open('https://t.me/SkyTechSupport', '_blank')">
+                    <i class="fas fa-headset" style="color:#ffcc00"></i>
+                    <span data-lang="menu_support">Support</span>
                 </div>
             </div>
-            <button class="logout-btn" onclick="tg.close()">Close App</button>
+            <button class="logout-btn" onclick="tg.close()">Exit App</button>
         </div>
 
     </div>
 
+    <div id="modal-guide" class="modal">
+        <div class="modal-content guide-content">
+            <span class="close" onclick="closeModal('guide')">&times;</span>
+            <h3 data-lang="guide_title">How to Earn?</h3>
+            <div class="guide-step">
+                <div class="step-num">1</div>
+                <p data-lang="guide_1">Register & Get $5 Bonus + Do tasks for $4.</p>
+            </div>
+            <div class="guide-step">
+                <div class="step-num">2</div>
+                <p data-lang="guide_2">Deposit to buy a VIP Machine (Starting from $15).</p>
+            </div>
+            <div class="guide-step">
+                <div class="step-num">3</div>
+                <p data-lang="guide_3">Collect profit daily & Invite friends for Salary!</p>
+            </div>
+            <button class="confirm-btn" onclick="closeModal('guide')">OK, Let's go!</button>
+        </div>
+    </div>
+
     <div id="modal-deposit" class="modal">
         <div class="modal-content">
-            <div class="modal-header">
-                <h3><i class="fas fa-coins"></i> Deposit (LTC)</h3>
-                <span class="close" onclick="closeModal('deposit')">&times;</span>
+            <span class="close" onclick="closeModal('deposit')">&times;</span>
+            <h3>Deposit LTC</h3>
+            <p class="modal-label">Plan: <span id="dep-plan-name" style="color:#00ff88">-</span></p>
+            <p class="modal-label">Amount: <span id="dep-amount" style="color:white; font-size:20px;">$0.00</span></p>
+            <div class="copy-box">
+                <span id="wallet-addr" style="font-size:10px;">ltc1qv5aape3pah2f954k5jjx9kgnrnkxzytm6f7an8</span>
+                <i class="fas fa-copy" onclick="copyAddr()"></i>
             </div>
-            <div class="modal-body">
-                <p class="modal-label">Target Plan: <span id="dep-plan-name" style="color:#00ff88">Balance Topup</span></p>
-                <p class="modal-label" style="margin-bottom:20px;">Amount to send: <span id="dep-amount" style="color:white; font-weight:bold; font-size:22px;">$10.00</span></p>
-                
-                <div class="copy-box">
-                    <span id="wallet-addr" style="font-size:10px;">ltc1qv5aape3pah2f954k5jjx9kgnrnkxzytm6f7an8</span>
-                    <i class="fas fa-copy" onclick="copyAddr()"></i>
-                </div>
-                
-                <p class="warning-text">⚠️ Send exact amount in LTC. Network fees apply. Rate is auto-converted.</p>
-
-                <input type="text" id="txid" placeholder="Paste Payment TXID here..." class="input-field">
-                <button class="confirm-btn" onclick="verifyPayment()">I Have Paid</button>
-            </div>
+            <input type="text" id="txid" placeholder="Paste TXID" class="input-field">
+            <button class="confirm-btn" onclick="verifyPayment()" data-lang="paid_btn">I Have Paid</button>
         </div>
     </div>
 
     <div id="modal-withdraw" class="modal">
         <div class="modal-content">
-            <div class="modal-header">
-                <h3><i class="fas fa-hand-holding-usd"></i> Withdraw</h3>
-                <span class="close" onclick="closeModal('withdraw')">&times;</span>
-            </div>
-            <div class="modal-body">
-                <p class="modal-label">Available Balance: <span style="color:#00ff88">$<span id="with-bal">0.00</span></span></p>
-                <p id="vip-lock-msg" style="color:#ff4d4d; font-size:11px; display:none;"><i class="fas fa-lock"></i> VIP0 cannot withdraw. Please upgrade.</p>
-                
-                <input type="text" placeholder="Your LTC Wallet Address" class="input-field">
-                <input type="number" placeholder="Amount (Min $20)" class="input-field">
-                
-                <p class="warning-text">Fee: 5% | Arrival time: 1-24 Hours</p>
-                <button class="confirm-btn" id="with-btn" onclick="requestWithdraw()">Withdraw Now</button>
-            </div>
+            <span class="close" onclick="closeModal('withdraw')">&times;</span>
+            <h3>Withdraw USDT/LTC</h3>
+            <p>Balance: <span style="color:#00ff88">$<span id="with-bal">0.00</span></span></p>
+            <p id="vip-lock-msg" style="color:#ff4d4d; font-size:11px; display:none;">🔒 VIP0 Locked. Buy a machine!</p>
+            <input type="text" placeholder="Wallet Address" class="input-field">
+            <input type="number" placeholder="Amount (Min $20)" class="input-field">
+            <button class="confirm-btn" id="with-btn" onclick="requestWithdraw()">Withdraw</button>
         </div>
     </div>
 
     <div class="nav-bar">
         <div class="nav-item active" onclick="nav('home', this)">
-            <i class="fas fa-rocket"></i>
-            <span>Invest</span>
+            <i class="fas fa-home"></i><span data-lang="nav_home">Home</span>
+        </div>
+        <div class="nav-item" onclick="nav('miners', this)">
+            <i class="fas fa-server"></i><span data-lang="nav_miners">Miners</span>
+        </div>
+        <div class="nav-item" onclick="nav('task', this)">
+            <i class="fas fa-check-square"></i><span data-lang="nav_task">Task</span>
         </div>
         <div class="nav-item" onclick="nav('team', this)">
-            <i class="fas fa-users"></i>
-            <span>Team</span>
+            <i class="fas fa-users"></i><span data-lang="nav_team">Team</span>
         </div>
         <div class="nav-item" onclick="nav('mine', this)">
-            <i class="fas fa-user-circle"></i>
-            <span>Mine</span>
+            <i class="fas fa-user"></i><span data-lang="nav_me">Me</span>
         </div>
     </div>
 
