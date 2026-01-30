@@ -1,359 +1,203 @@
-// --- CONFIGURATION ---
-const tg = window.Telegram.WebApp;
-tg.expand();
-
-// Ciklus idő: 24 óra (86400000 ms)
-const CYCLE_TIME = 24 * 60 * 60 * 1000; 
-
-// --- ÚJ MATEK (ROI ~45-50 NAP) ---
-// Szabály: Ár / Napi profit = kb. 45-50 nap megtérülés
-const machines = [
-    { id: 1, name: "VIP 1 - Node V1", price: 15, daily: 0.35, roi: 365 },   // ~42 nap megtérülés
-    { id: 2, name: "VIP 2 - Node V2", price: 50, daily: 1.10, roi: 365 },   // ~45 nap
-    { id: 3, name: "VIP 3 - Cluster", price: 100, daily: 2.20, roi: 365 },  // ~45 nap
-    { id: 4, name: "VIP 4 - Farm X", price: 300, daily: 7.00, roi: 365 },   // ~42 nap
-    { id: 5, name: "VIP 5 - Mega Farm", price: 800, daily: 18.00, roi: 365 }, // ~44 nap
-    { id: 6, name: "VIP 6 - Giga Watt", price: 1600, daily: 38.00, roi: 365 }, // ~42 nap
-    { id: 7, name: "VIP 7 - Quantum X", price: 2700, daily: 65.00, roi: 365 }  // ~41 nap
+// --- CLAY MYSTERY SHOP KÍNÁLAT ---
+// A 'id'-nek egyeznie kell a Backend api/buy.js fájlban lévő REWARDS id-kkal!
+const products = [
+    { id: 1, name: "Small Clay Box", price: 10, icon: "📦", desc: "Egy gyakori titkos helyszín koordinátái." },
+    { id: 2, name: "Medium Clay Box", price: 50, icon: "🎁", desc: "Egy ritkább, érdekesebb lokáció." },
+    { id: 3, name: "Large Clay Box", price: 100, icon: "🏺", desc: "Exkluzív, prémium titkos helyszín." }
 ];
 
-// --- STATE MANAGEMENT ---
-let balance = parseFloat(localStorage.getItem('balance')) || 0.00;
-let vipLevel = parseInt(localStorage.getItem('vipLevel')) || 0;
-let myMiners = JSON.parse(localStorage.getItem('myMiners')) || [];
-let tasksDone = JSON.parse(localStorage.getItem('tasksDone')) || {1:false, 2:false};
+const tg = window.Telegram.WebApp;
+tg.expand();
+tg.enableClosingConfirmation();
 
-// User Handling
-let userId = (tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user.id : Math.floor(Math.random() * 90000) + 10000;
-let username = (tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user.first_name : "User";
+let userId = (tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user.id : 777777;
+let balance = 0;
+let invitedCount = 0;
+let referralEarnings = 0;
 
-// --- INIT ---
 window.onload = function() {
-    // UI inicializálás
+    const username = (tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user.first_name : "Felfedező";
     document.getElementById('username').innerText = username;
+    
     if(document.getElementById('ref-link')) {
         document.getElementById('ref-link').value = `https://t.me/SkyTechBot?start=${userId}`;
     }
-    
-    updateUI();
-    renderMachines();
-    renderMyMiners();
-    checkTasks();
-    startFakeNotifications(); 
-    
-    // Időzítő hurok (másodpercenként)
-    setInterval(updateTimers, 1000);
+
+    fetchUserData();
+    renderShop();
 };
 
-// --- CORE FUNCTIONS ---
+// --- ADATBÁZIS ---
+async function fetchUserData() {
+    try {
+        // Mivel a régi api/user.js még a "miners"-t adja vissza, azt most ignoráljuk,
+        // csak az egyenleg és a meghívások kellenek.
+        const response = await fetch(`/api/user?id=${userId}`);
+        const data = await response.json();
 
-// 1. SHOP RENDERELÉSE
-function renderMachines() {
-    const list = document.getElementById('machine-list');
+        if (data.success) {
+            balance = data.balance;
+            invitedCount = data.invited || 0;
+            referralEarnings = data.referralEarnings || 0;
+            updateUI();
+        }
+    } catch (error) { console.error("Hiba az adatok lekérésekor", error); }
+}
+
+// --- BOLT RENDERELÉSE ---
+function renderShop() {
+    const list = document.getElementById('shop-list');
     list.innerHTML = '';
     
-    machines.forEach(m => {
+    products.forEach(p => {
         list.innerHTML += `
         <div class="machine-card">
-            <div class="machine-header">
-                <span>${m.name}</span>
-                <span style="color:#888; font-size:12px;">Valid: ${m.roi} Days</span>
-            </div>
-            <div class="machine-stats">
+            <div class="machine-header" style="display:flex; align-items:center;">
+                <span style="font-size:32px; margin-right: 10px;">${p.icon}</span>
                 <div>
-                    <span class="stat-val">$${m.price}</span><br>
-                    <span class="stat-lbl">Price</span>
-                </div>
-                <div style="text-align:right;">
-                    <span class="stat-val" style="color:#00ff88">+$${m.daily.toFixed(2)}</span><br>
-                    <span class="stat-lbl">Daily Profit</span>
+                    <span style="font-weight:bold; color:var(--secondary); font-size: 18px;">${p.name}</span><br>
+                    <span style="font-size:12px; color:#aaa; font-style:italic;">${p.desc}</span>
                 </div>
             </div>
-            <button class="rent-btn" onclick="buyMachine(${m.id})">RENT NOW</button>
+            <div class="machine-stats" style="margin-top: 15px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+                    <span class="stat-val" style="font-size: 20px;">$${p.price}</span>
+                    <button class="rent-btn" onclick="buyItem(${p.id})" style="padding: 8px 20px;">MEGVESZEM</button>
+                </div>
+            </div>
         </div>`;
     });
 }
 
-// 2. VÁSÁRLÁS LOGIKA
-function buyMachine(id) {
-    const machine = machines.find(m => m.id === id);
+// --- VÁSÁRLÁS ÉS JUTALOM MEGJELENÍTÉS ---
+async function buyItem(id) {
+    const item = products.find(p => p.id === id);
+    
+    if(balance < item.price) {
+        tg.showAlert("Nincs elég fedezet az egyenlegeden.");
+        return openModal('deposit', item.price);
+    }
 
-    if (balance >= machine.price) {
-        tg.showConfirm(`Rent ${machine.name} for $${machine.price}?`, (ok) => {
-            if (ok) {
-                balance -= machine.price;
-                
-                // Miner hozzáadása
-                myMiners.push({
-                    instanceId: Date.now(), 
-                    modelId: machine.id,
-                    name: machine.name,
-                    daily: machine.daily,
-                    lastStart: 0, // 0 = Inaktív, el kell indítani
-                    expiresAt: Date.now() + (machine.roi * 24 * 60 * 60 * 1000)
+    tg.showConfirm(`Megveszed a(z) ${item.name} dobozt $${item.price} értékben?`, async (ok) => {
+        if(ok) {
+            showToast("A doboz kinyitása folyamatban... 🎲", "info");
+
+            try {
+                const res = await fetch('/api/buy', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ telegramId: userId, item: item })
                 });
-
-                // VIP Upgrade logika
-                if (machine.price >= 15 && vipLevel < 1) vipLevel = 1;
-                if (machine.price >= 300 && vipLevel < 2) vipLevel = 2;
+                const data = await res.json();
                 
-                saveData();
-                updateUI();
-                renderMyMiners();
-                showToast(`✅ Successfully rented ${machine.name}!`, 'success');
-                
-                // Átirányítás a Miners fülre
-                nav('miners', document.querySelectorAll('.nav-item')[1]);
-            }
-        });
-    } else {
-        openModal('deposit', machine.price);
-    }
-}
-
-// 3. MINERS LISTA (START / CLAIM RENDSZER)
-function renderMyMiners() {
-    const list = document.getElementById('my-miners-list');
-    
-    if (myMiners.length === 0) {
-        list.innerHTML = `<div style="text-align:center; color:#666; padding:40px;">
-            <i class="fas fa-server" style="font-size:40px; margin-bottom:10px; opacity:0.3"></i><br>
-            No active miners.<br>Go to Home to rent one!
-        </div>`;
-        return;
-    }
-
-    list.innerHTML = "";
-    // Legújabb elől
-    myMiners.sort((a,b) => b.instanceId - a.instanceId).forEach(miner => {
-        let btnHTML = "";
-        let statusText = "";
-        let timerColor = "#666";
-        const now = Date.now();
-
-        // LOGIKA:
-        if (miner.lastStart === 0) {
-            // 1. ÁLLAPOT: Nincs elindítva
-            btnHTML = `<button class="btn-miner-action btn-start" onclick="startMining(${miner.instanceId})">START MINING</button>`;
-            statusText = "Ready to Start";
-        } else {
-            const elapsed = now - miner.lastStart;
-            
-            if (elapsed >= CYCLE_TIME) {
-                // 3. ÁLLAPOT: Kész, felvehető
-                btnHTML = `<button class="btn-miner-action btn-claim" onclick="claimProfit(${miner.instanceId})">CLAIM +$${miner.daily.toFixed(2)}</button>`;
-                statusText = "Cycle Completed";
-                timerColor = "#00e676";
-            } else {
-                // 2. ÁLLAPOT: Fut a gép
-                btnHTML = `<button class="btn-miner-action btn-wait">MINING...</button>`;
-                statusText = "Mining in Progress";
-                timerColor = "#00ff88";
-            }
-        }
-
-        list.innerHTML += `
-            <div class="active-miner" id="miner-${miner.instanceId}">
-                <div class="miner-top">
-                    <span style="color:#00bfff">${miner.name}</span>
-                    <span style="font-size:10px; color:#888;">Active</span>
-                </div>
-                <div class="miner-timer-display" id="timer-${miner.instanceId}" style="color:${timerColor}">--:--:--</div>
-                ${btnHTML}
-                <div style="font-size:10px; color:#555; text-align:center; margin-top:5px;">${statusText}</div>
-            </div>
-        `;
-    });
-    
-    updateTimers(); 
-}
-
-// 4. INDÍTÁS
-function startMining(instanceId) {
-    const miner = myMiners.find(m => m.instanceId === instanceId);
-    if (miner) {
-        miner.lastStart = Date.now();
-        saveData();
-        renderMyMiners(); 
-    }
-}
-
-// 5. CLAIM PROFIT
-function claimProfit(instanceId) {
-    const miner = myMiners.find(m => m.instanceId === instanceId);
-    if (miner) {
-        balance += miner.daily;
-        miner.lastStart = 0; // Reset
-        saveData();
-        updateUI();
-        renderMyMiners();
-        showToast(`💰 +$${miner.daily.toFixed(2)} Profit Collected!`, 'success');
-    }
-}
-
-// 6. IDŐZÍTŐ
-function updateTimers() {
-    const now = Date.now();
-    myMiners.forEach(miner => {
-        if(miner.lastStart > 0) {
-            const el = document.getElementById(`timer-${miner.instanceId}`);
-            if(!el) return;
-
-            const elapsed = now - miner.lastStart;
-            const remaining = CYCLE_TIME - elapsed;
-
-            if (remaining > 0) {
-                const h = Math.floor((remaining / (1000 * 60 * 60)) % 24);
-                const m = Math.floor((remaining / (1000 * 60)) % 60);
-                const s = Math.floor((remaining / 1000) % 60);
-                el.innerText = `${h}h ${m}m ${s}s`;
-            } else {
-                if(el.innerText !== "COMPLETED") {
-                    el.innerText = "COMPLETED";
-                    el.style.color = "#00e676";
-                    renderMyMiners(); // Frissítés a gomb miatt
+                if(data.success) {
+                    balance = data.balance;
+                    updateUI();
+                    
+                    // SIKER! Megjelenítjük a titkos jutalmat a modalban
+                    showRewardModal(data.reward);
+                    
+                } else {
+                    showToast(`❌ Hiba: ${data.error}`);
                 }
-            }
+            } catch(e) { showToast("Hálózati hiba történt."); }
         }
     });
 }
 
-// --- EGYÉB FUNKCIÓK ---
+// --- JUTALOM MODAL KEZELÉSE ---
+function showRewardModal(reward) {
+    document.getElementById('reward-location-name').innerText = reward.locationName;
+    document.getElementById('reward-coords').innerText = reward.coordinates;
+    document.getElementById('reward-message').innerText = `"${reward.secretMessage}"`;
+    
+    openModal('reward');
+    tg.HapticFeedback.notificationOccurred('success'); // Kis rezgés a telefonon
+}
+
+function copyCoords() {
+    const coords = document.getElementById('reward-coords').innerText;
+    navigator.clipboard.writeText(coords);
+    showToast("Koordináták másolva! Irány a térkép!");
+}
+
+
+// --- FIZETÉS ÉS UI ---
+function updateUI() {
+    document.getElementById('main-balance').innerText = balance.toFixed(2);
+    
+    const teamPage = document.getElementById('page-team');
+    if (teamPage) {
+        const h3s = teamPage.querySelectorAll('h3');
+        if(h3s.length >= 2) {
+            h3s[0].innerText = invitedCount;
+            h3s[1].innerText = `$${referralEarnings.toFixed(2)}`;
+        }
+    }
+}
 
 function verifyPayment() {
     const txid = document.getElementById('txid').value;
-    if(txid.length < 5) return tg.showAlert("Invalid TXID");
+    // FONTOS: Ide írd be a saját LTC címedet!
+    const address = "ltc1qv5aape3pah2f954k5jjx9kgnrnkxzytm6f7an8"; 
+
+    if(txid.length < 5) return tg.showAlert("Érvénytelen TXID formátum.");
 
     const btn = document.querySelector('#modal-deposit .confirm-btn');
-    const originalText = btn.innerText;
-    btn.innerText = "Checking...";
+    btn.innerText = "Ellenőrzés...";
     btn.disabled = true;
 
-    setTimeout(() => {
-        let amount = parseFloat(document.getElementById('dep-amount').value) || 10;
-        balance += amount;
-        saveData();
-        updateUI();
-        showToast(`✅ Payment Confirmed: +$${amount}`, 'success');
-        closeModal('deposit');
-        btn.innerText = originalText;
-        btn.disabled = false;
-        document.getElementById('txid').value = "";
-    }, 2000);
-}
-
-function doTask(id) {
-    if(tasksDone[id]) return;
-    const btn = document.getElementById('btn-task-' + id);
-    btn.innerText = "Checking...";
-    
-    setTimeout(() => {
-        if(id===1) window.open('https://t.me/SkyTechSupport', '_blank'); 
-        if(id===2) window.open('https://twitter.com', '_blank');
-
-        setTimeout(() => {
-            btn.innerText = "Done";
-            btn.disabled = true;
-            btn.style.background = "#333";
-            balance += 0.50; // Kisebb jutalom a realitás miatt
-            tasksDone[id] = true;
-            saveData();
+    fetch('/api/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ txid, myAddress: address, telegramId: userId })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if(data.success) {
+            balance = data.newBalance;
             updateUI();
-            showToast("Task Complete! +$0.50 added.", 'success');
-        }, 3000);
-    }, 500);
-}
-
-function checkTasks() {
-    if(tasksDone[1]) { 
-        const b = document.getElementById('btn-task-1'); 
-        if(b) { b.innerText = "Done"; b.disabled = true; b.style.background = "#333"; }
-    }
-    if(tasksDone[2]) { 
-        const b = document.getElementById('btn-task-2'); 
-        if(b) { b.innerText = "Done"; b.disabled = true; b.style.background = "#333"; }
-    }
-}
-
-// UI HELPEREK
-function updateUI() {
-    document.getElementById('main-balance').innerText = balance.toFixed(2);
-    if(document.getElementById('with-bal')) document.getElementById('with-bal').innerText = balance.toFixed(2);
-    
-    const vipEl = document.getElementById('vip-display');
-    if(vipEl) {
-        vipEl.innerText = `VIP ${vipLevel}`;
-        if(vipLevel > 0) vipEl.classList.add('active');
-    }
-}
-
-function saveData() {
-    localStorage.setItem('balance', balance);
-    localStorage.setItem('vipLevel', vipLevel);
-    localStorage.setItem('myMiners', JSON.stringify(myMiners));
-    localStorage.setItem('tasksDone', JSON.stringify(tasksDone));
-}
-
-function showToast(msg, type='info') {
-    const container = document.getElementById('notification-container');
-    if(!container) return;
-    const div = document.createElement('div');
-    div.className = 'notify-bubble';
-    div.innerHTML = `<i class="fas fa-check-circle"></i> ${msg}`;
-    container.appendChild(div);
-    setTimeout(() => div.remove(), 4000);
-}
-
-function startFakeNotifications() {
-    const users = ['User99**', 'CryptoM**', 'Anna_K**', 'LTC_Wh**', 'Hunter01'];
-    const acts = ['withdrew $50', 'rented VIP 1', 'invited a friend', 'earned $2.2 profit'];
-    setInterval(() => {
-        if(Math.random() > 0.4) {
-            const container = document.getElementById('notification-container');
-            if(container) {
-                const u = users[Math.floor(Math.random()*users.length)];
-                const a = acts[Math.floor(Math.random()*acts.length)];
-                const div = document.createElement('div');
-                div.className = 'notify-bubble';
-                div.innerHTML = `<i class="fas fa-user-circle"></i> <div><b>${u}</b><br>${a}</div>`;
-                container.appendChild(div);
-                setTimeout(() => div.remove(), 4000);
-            }
+            closeModal('deposit');
+            showToast(`Sikeres feltöltés! +$${data.newBalance} jóváírva.`);
+        } else {
+            tg.showAlert("Hiba: " + data.error);
         }
-    }, 6000);
+        btn.innerText = "Beküldés";
+        btn.disabled = false;
+    });
 }
 
-function nav(pageId, btn) {
+// --- EGYÉB ---
+function nav(page) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    document.getElementById('page-' + page).classList.add('active');
     
-    const page = document.getElementById('page-' + pageId);
-    if(page) page.classList.add('active');
-    
-    // Ha a gombot átadjuk, akkor aktív lesz, ha nem, akkor megkeressük
-    if(btn) {
-        btn.classList.add('active');
-    } else {
-        // Automatikus keresés (pl redirectnél)
-        if(pageId === 'home') document.querySelectorAll('.nav-item')[0].classList.add('active');
-        if(pageId === 'miners') document.querySelectorAll('.nav-item')[1].classList.add('active');
+    const icons = { 'home': 0, 'team': 1, 'mine': 2 };
+    if(document.querySelectorAll('.nav-item')[icons[page]]) {
+        document.querySelectorAll('.nav-item')[icons[page]].classList.add('active');
     }
 }
 
-function openModal(type, amt=0) {
-    if(type==='deposit' && amt > 0) {
-        const inp = document.getElementById('dep-amount');
-        if(inp) inp.value = amt;
-    }
+function openModal(type, amt) {
+    if(amt) document.getElementById('dep-amount').value = amt;
     document.getElementById('modal-' + type).style.display = 'flex';
 }
 function closeModal(type) { document.getElementById('modal-' + type).style.display = 'none'; }
-function openWithdrawModal() {
-    if(vipLevel === 0) tg.showAlert("⚠️ VIP 0 cannot withdraw.\nPlease invest first.");
-    else openModal('withdraw');
-}
 function copyRef() { 
     const ref = document.getElementById('ref-link');
-    if(ref) { ref.select(); document.execCommand('copy'); showToast("Invite Link Copied!"); }
+    ref.select(); document.execCommand('copy'); 
+    showToast("Meghívó link másolva!"); 
 }
-function toggleLanguage() { showToast("Language switch coming soon!"); }
+function copyAddr() {
+    navigator.clipboard.writeText(document.getElementById('wallet-addr').innerText);
+    showToast("LTC cím másolva!");
+}
+function showToast(msg) {
+    const box = document.getElementById('notification-container');
+    const div = document.createElement('div');
+    div.className = 'notify-bubble';
+    div.innerHTML = msg;
+    box.appendChild(div);
+    setTimeout(() => div.remove(), 3000);
+}
