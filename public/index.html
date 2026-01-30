@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="en"> <head>
+<html lang="en">
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>SkyTech Quantum</title>
@@ -12,7 +13,7 @@
     <div id="toast" class="fake-toast">
         <div class="toast-icon"><i class="fas fa-check-circle"></i></div>
         <div>
-            <div class="toast-text" id="toast-msg">User88** withdrew $1,200</div>
+            <div class="toast-text" id="toast-msg">...</div>
             <span class="toast-time">Just now</span>
         </div>
     </div>
@@ -21,69 +22,52 @@
         
         <div class="header">
             <div class="user-info">
-                <i class="fas fa-user-circle"></i> <span id="username">User</span>
-                <span class="badge-vip" id="vip-display">VIP 0</span>
+                <i class="fas fa-user-astronaut"></i> <span id="username">User</span>
+                <span class="badge-vip vip-0" id="vip-display"><i class="fas fa-lock"></i> VIP 0</span>
             </div>
-            <div class="lang-switch"><i class="fas fa-globe"></i> EN</div>
+            <div class="lang-switch"><i class="fas fa-globe-europe"></i> Global</div>
         </div>
 
         <div class="hero-card">
-            <div class="hero-label">Total Assets (USDT)</div>
+            <div class="hero-label">Total Assets (USDT) <i class="fas fa-info-circle"></i></div>
             <div class="hero-balance">$<span id="main-balance">5.00</span></div>
-            <div class="hero-profit">Yesterday's Profit: <span style="color:#00ff88">+$0.10</span></div>
+            <div class="hero-profit">
+                Today's Profit: <span style="color:#00ff88">+$0.00</span>
+                <span style="float:right; font-size:10px; color:#ff4d4d;" id="withdrawal-status">🔒 Locked (VIP0)</span>
+            </div>
             
             <div class="hero-actions">
                 <button class="action-btn dep" onclick="openModal('deposit')">
-                    <i class="fas fa-arrow-down"></i> Deposit
+                    <i class="fas fa-plus-circle"></i> Deposit
                 </button>
-                <button class="action-btn with" onclick="openModal('withdraw')">
-                    <i class="fas fa-arrow-up"></i> Withdraw
+                <button class="action-btn with" onclick="openWithdrawModal()">
+                    <i class="fas fa-arrow-circle-down"></i> Withdraw
                 </button>
             </div>
         </div>
 
         <div class="marquee-container">
             <div class="marquee-icon"><i class="fas fa-bullhorn"></i></div>
-            <div class="marquee-text">
-                <p>🚀 Welcome to SkyTech Quantum! New users get $5 Bonus. VIP 1 ROI is 20%. Withdrawals are instant (LTC).</p>
+            <div class="marquee-wrapper">
+                <div class="marquee-content">
+                    🚀 Welcome to SkyTech Quantum! New users get $5 Experience Bonus. Activate VIP1 to unlock withdrawals. Instant LTC deposits! 🔥 Regional Agents wanted: Earn up to $150 daily salary!
+                </div>
             </div>
         </div>
 
         <div id="page-home" class="page active">
             <div class="section-header">
-                <h3>Investment Hall</h3>
-                <span onclick="alert('Join Telegram for support!')">Rules <i class="fas fa-question-circle"></i></span>
+                <h3>Investment Hall (VIP)</h3>
+                <span onclick="tg.showAlert('Buy a node to become VIP and unlock withdrawals.')">Help <i class="fas fa-question-circle"></i></span>
             </div>
 
             <div id="machine-list">
                 </div>
-        </div>
-
-        <div id="page-task" class="page">
-            <div class="section-header"><h3>Task Center</h3></div>
-            <div class="task-card">
-                <div class="task-icon telegram"><i class="fab fa-telegram"></i></div>
-                <div class="task-info">
-                    <h4>Join Official Channel</h4>
-                    <p>Reward: $0.50 USDT</p>
-                </div>
-                <button class="task-btn" onclick="completeTask(this)">Claim</button>
-            </div>
-            <div class="task-card">
-                <div class="task-icon twitter"><i class="fab fa-twitter"></i></div>
-                <div class="task-info">
-                    <h4>Follow on X</h4>
-                    <p>Reward: $0.50 USDT</p>
-                </div>
-                <button class="task-btn" onclick="completeTask(this)">Claim</button>
-            </div>
-            <div class="task-card">
-                <div class="task-icon invite"><i class="fas fa-user-plus"></i></div>
-                <div class="task-info">
-                    <h4>Invite 5 Active Users</h4>
-                    <p>Reward: $10.00 USDT</p>
-                </div>
-                <button class="task-btn disabled">0/5</button>
+            
+            <div class="trust-badges">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/1/12/Binance_logo.svg" alt="Binance" style="height:20px; opacity:0.5;">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Coinbase_logo.png" alt="Coinbase" style="height:20px; opacity:0.5;">
+                <span style="color:#555; font-size:10px;"><i class="fas fa-shield-alt"></i> Secured by CertiK</span>
             </div>
         </div>
 
@@ -91,55 +75,87 @@
             <div class="team-header">
                 <div class="team-total">
                     <span>Team Size</span>
-                    <h3>0</h3>
+                    <h3>0 Users</h3>
                 </div>
                 <div class="team-comm">
-                    <span>Total Comm.</span>
+                    <span>Total Commission</span>
                     <h3 style="color:#00ff88">$0.00</h3>
                 </div>
             </div>
 
             <div class="invite-box">
-                <p>Invite Link</p>
+                <p>Your Invitation Link <span style="color:#00ff88">(12% - 5% - 2%)</span></p>
                 <div class="link-input">
                     <input type="text" id="ref-link" value="..." readonly>
-                    <button onclick="copyRef()">Copy</button>
+                    <button onclick="copyRef()"><i class="fas fa-copy"></i> Copy</button>
                 </div>
-                <p style="font-size:10px; color:#888; margin-top:5px;">Share to earn 12% - 5% - 2% commission!</p>
+                <p style="font-size:10px; color:#888; margin-top:5px;">Share this link to build your empire!</p>
             </div>
 
-            <div class="salary-card">
-                <h4><i class="fas fa-crown"></i> Agent Salary</h4>
-                <p>Invite 15 VIP1 members to get <b>$20 / day</b> fixed salary.</p>
-                <div class="progress-bar"><div class="fill" style="width:0%"></div></div>
-                <p style="text-align:right; font-size:10px;">0/15</p>
+            <div class="salary-section">
+                <h4><i class="fas fa-crown" style="color:#ffd700;"></i> Regional Agent Salary</h4>
+                <p style="font-size:11px; color:#aaa; margin-bottom:15px;">Invite active members (VIP1+) to earn daily fixed salary!</p>
+                
+                <div class="salary-table">
+                    <div class="st-row header">
+                        <div>Level</div>
+                        <div>Requirement (VIP1s)</div>
+                        <div>Daily Salary</div>
+                    </div>
+                    <div class="st-row">
+                        <div>Junior</div>
+                        <div>Invite 5</div>
+                        <div style="color:#00ff88;">$5 / Day</div>
+                    </div>
+                    <div class="st-row active-row">
+                        <div>Senior</div>
+                        <div>Invite 15</div>
+                        <div style="color:#00ff88; font-weight:bold;">$20 / Day</div>
+                    </div>
+                    <div class="st-row">
+                        <div>Director</div>
+                        <div>Invite 50</div>
+                        <div style="color:#00ff88; font-weight:bold;">$80 / Day</div>
+                    </div>
+                    <div class="st-row">
+                        <div>Partner</div>
+                        <div>Invite 150</div>
+                        <div style="color:#00ff88; font-weight:bold;">$200 / Day</div>
+                    </div>
+                </div>
+                <p style="text-align:center; font-size:10px; margin-top:10px; color:#888;">*Salary is paid automatically every 24h.</p>
             </div>
         </div>
 
         <div id="page-mine" class="page">
             <div class="profile-menu">
-                <div class="menu-item" onclick="openModal('withdraw')">
+                <div class="menu-item" onclick="openWithdrawModal()">
                     <i class="fas fa-wallet" style="color:#00ff88"></i>
-                    <span>Withdraw Record</span>
+                    <span>Withdrawal</span>
                     <i class="fas fa-chevron-right"></i>
                 </div>
-                <div class="menu-item">
-                    <i class="fas fa-users" style="color:#00bfff"></i>
-                    <span>My Team</span>
+                <div class="menu-item" onclick="tg.showAlert('No transactions yet.')">
+                    <i class="fas fa-list-alt" style="color:#00bfff"></i>
+                    <span>Transaction Records</span>
                     <i class="fas fa-chevron-right"></i>
                 </div>
-                <div class="menu-item">
-                    <i class="fas fa-key" style="color:#ffcc00"></i>
+                <div class="menu-item" onclick="tg.showAlert('Security is active. Your account is safe.')">
+                    <i class="fas fa-shield-alt" style="color:#ffcc00"></i>
                     <span>Security Center</span>
                     <i class="fas fa-chevron-right"></i>
                 </div>
-                <div class="menu-item" onclick="alert('Support: @SkyTechAdmin')">
+                <div class="menu-item" onclick="window.open('https://t.me/SkyTechAdmin', '_blank')">
                     <i class="fas fa-headset" style="color:#ff0055"></i>
                     <span>Online Support</span>
+                    <i class="fas fa-external-link-alt" style="font-size:10px;"></i>
+                </div>
+                 <div class="menu-item" onclick="tg.showAlert('App download coming soon for iOS/Android!')">
+                    <i class="fas fa-mobile-alt" style="color:#fff"></i>
+                    <span>Download App</span>
                     <i class="fas fa-chevron-right"></i>
                 </div>
             </div>
-            <button class="logout-btn">Log Out</button>
+            <button class="logout-btn" onclick="tg.close()">Close App</button>
         </div>
 
     </div>
@@ -147,25 +163,21 @@
     <div id="modal-deposit" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3>Deposit (LTC)</h3>
+                <h3><i class="fas fa-coins"></i> Deposit (LTC)</h3>
                 <span class="close" onclick="closeModal('deposit')">&times;</span>
             </div>
             <div class="modal-body">
-                <p class="modal-label">Plan: <span id="dep-plan-name" style="color:#00ff88">Balance Topup</span></p>
-                <p class="modal-label">Amount: <span id="dep-amount" style="color:white; font-weight:bold; font-size:18px;">$10.00</span></p>
-                
-                <div class="qr-box">
-                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=ltc1qv5aape3pah2f954k5jjx9kgnrnkxzytm6f7an8" alt="QR">
-                </div>
+                <p class="modal-label">Target Plan: <span id="dep-plan-name" style="color:#00ff88">Balance Topup</span></p>
+                <p class="modal-label" style="margin-bottom:20px;">Amount to send: <span id="dep-amount" style="color:white; font-weight:bold; font-size:22px;">$10.00</span></p>
                 
                 <div class="copy-box">
-                    <span id="wallet-addr">ltc1qv5aape3pah2f954k5jjx9kgnrnkxzytm6f7an8</span>
+                    <span id="wallet-addr" style="font-size:10px;">ltc1qv5aape3pah2f954k5jjx9kgnrnkxzytm6f7an8</span>
                     <i class="fas fa-copy" onclick="copyAddr()"></i>
                 </div>
                 
-                <p class="warning-text">⚠️ Please send only LTC (Litecoin). Rates are auto-converted.</p>
+                <p class="warning-text">⚠️ Send exact amount in LTC. Network fees apply. Rate is auto-converted.</p>
 
-                <input type="text" id="txid" placeholder="Enter Payment TXID" class="input-field">
+                <input type="text" id="txid" placeholder="Paste Payment TXID here..." class="input-field">
                 <button class="confirm-btn" onclick="verifyPayment()">I Have Paid</button>
             </div>
         </div>
@@ -174,37 +186,33 @@
     <div id="modal-withdraw" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3>Withdraw</h3>
+                <h3><i class="fas fa-hand-holding-usd"></i> Withdraw</h3>
                 <span class="close" onclick="closeModal('withdraw')">&times;</span>
             </div>
             <div class="modal-body">
-                <p class="modal-label">Balance: <span style="color:#00ff88">$<span id="with-bal">0.00</span></span></p>
+                <p class="modal-label">Available Balance: <span style="color:#00ff88">$<span id="with-bal">0.00</span></span></p>
+                <p id="vip-lock-msg" style="color:#ff4d4d; font-size:11px; display:none;"><i class="fas fa-lock"></i> VIP0 cannot withdraw. Please upgrade.</p>
                 
-                <input type="text" placeholder="Your LTC Address" class="input-field">
+                <input type="text" placeholder="Your LTC Wallet Address" class="input-field">
                 <input type="number" placeholder="Amount (Min $20)" class="input-field">
-                <input type="password" placeholder="Fund Password" class="input-field">
                 
-                <p class="warning-text">Fee: 5% | Arrival: 1-24 Hours</p>
-                <button class="confirm-btn" onclick="requestWithdraw()">Withdraw</button>
+                <p class="warning-text">Fee: 5% | Arrival time: 1-24 Hours</p>
+                <button class="confirm-btn" id="with-btn" onclick="requestWithdraw()">Withdraw Now</button>
             </div>
         </div>
     </div>
 
     <div class="nav-bar">
         <div class="nav-item active" onclick="nav('home', this)">
-            <i class="fas fa-home"></i>
+            <i class="fas fa-rocket"></i>
             <span>Invest</span>
-        </div>
-        <div class="nav-item" onclick="nav('task', this)">
-            <i class="fas fa-clipboard-check"></i>
-            <span>Task</span>
         </div>
         <div class="nav-item" onclick="nav('team', this)">
             <i class="fas fa-users"></i>
             <span>Team</span>
         </div>
         <div class="nav-item" onclick="nav('mine', this)">
-            <i class="fas fa-user"></i>
+            <i class="fas fa-user-circle"></i>
             <span>Mine</span>
         </div>
     </div>
