@@ -1,88 +1,140 @@
-// --- CLAY MYSTERY SHOP KÍNÁLAT ---
-// A 'id'-nek egyeznie kell a Backend api/buy.js fájlban lévő REWARDS id-kkal!
+// --- CLAY PREMIUM SHOP ADATBÁZIS ---
+// Fontos: Az ID-k egyezzenek a backenddel (api/buy.js)!
 const products = [
-    { id: 1, name: "Small Clay Box", price: 10, icon: "📦", desc: "Egy gyakori titkos helyszín koordinátái." },
-    { id: 2, name: "Medium Clay Box", price: 50, icon: "🎁", desc: "Egy ritkább, érdekesebb lokáció." },
-    { id: 3, name: "Large Clay Box", price: 100, icon: "🏺", desc: "Exkluzív, prémium titkos helyszín." }
+    { 
+        id: 1, 
+        name: "Starter Box", 
+        category: "starter",
+        price: 5, 
+        originalPrice: 10, // Ezért lesz áthúzva!
+        badge: "-50%", 
+        icon: "📦", 
+        desc: "Ideális kezdőknek. Egy könnyen elérhető városi lokáció." 
+    },
+    { 
+        id: 2, 
+        name: "Explorer Pack", 
+        category: "starter",
+        price: 25, 
+        originalPrice: 40,
+        badge: "HOT", 
+        icon: "🧭", 
+        desc: "Izgalmas helyszín, rejtett üzenettel." 
+    },
+    { 
+        id: 3, 
+        name: "Pro Vault", 
+        category: "pro",
+        price: 80, 
+        originalPrice: 100, 
+        badge: "SALE", 
+        icon: "🏺", 
+        desc: "Nehezen megközelíthető, nagy értékű titok." 
+    },
+    { 
+        id: 4, 
+        name: "VIP Gold Access", 
+        category: "vip",
+        price: 300, 
+        originalPrice: null, // Nincs akció
+        badge: "NEW", 
+        icon: "👑", 
+        desc: "A legexkluzívabb lokációk és 24h support." 
+    }
 ];
 
 const tg = window.Telegram.WebApp;
 tg.expand();
 tg.enableClosingConfirmation();
 
-let userId = (tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user.id : 777777;
+let userId = (tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user.id : 888888;
 let balance = 0;
-let invitedCount = 0;
-let referralEarnings = 0;
 
 window.onload = function() {
-    const username = (tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user.first_name : "Felfedező";
-    document.getElementById('username').innerText = username;
+    const username = (tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user.first_name : "Vendég";
     
+    // Referral link generálás
     if(document.getElementById('ref-link')) {
         document.getElementById('ref-link').value = `https://t.me/SkyTechBot?start=${userId}`;
     }
 
     fetchUserData();
-    renderShop();
+    renderShop('all'); // Alapból mindent mutat
 };
 
-// --- ADATBÁZIS ---
+// --- ADATOK LEKÉRÉSE ---
 async function fetchUserData() {
     try {
-        // Mivel a régi api/user.js még a "miners"-t adja vissza, azt most ignoráljuk,
-        // csak az egyenleg és a meghívások kellenek.
         const response = await fetch(`/api/user?id=${userId}`);
         const data = await response.json();
-
         if (data.success) {
             balance = data.balance;
-            invitedCount = data.invited || 0;
-            referralEarnings = data.referralEarnings || 0;
-            updateUI();
+            document.getElementById('main-balance').innerText = balance.toFixed(2);
+            document.getElementById('team-count').innerText = data.invited || 0;
+            document.getElementById('team-earn').innerText = (data.referralEarnings || 0).toFixed(2);
+            renderInventory(data.inventory || []);
         }
-    } catch (error) { console.error("Hiba az adatok lekérésekor", error); }
+    } catch (e) { console.error(e); }
 }
 
-// --- BOLT RENDERELÉSE ---
-function renderShop() {
-    const list = document.getElementById('shop-list');
-    list.innerHTML = '';
+// --- SHOP RENDERELÉS (Kártyák) ---
+function renderShop(filter) {
+    const grid = document.getElementById('shop-grid');
+    grid.innerHTML = '';
     
     products.forEach(p => {
-        list.innerHTML += `
-        <div class="machine-card">
-            <div class="machine-header" style="display:flex; align-items:center;">
-                <span style="font-size:32px; margin-right: 10px;">${p.icon}</span>
-                <div>
-                    <span style="font-weight:bold; color:var(--secondary); font-size: 18px;">${p.name}</span><br>
-                    <span style="font-size:12px; color:#aaa; font-style:italic;">${p.desc}</span>
-                </div>
-            </div>
-            <div class="machine-stats" style="margin-top: 15px;">
-                <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
-                    <span class="stat-val" style="font-size: 20px;">$${p.price}</span>
-                    <button class="rent-btn" onclick="buyItem(${p.id})" style="padding: 8px 20px;">MEGVESZEM</button>
-                </div>
+        if(filter !== 'all' && p.category !== filter) return;
+
+        // Ár logika (ha van akció)
+        let priceHtml = '';
+        if(p.originalPrice) {
+            priceHtml = `<span class="old-price">$${p.originalPrice}</span> <span class="new-price">$${p.price}</span>`;
+        } else {
+            priceHtml = `<span class="new-price">$${p.price}</span>`;
+        }
+
+        // Badge logika
+        let badgeHtml = p.badge ? `<div class="badge">${p.badge}</div>` : '';
+
+        grid.innerHTML += `
+        <div class="product-card">
+            ${badgeHtml}
+            <div class="prod-img">${p.icon}</div>
+            <div class="prod-info">
+                <div class="prod-title">${p.name}</div>
+                <div class="prod-desc">${p.desc}</div>
+                <div class="price-row">${priceHtml}</div>
+                <button class="buy-btn" onclick="buyItem(${p.id})">KOSÁRBA</button>
             </div>
         </div>`;
     });
 }
 
-// --- VÁSÁRLÁS ÉS JUTALOM MEGJELENÍTÉS ---
+// --- SZŰRÉS ---
+function filterShop(category, btn) {
+    // Aktív gomb stílus
+    document.querySelectorAll('.cat-item').forEach(el => el.classList.remove('active'));
+    btn.classList.add('active');
+    
+    // Renderelés
+    renderShop(category);
+}
+
+// --- VÁSÁRLÁS LOGIKA ---
 async function buyItem(id) {
     const item = products.find(p => p.id === id);
     
+    // Ellenőrzés
     if(balance < item.price) {
-        tg.showAlert("Nincs elég fedezet az egyenlegeden.");
-        return openModal('deposit', item.price);
+        tg.showAlert("⚠️ Nincs elég egyenleged! Tölts fel pénzt.");
+        openModal('deposit');
+        return;
     }
 
-    tg.showConfirm(`Megveszed a(z) ${item.name} dobozt $${item.price} értékben?`, async (ok) => {
+    tg.showConfirm(`Megveszed: ${item.name}?\nÁr: $${item.price}`, async (ok) => {
         if(ok) {
-            showToast("A doboz kinyitása folyamatban... 🎲", "info");
-
             try {
+                // Backend hívás
                 const res = await fetch('/api/buy', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
@@ -92,58 +144,67 @@ async function buyItem(id) {
                 
                 if(data.success) {
                     balance = data.balance;
-                    updateUI();
+                    document.getElementById('main-balance').innerText = balance.toFixed(2);
                     
-                    // SIKER! Megjelenítjük a titkos jutalmat a modalban
-                    showRewardModal(data.reward);
+                    // JUTALOM MEGJELENÍTÉSE
+                    document.getElementById('reward-location-name').innerText = data.reward.locationName;
+                    document.getElementById('reward-coords').innerText = data.reward.coordinates;
+                    document.getElementById('reward-message').innerText = data.reward.secretMessage;
+                    
+                    openModal('reward');
+                    tg.HapticFeedback.notificationOccurred('success');
                     
                 } else {
-                    showToast(`❌ Hiba: ${data.error}`);
+                    tg.showAlert(`Hiba: ${data.error}`);
                 }
-            } catch(e) { showToast("Hálózati hiba történt."); }
+            } catch(e) { tg.showAlert("Hálózati hiba!"); }
         }
     });
 }
 
-// --- JUTALOM MODAL KEZELÉSE ---
-function showRewardModal(reward) {
-    document.getElementById('reward-location-name').innerText = reward.locationName;
-    document.getElementById('reward-coords').innerText = reward.coordinates;
-    document.getElementById('reward-message').innerText = `"${reward.secretMessage}"`;
+// --- RAKTÁR MEGJELENÍTÉS ---
+function renderInventory(items) {
+    const list = document.getElementById('inventory-list');
+    list.innerHTML = '';
+    if(items.length === 0) list.innerHTML = '<p style="text-align:center;color:#666;padding:20px;">Még nincs vásárolt terméked.</p>';
     
-    openModal('reward');
-    tg.HapticFeedback.notificationOccurred('success'); // Kis rezgés a telefonon
+    items.reverse().forEach(item => {
+        list.innerHTML += `
+        <div style="background:#333; padding:10px; margin-bottom:10px; border-radius:8px; display:flex; justify-content:space-between; align-items:center;">
+            <div>
+                <div style="font-weight:bold; color:#fff">${item.name}</div>
+                <div style="font-size:10px; color:#aaa">Vásárolva</div>
+            </div>
+            <div style="color:var(--gold)">$${item.price}</div>
+        </div>`;
+    });
 }
 
-function copyCoords() {
-    const coords = document.getElementById('reward-coords').innerText;
-    navigator.clipboard.writeText(coords);
-    showToast("Koordináták másolva! Irány a térkép!");
-}
+// --- MODAL KEZELÉS ---
+function openModal(id) { document.getElementById('modal-'+id).style.display = 'flex'; }
+function closeModal(id) { document.getElementById('modal-'+id).style.display = 'none'; }
+function showInventory() { openModal('inventory'); }
 
-
-// --- FIZETÉS ÉS UI ---
-function updateUI() {
-    document.getElementById('main-balance').innerText = balance.toFixed(2);
+// --- NAVIGÁCIÓ (TAB BAR) ---
+function nav(page) {
+    document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
+    document.getElementById('page-' + page).style.display = 'block';
     
-    const teamPage = document.getElementById('page-team');
-    if (teamPage) {
-        const h3s = teamPage.querySelectorAll('h3');
-        if(h3s.length >= 2) {
-            h3s[0].innerText = invitedCount;
-            h3s[1].innerText = `$${referralEarnings.toFixed(2)}`;
-        }
-    }
+    document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+    // Egyszerűsített logika a gomb aktiváláshoz
+    if(page === 'home') document.querySelectorAll('.tab-item')[0].classList.add('active');
+    if(page === 'team') document.querySelectorAll('.tab-item')[2].classList.add('active');
 }
 
+// --- FIZETÉS ELLENŐRZÉS (Backend) ---
 function verifyPayment() {
     const txid = document.getElementById('txid').value;
-    // FONTOS: Ide írd be a saját LTC címedet!
     const address = "ltc1qv5aape3pah2f954k5jjx9kgnrnkxzytm6f7an8"; 
-
-    if(txid.length < 5) return tg.showAlert("Érvénytelen TXID formátum.");
-
-    const btn = document.querySelector('#modal-deposit .confirm-btn');
+    
+    if(txid.length < 5) return tg.showAlert("Érvénytelen TXID!");
+    
+    // Gomb letiltása
+    const btn = document.querySelector('#modal-deposit .pro-btn');
     btn.innerText = "Ellenőrzés...";
     btn.disabled = true;
 
@@ -156,48 +217,20 @@ function verifyPayment() {
     .then(data => {
         if(data.success) {
             balance = data.newBalance;
-            updateUI();
+            document.getElementById('main-balance').innerText = balance.toFixed(2);
             closeModal('deposit');
-            showToast(`Sikeres feltöltés! +$${data.newBalance} jóváírva.`);
+            tg.showAlert("✅ Sikeres jóváírás!");
         } else {
-            tg.showAlert("Hiba: " + data.error);
+            tg.showAlert("❌ Hiba: " + data.error);
         }
-        btn.innerText = "Beküldés";
+        btn.innerText = "Jóváírás Kérése";
         btn.disabled = false;
     });
 }
 
-// --- EGYÉB ---
-function nav(page) {
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-    document.getElementById('page-' + page).classList.add('active');
-    
-    const icons = { 'home': 0, 'team': 1, 'mine': 2 };
-    if(document.querySelectorAll('.nav-item')[icons[page]]) {
-        document.querySelectorAll('.nav-item')[icons[page]].classList.add('active');
-    }
-}
-
-function openModal(type, amt) {
-    if(amt) document.getElementById('dep-amount').value = amt;
-    document.getElementById('modal-' + type).style.display = 'flex';
-}
-function closeModal(type) { document.getElementById('modal-' + type).style.display = 'none'; }
+function copyAddr() { navigator.clipboard.writeText("ltc1qv5aape3pah2f954k5jjx9kgnrnkxzytm6f7an8"); tg.showAlert("Cím másolva!"); }
 function copyRef() { 
     const ref = document.getElementById('ref-link');
     ref.select(); document.execCommand('copy'); 
-    showToast("Meghívó link másolva!"); 
-}
-function copyAddr() {
-    navigator.clipboard.writeText(document.getElementById('wallet-addr').innerText);
-    showToast("LTC cím másolva!");
-}
-function showToast(msg) {
-    const box = document.getElementById('notification-container');
-    const div = document.createElement('div');
-    div.className = 'notify-bubble';
-    div.innerHTML = msg;
-    box.appendChild(div);
-    setTimeout(() => div.remove(), 3000);
+    tg.showAlert("Link másolva!"); 
 }
