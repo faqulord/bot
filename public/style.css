@@ -1,0 +1,91 @@
+/* --- SKY-TECH STYLES --- */
+:root { 
+    --bg: #0f172a; 
+    --panel: #1e293b; 
+    --primary: #3b82f6; 
+    --accent: #06b6d4; 
+    --gold: #fbbf24;
+    --text: #f1f5f9;
+    --muted: #64748b;
+    --success: #10b981;
+}
+
+body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; padding-bottom: 100px; user-select: none; overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
+
+/* ÉRTESÍTÉS */
+.fake-toast {
+    position: fixed; top: 80px; right: -300px;
+    background: rgba(30, 41, 59, 0.95); border-left: 4px solid var(--gold);
+    padding: 12px 15px; border-radius: 8px; display: flex; align-items: center; gap: 10px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.6); z-index: 9900; transition: right 0.5s ease;
+    width: auto; max-width: 85%; backdrop-filter: blur(5px);
+}
+.fake-toast.show { right: 15px; }
+.toast-icon { font-size: 20px; }
+.toast-text { font-size: 12px; color: white; font-weight: 500; }
+.toast-time { font-size: 10px; color: var(--muted); display: block; margin-top: 2px; }
+
+/* HEADER */
+.header { background: rgba(30,41,59,0.98); padding: 15px; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; }
+.logo { font-weight: 800; font-size: 18px; color: var(--text); display: flex; align-items: center; gap: 8px; }
+.logo i { color: var(--accent); }
+.user-balance { background: #0f172a; padding: 5px 12px; border-radius: 20px; font-weight: bold; font-size: 13px; color: var(--primary); border: 1px solid var(--primary); }
+
+/* OLDALAK */
+.page { display: none; padding: 15px; animation: fadeIn 0.3s; padding-bottom: 120px; }
+.page.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ELEMEK */
+.card-box { background: var(--panel); border-radius: 12px; overflow: hidden; margin-bottom: 15px; border: 1px solid #334155; padding: 15px; }
+.news-img { height: 120px; background: linear-gradient(45deg, #3b82f6, #06b6d4); display: flex; align-items: center; justify-content: center; font-size: 40px; color: rgba(255,255,255,0.3); border-radius: 8px; margin-bottom: 10px; }
+.news-date { font-size: 10px; color: var(--muted); margin-bottom: 5px; }
+.news-title { font-weight: bold; margin-bottom: 5px; font-size: 14px; }
+.news-text { font-size: 12px; color: #94a3b8; line-height: 1.4; }
+
+/* BÁNYÁSZAT */
+.mining-status { text-align: center; margin: 20px 0; }
+.miner-circle { width: 180px; height: 180px; margin: 0 auto; border-radius: 50%; border: 4px solid var(--panel); display: flex; flex-direction: column; align-items: center; justify-content: center; background: radial-gradient(circle, #1e293b, #0f172a); position: relative; transition: 0.3s; }
+.miner-circle.active { border-color: var(--accent); box-shadow: 0 0 40px rgba(6,182,212,0.2); }
+.start-btn { background: linear-gradient(90deg, var(--primary), var(--accent)); color: white; border: none; padding: 14px 35px; border-radius: 30px; font-weight: bold; margin-top: -25px; position: relative; z-index: 10; cursor: pointer; box-shadow: 0 4px 15px rgba(6,182,212,0.4); font-size: 14px; }
+.start-btn:disabled { background: #334155; cursor: not-allowed; box-shadow: none; color: #94a3b8; }
+
+.machine-card { display: flex; justify-content: space-between; align-items: center; background: var(--panel); padding: 12px; border-radius: 10px; margin-bottom: 10px; border-left: 3px solid var(--muted); }
+.machine-card.active { border-left-color: var(--accent); }
+.m-icon { font-size: 24px; width: 40px; text-align: center; }
+.m-info h4 { margin: 0; font-size: 13px; }
+.m-info p { margin: 2px 0 0 0; font-size: 10px; color: var(--muted); }
+.m-profit { text-align: right; font-weight: bold; color: var(--accent); font-size: 13px; }
+
+/* JÁTÉK */
+.game-area { text-align: center; padding: 20px; }
+.diamond-display { font-size: 30px; color: var(--gold); margin-bottom: 20px; font-weight: bold; }
+.tap-btn { width: 130px; height: 130px; background: var(--panel); border: 2px solid var(--gold); border-radius: 50%; font-size: 40px; color: var(--gold); cursor: pointer; margin: 0 auto; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 20px rgba(251, 191, 36, 0.2); }
+.tap-btn:active { transform: scale(0.95); background: rgba(251,191,36,0.1); }
+
+/* WALLET */
+.wallet-card { background: linear-gradient(135deg, #1e293b, #0f172a); border: 1px solid #334155; border-radius: 15px; padding: 25px 20px; text-align: center; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+.balance-huge { font-size: 36px; font-weight: 800; color: var(--primary); margin: 10px 0; letter-spacing: -1px; }
+.btn-action { width: 100%; padding: 14px; border-radius: 10px; border: none; font-weight: bold; margin-top: 10px; cursor: pointer; font-size: 14px; transition: 0.2s; }
+.btn-dep { background: var(--accent); color: white; box-shadow: 0 4px 15px rgba(6, 182, 212, 0.3); }
+.btn-dep:active { transform: scale(0.98); }
+.btn-with { background: transparent; border: 1px solid var(--muted); color: var(--muted); }
+
+/* CSAPAT & EGYÉB */
+.team-stats { display: flex; justify-content: space-around; text-align: center; margin-bottom: 15px; }
+.ts-val { font-size: 18px; font-weight: bold; color: var(--primary); }
+.ts-label { font-size: 10px; color: var(--muted); }
+.ref-link { background: #0f172a; padding: 12px; border-radius: 8px; font-size: 11px; word-break: break-all; color: var(--accent); margin-bottom: 10px; border: 1px dashed var(--muted); }
+.level-row { display: flex; justify-content: space-between; padding: 12px; border-bottom: 1px solid #334155; font-size: 12px; align-items: center; }
+.level-badge { padding: 3px 8px; border-radius: 4px; background: #334155; font-size: 10px; font-weight: bold; margin-right: 5px;}
+
+/* MENÜ */
+.nav { position: fixed; bottom: 0; left: 0; width: 100%; height: 75px; background: rgba(30, 41, 59, 0.98); border-top: 1px solid #334155; display: flex; justify-content: space-around; align-items: center; z-index: 20000; padding-bottom: 15px; backdrop-filter: blur(10px); box-shadow: 0 -5px 20px rgba(0,0,0,0.5); }
+.nav-item { text-align: center; color: #64748b; font-size: 10px; flex: 1; cursor: pointer; height: 100%; display: flex; flex-direction: column; justify-content: center; -webkit-tap-highlight-color: transparent; }
+.nav-item.active { color: var(--accent); }
+.nav-item i { font-size: 22px; margin-bottom: 5px; display: block; }
+
+/* MODAL */
+.modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 30000; align-items: center; justify-content: center; }
+.modal-content { background: var(--panel); padding: 25px; border-radius: 16px; width: 85%; border: 1px solid var(--accent); text-align: center; position: relative; }
+.close-icon { position: absolute; top: 10px; right: 15px; font-size: 20px; color: #64748b; cursor: pointer; }
