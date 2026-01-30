@@ -2,23 +2,23 @@
 const tg = window.Telegram.WebApp;
 tg.expand();
 
-const LTC_ADDRESS = "ltc1qv5aape3pah2f954k5jjx9kgnrnkxzytm6f7an8";
-const CYCLE_TIME = 24 * 60 * 60 * 1000; // 24 óra
-// const CYCLE_TIME = 10 * 1000; // TESZT MÓD: Ha ki akarod próbálni gyorsan (10 mp), vedd ki a kommentjelet!
+// Ciklus idő: 24 óra (86400000 ms)
+const CYCLE_TIME = 24 * 60 * 60 * 1000; 
 
-// --- DATA ---
+// --- ÚJ MATEK (ROI ~45-50 NAP) ---
+// Szabály: Ár / Napi profit = kb. 45-50 nap megtérülés
 const machines = [
-    { id: 1, name: "VIP 1 - Node V1", price: 15, daily: 1.20, roi: 20 },
-    { id: 2, name: "VIP 2 - Node V2", price: 50, daily: 4.00, roi: 20 },
-    { id: 3, name: "VIP 3 - Cluster", price: 100, daily: 9.00, roi: 18 },
-    { id: 4, name: "VIP 4 - Farm X", price: 300, daily: 30.00, roi: 15 },
-    { id: 5, name: "VIP 5 - Mega Farm", price: 800, daily: 90.00, roi: 14 },
-    { id: 6, name: "VIP 6 - Giga Watt", price: 1600, daily: 200.00, roi: 12 },
-    { id: 7, name: "VIP 7 - Quantum X", price: 2700, daily: 400.00, roi: 10 }
+    { id: 1, name: "VIP 1 - Node V1", price: 15, daily: 0.35, roi: 365 },   // ~42 nap megtérülés
+    { id: 2, name: "VIP 2 - Node V2", price: 50, daily: 1.10, roi: 365 },   // ~45 nap
+    { id: 3, name: "VIP 3 - Cluster", price: 100, daily: 2.20, roi: 365 },  // ~45 nap
+    { id: 4, name: "VIP 4 - Farm X", price: 300, daily: 7.00, roi: 365 },   // ~42 nap
+    { id: 5, name: "VIP 5 - Mega Farm", price: 800, daily: 18.00, roi: 365 }, // ~44 nap
+    { id: 6, name: "VIP 6 - Giga Watt", price: 1600, daily: 38.00, roi: 365 }, // ~42 nap
+    { id: 7, name: "VIP 7 - Quantum X", price: 2700, daily: 65.00, roi: 365 }  // ~41 nap
 ];
 
 // --- STATE MANAGEMENT ---
-let balance = parseFloat(localStorage.getItem('balance')) || 5.00;
+let balance = parseFloat(localStorage.getItem('balance')) || 0.00;
 let vipLevel = parseInt(localStorage.getItem('vipLevel')) || 0;
 let myMiners = JSON.parse(localStorage.getItem('myMiners')) || [];
 let tasksDone = JSON.parse(localStorage.getItem('tasksDone')) || {1:false, 2:false};
@@ -29,6 +29,7 @@ let username = (tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe
 
 // --- INIT ---
 window.onload = function() {
+    // UI inicializálás
     document.getElementById('username').innerText = username;
     if(document.getElementById('ref-link')) {
         document.getElementById('ref-link').value = `https://t.me/SkyTechBot?start=${userId}`;
@@ -38,15 +39,15 @@ window.onload = function() {
     renderMachines();
     renderMyMiners();
     checkTasks();
-    startFakeNotifications(); // Jobb oldali popupok indítása
+    startFakeNotifications(); 
     
-    // Időzítő hurok (másodpercenként frissít)
+    // Időzítő hurok (másodpercenként)
     setInterval(updateTimers, 1000);
 };
 
 // --- CORE FUNCTIONS ---
 
-// 1. GÉPEK MEGJELENÍTÉSE (SHOP)
+// 1. SHOP RENDERELÉSE
 function renderMachines() {
     const list = document.getElementById('machine-list');
     list.innerHTML = '';
@@ -56,7 +57,7 @@ function renderMachines() {
         <div class="machine-card">
             <div class="machine-header">
                 <span>${m.name}</span>
-                <span style="color:#888; font-size:12px;">Valid: 365 Days</span>
+                <span style="color:#888; font-size:12px;">Valid: ${m.roi} Days</span>
             </div>
             <div class="machine-stats">
                 <div>
@@ -64,7 +65,7 @@ function renderMachines() {
                     <span class="stat-lbl">Price</span>
                 </div>
                 <div style="text-align:right;">
-                    <span class="stat-val">+$${m.daily}</span><br>
+                    <span class="stat-val" style="color:#00ff88">+$${m.daily.toFixed(2)}</span><br>
                     <span class="stat-lbl">Daily Profit</span>
                 </div>
             </div>
@@ -73,7 +74,7 @@ function renderMachines() {
     });
 }
 
-// 2. VÁSÁRLÁS
+// 2. VÁSÁRLÁS LOGIKA
 function buyMachine(id) {
     const machine = machines.find(m => m.id === id);
 
@@ -82,24 +83,26 @@ function buyMachine(id) {
             if (ok) {
                 balance -= machine.price;
                 
-                // Új miner hozzáadása (START GOMB LOGIKÁHOZ BŐVÍTVE)
+                // Miner hozzáadása
                 myMiners.push({
-                    instanceId: Date.now(), // Egyedi azonosító
+                    instanceId: Date.now(), 
                     modelId: machine.id,
                     name: machine.name,
                     daily: machine.daily,
-                    lastStart: 0, // 0 = nincs elindítva
-                    expiresAt: Date.now() + (365 * 24 * 60 * 60 * 1000) // 365 nap múlva jár le
+                    lastStart: 0, // 0 = Inaktív, el kell indítani
+                    expiresAt: Date.now() + (machine.roi * 24 * 60 * 60 * 1000)
                 });
 
-                if (vipLevel === 0) vipLevel = 1;
+                // VIP Upgrade logika
+                if (machine.price >= 15 && vipLevel < 1) vipLevel = 1;
+                if (machine.price >= 300 && vipLevel < 2) vipLevel = 2;
                 
                 saveData();
                 updateUI();
                 renderMyMiners();
                 showToast(`✅ Successfully rented ${machine.name}!`, 'success');
                 
-                // Átdob a Miners oldalra
+                // Átirányítás a Miners fülre
                 nav('miners', document.querySelectorAll('.nav-item')[1]);
             }
         });
@@ -108,7 +111,7 @@ function buyMachine(id) {
     }
 }
 
-// 3. SAJÁT GÉPEK LISTÁZÁSA (A FŐ START/CLAIM LOGIKA)
+// 3. MINERS LISTA (START / CLAIM RENDSZER)
 function renderMyMiners() {
     const list = document.getElementById('my-miners-list');
     
@@ -121,7 +124,7 @@ function renderMyMiners() {
     }
 
     list.innerHTML = "";
-    // Fordított sorrend (legújabb felül)
+    // Legújabb elől
     myMiners.sort((a,b) => b.instanceId - a.instanceId).forEach(miner => {
         let btnHTML = "";
         let statusText = "";
@@ -130,19 +133,19 @@ function renderMyMiners() {
 
         // LOGIKA:
         if (miner.lastStart === 0) {
-            // ÁLLAPOT 1: MÉG NEM INDULT EL -> START GOMB
+            // 1. ÁLLAPOT: Nincs elindítva
             btnHTML = `<button class="btn-miner-action btn-start" onclick="startMining(${miner.instanceId})">START MINING</button>`;
             statusText = "Ready to Start";
         } else {
             const elapsed = now - miner.lastStart;
             
             if (elapsed >= CYCLE_TIME) {
-                // ÁLLAPOT 3: LEJÁRT AZ IDŐ -> CLAIM GOMB
-                btnHTML = `<button class="btn-miner-action btn-claim" onclick="claimProfit(${miner.instanceId})">CLAIM +$${miner.daily}</button>`;
+                // 3. ÁLLAPOT: Kész, felvehető
+                btnHTML = `<button class="btn-miner-action btn-claim" onclick="claimProfit(${miner.instanceId})">CLAIM +$${miner.daily.toFixed(2)}</button>`;
                 statusText = "Cycle Completed";
                 timerColor = "#00e676";
             } else {
-                // ÁLLAPOT 2: FUT A GÉP -> SZÜRKE GOMB + IDŐZÍTŐ
+                // 2. ÁLLAPOT: Fut a gép
                 btnHTML = `<button class="btn-miner-action btn-wait">MINING...</button>`;
                 statusText = "Mining in Progress";
                 timerColor = "#00ff88";
@@ -153,7 +156,7 @@ function renderMyMiners() {
             <div class="active-miner" id="miner-${miner.instanceId}">
                 <div class="miner-top">
                     <span style="color:#00bfff">${miner.name}</span>
-                    <span style="font-size:10px; color:#888;">Valid: 365 Days</span>
+                    <span style="font-size:10px; color:#888;">Active</span>
                 </div>
                 <div class="miner-timer-display" id="timer-${miner.instanceId}" style="color:${timerColor}">--:--:--</div>
                 ${btnHTML}
@@ -162,7 +165,7 @@ function renderMyMiners() {
         `;
     });
     
-    updateTimers(); // Azonnal frissítjük a számokat
+    updateTimers(); 
 }
 
 // 4. INDÍTÁS
@@ -171,29 +174,27 @@ function startMining(instanceId) {
     if (miner) {
         miner.lastStart = Date.now();
         saveData();
-        renderMyMiners(); // Újrarajzoljuk, hogy megjelenjen a számláló
+        renderMyMiners(); 
     }
 }
 
-// 5. CLAIM (PROFIT BESZEDÉSE)
+// 5. CLAIM PROFIT
 function claimProfit(instanceId) {
     const miner = myMiners.find(m => m.instanceId === instanceId);
     if (miner) {
         balance += miner.daily;
-        miner.lastStart = 0; // Visszaállítjuk nullára (Start állapotba)
+        miner.lastStart = 0; // Reset
         saveData();
         updateUI();
         renderMyMiners();
-        showToast(`💰 +$${miner.daily} Profit Collected!`, 'success');
+        showToast(`💰 +$${miner.daily.toFixed(2)} Profit Collected!`, 'success');
     }
 }
 
-// 6. IDŐZÍTŐ FRISSÍTÉSE (MP-enkét fut)
+// 6. IDŐZÍTŐ
 function updateTimers() {
     const now = Date.now();
-    
     myMiners.forEach(miner => {
-        // Csak akkor számolunk, ha el van indítva
         if(miner.lastStart > 0) {
             const el = document.getElementById(`timer-${miner.instanceId}`);
             if(!el) return;
@@ -207,18 +208,17 @@ function updateTimers() {
                 const s = Math.floor((remaining / 1000) % 60);
                 el.innerText = `${h}h ${m}m ${s}s`;
             } else {
-                // Ha most járt le éppen, frissítsük a UI-t, hogy megjelenjen a Claim gomb
                 if(el.innerText !== "COMPLETED") {
                     el.innerText = "COMPLETED";
                     el.style.color = "#00e676";
-                    renderMyMiners(); // Gombok cseréje
+                    renderMyMiners(); // Frissítés a gomb miatt
                 }
             }
         }
     });
 }
 
-// --- STANDARD FEATURES (BEFIZETÉS, TASK, STB) ---
+// --- EGYÉB FUNKCIÓK ---
 
 function verifyPayment() {
     const txid = document.getElementById('txid').value;
@@ -226,7 +226,7 @@ function verifyPayment() {
 
     const btn = document.querySelector('#modal-deposit .confirm-btn');
     const originalText = btn.innerText;
-    btn.innerText = "Checking Blockchain...";
+    btn.innerText = "Checking...";
     btn.disabled = true;
 
     setTimeout(() => {
@@ -234,34 +234,32 @@ function verifyPayment() {
         balance += amount;
         saveData();
         updateUI();
-        
         showToast(`✅ Payment Confirmed: +$${amount}`, 'success');
         closeModal('deposit');
-        
         btn.innerText = originalText;
         btn.disabled = false;
         document.getElementById('txid').value = "";
-    }, 2500);
+    }, 2000);
 }
 
 function doTask(id) {
     if(tasksDone[id]) return;
     const btn = document.getElementById('btn-task-' + id);
     btn.innerText = "Checking...";
-
+    
     setTimeout(() => {
-        if(id===1) window.open('https://t.me/SkyTechSupport', '_blank'); // Csatorna link
-        if(id===2) window.open('https://twitter.com', '_blank'); // Twitter link
+        if(id===1) window.open('https://t.me/SkyTechSupport', '_blank'); 
+        if(id===2) window.open('https://twitter.com', '_blank');
 
         setTimeout(() => {
             btn.innerText = "Done";
             btn.disabled = true;
             btn.style.background = "#333";
-            balance += 2.00;
+            balance += 0.50; // Kisebb jutalom a realitás miatt
             tasksDone[id] = true;
             saveData();
             updateUI();
-            showToast("Task Complete! +$2.00 added.", 'success');
+            showToast("Task Complete! +$0.50 added.", 'success');
         }, 3000);
     }, 500);
 }
@@ -277,13 +275,11 @@ function checkTasks() {
     }
 }
 
-// --- HELPER FUNCTIONS ---
-
+// UI HELPEREK
 function updateUI() {
     document.getElementById('main-balance').innerText = balance.toFixed(2);
     if(document.getElementById('with-bal')) document.getElementById('with-bal').innerText = balance.toFixed(2);
     
-    // VIP kijelzés
     const vipEl = document.getElementById('vip-display');
     if(vipEl) {
         vipEl.innerText = `VIP ${vipLevel}`;
@@ -298,31 +294,25 @@ function saveData() {
     localStorage.setItem('tasksDone', JSON.stringify(tasksDone));
 }
 
-// ÚJ ÉRTESÍTÉSI RENDSZER (JOBB OLDALI POPUP)
 function showToast(msg, type='info') {
     const container = document.getElementById('notification-container');
-    if(!container) return; // Ha nincs a HTML-ben, nem csinál semmit
-
+    if(!container) return;
     const div = document.createElement('div');
     div.className = 'notify-bubble';
     div.innerHTML = `<i class="fas fa-check-circle"></i> ${msg}`;
-    
     container.appendChild(div);
     setTimeout(() => div.remove(), 4000);
 }
 
-// FAKE USERS POPUP (HANGULATKELTÉS)
 function startFakeNotifications() {
     const users = ['User99**', 'CryptoM**', 'Anna_K**', 'LTC_Wh**', 'Hunter01'];
-    const acts = ['withdrew $120', 'rented VIP 2', 'invited a friend', 'earned $45 profit'];
-    
+    const acts = ['withdrew $50', 'rented VIP 1', 'invited a friend', 'earned $2.2 profit'];
     setInterval(() => {
         if(Math.random() > 0.4) {
             const container = document.getElementById('notification-container');
             if(container) {
                 const u = users[Math.floor(Math.random()*users.length)];
                 const a = acts[Math.floor(Math.random()*acts.length)];
-                
                 const div = document.createElement('div');
                 div.className = 'notify-bubble';
                 div.innerHTML = `<i class="fas fa-user-circle"></i> <div><b>${u}</b><br>${a}</div>`;
@@ -330,23 +320,30 @@ function startFakeNotifications() {
                 setTimeout(() => div.remove(), 4000);
             }
         }
-    }, 5000);
+    }, 6000);
 }
 
-// NAVIGATION & MODALS
 function nav(pageId, btn) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
     
     const page = document.getElementById('page-' + pageId);
     if(page) page.classList.add('active');
-    if(btn) btn.classList.add('active');
+    
+    // Ha a gombot átadjuk, akkor aktív lesz, ha nem, akkor megkeressük
+    if(btn) {
+        btn.classList.add('active');
+    } else {
+        // Automatikus keresés (pl redirectnél)
+        if(pageId === 'home') document.querySelectorAll('.nav-item')[0].classList.add('active');
+        if(pageId === 'miners') document.querySelectorAll('.nav-item')[1].classList.add('active');
+    }
 }
 
 function openModal(type, amt=0) {
     if(type==='deposit' && amt > 0) {
         const inp = document.getElementById('dep-amount');
-        if(inp) inp.value = amt; // Ha input mező
+        if(inp) inp.value = amt;
     }
     document.getElementById('modal-' + type).style.display = 'flex';
 }
@@ -355,17 +352,8 @@ function openWithdrawModal() {
     if(vipLevel === 0) tg.showAlert("⚠️ VIP 0 cannot withdraw.\nPlease invest first.");
     else openModal('withdraw');
 }
-function copyAddr() { 
-    navigator.clipboard.writeText(LTC_ADDRESS).then(() => showToast("Address Copied!")); 
-}
 function copyRef() { 
     const ref = document.getElementById('ref-link');
-    if(ref) {
-        ref.select();
-        document.execCommand('copy');
-        showToast("Invite Link Copied!");
-    }
+    if(ref) { ref.select(); document.execCommand('copy'); showToast("Invite Link Copied!"); }
 }
-function toggleLanguage() {
-    showToast("Language switch coming soon!");
-}
+function toggleLanguage() { showToast("Language switch coming soon!"); }
