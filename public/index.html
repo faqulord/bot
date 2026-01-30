@@ -3,288 +3,289 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Dark Tycoon</title>
+    <title>SkyHash Miner</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        /* --- DESIGN --- */
-        :root { --bg: #0b0b0f; --card: #1c1c24; --accent: #7b2cbf; --gold: #ffcc00; --danger: #ff3366; }
-        body { background: var(--bg); color: #fff; font-family: sans-serif; margin: 0; padding-bottom: 90px; user-select: none; overflow: hidden; }
+        /* --- PROFI DASHBOARD DESIGN --- */
+        :root { --bg: #0f172a; --panel: #1e293b; --accent: #3b82f6; --success: #10b981; --text: #f8fafc; --text-mut: #94a3b8; }
+        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; padding-bottom: 80px; user-select: none; }
 
         /* HEADER */
-        .header { padding: 15px; background: rgba(28,28,36,0.9); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; }
-        .balance-val { font-size: 18px; font-weight: bold; color: var(--gold); }
-        
-        /* FŐOLDAL */
-        .clicker-zone { height: 45vh; display: flex; align-items: center; justify-content: center; position: relative; }
-        .main-btn { 
-            width: 200px; height: 200px; background: radial-gradient(circle, #3a0ca3, #10002b);
-            border: 4px solid var(--accent); border-radius: 50%; box-shadow: 0 0 30px var(--accent);
-            display: flex; align-items: center; justify-content: center; font-size: 50px; cursor: pointer;
-        }
-        .main-btn:active { transform: scale(0.95); }
-        .float-num { position: absolute; color: #fff; font-weight: bold; animation: floatUp 0.8s forwards; pointer-events: none; }
-        @keyframes floatUp { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-80px); } }
+        .header { padding: 20px; display: flex; justify-content: space-between; align-items: center; background: rgba(30, 41, 59, 0.8); backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 50; }
+        .brand { font-weight: 800; font-size: 18px; letter-spacing: 1px; display: flex; align-items: center; gap: 8px; }
+        .brand i { color: var(--accent); }
+        .user-badge { font-size: 12px; background: #334155; padding: 4px 10px; border-radius: 20px; color: var(--text-mut); }
 
-        /* CONTROLS */
-        .controls { padding: 20px; text-align: center; }
-        .energy-bar-bg { width: 100%; height: 10px; background: #333; border-radius: 5px; overflow: hidden; margin: 5px 0 20px 0; }
-        .energy-fill { height: 100%; background: var(--accent); width: 100%; transition: width 0.2s; }
-        
-        .btn-action { 
-            background: linear-gradient(90deg, #ff0055, #ff5500); color: white; border: none; 
-            padding: 15px; width: 100%; border-radius: 12px; font-weight: bold; margin-bottom: 10px; cursor: pointer;
-        }
+        /* STATS CARDS */
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 20px; }
+        .card { background: var(--panel); border-radius: 15px; padding: 15px; border: 1px solid #334155; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
+        .card-label { font-size: 11px; color: var(--text-mut); text-transform: uppercase; letter-spacing: 0.5px; }
+        .card-value { font-size: 22px; font-weight: 700; margin-top: 5px; color: var(--text); }
+        .card-sub { font-size: 10px; color: var(--success); margin-top: 5px; display: flex; align-items: center; gap: 3px; }
 
-        /* OLDALAK */
-        .page { display: none; padding: 15px; height: 100vh; overflow-y: auto; padding-bottom: 120px; }
+        /* MINING VISUAL */
+        .mining-vis { margin: 0 20px; background: #000; border-radius: 15px; padding: 20px; border: 1px solid var(--accent); position: relative; overflow: hidden; text-align: center; }
+        .hash-rate { font-size: 36px; font-weight: 800; color: var(--accent); font-family: monospace; }
+        .mining-status { color: var(--success); font-size: 12px; margin-top: 5px; display: flex; align-items: center; justify-content: center; gap: 5px; }
+        .blink { animation: blink 1s infinite; width: 8px; height: 8px; background: var(--success); border-radius: 50%; }
+        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+
+        /* SHOP ITEMS */
+        .miner-item { display: flex; justify-content: space-between; align-items: center; background: var(--panel); margin: 0 20px 15px 20px; padding: 15px; border-radius: 12px; border: 1px solid #334155; }
+        .miner-icon { font-size: 24px; color: var(--text-mut); width: 40px; }
+        .miner-info h4 { margin: 0; font-size: 14px; }
+        .miner-info p { margin: 2px 0 0 0; font-size: 11px; color: var(--success); }
+        .btn-buy { background: var(--accent); color: white; border: none; padding: 8px 16px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 12px; }
+
+        /* PAGES */
+        .page { display: none; animation: fade 0.2s; }
         .page.active { display: block; }
-        
-        /* KERÉK */
-        .wheel-container { position: relative; width: 250px; height: 250px; margin: 20px auto; }
-        .wheel { width: 100%; height: 100%; border-radius: 50%; border: 5px solid var(--gold); transition: transform 3s cubic-bezier(0.25, 0.1, 0.25, 1); }
-        .pointer { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); width: 20px; height: 20px; background: white; clip-path: polygon(50% 100%, 0 0, 100% 0); z-index: 10; }
+        @keyframes fade { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* TÁRCA */
-        .wallet-box { background: var(--card); padding: 20px; border-radius: 15px; border: 1px solid #333; text-align: center; }
-        .crypto-addr { background: #000; padding: 10px; font-family: monospace; color: var(--gold); word-break: break-all; margin: 10px 0; font-size: 12px; }
-
-        /* MODAL (Tutorial) */
-        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 999; display: flex; align-items: center; justify-content: center; }
-        .modal-content { background: var(--card); padding: 20px; border-radius: 15px; max-width: 80%; text-align: center; border: 1px solid var(--accent); }
-
-        /* MENU */
-        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #15151a; display: flex; padding: 10px 0 25px 0; border-top: 1px solid #333; }
-        .nav-item { flex: 1; text-align: center; color: #666; font-size: 10px; }
+        /* BOTTOM NAV */
+        .nav { position: fixed; bottom: 0; width: 100%; background: var(--panel); border-top: 1px solid #334155; display: flex; justify-content: space-around; padding: 15px 0 25px 0; }
+        .nav-item { color: var(--text-mut); text-align: center; font-size: 10px; }
         .nav-item.active { color: var(--accent); }
         .nav-item i { font-size: 20px; margin-bottom: 4px; display: block; }
+
+        /* MODAL */
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 100; display: none; align-items: center; justify-content: center; }
+        .modal-box { background: var(--panel); padding: 25px; border-radius: 15px; width: 80%; text-align: center; border: 1px solid var(--accent); }
     </style>
 </head>
 <body>
 
-    <div id="tutorial" class="modal">
-        <div class="modal-content">
-            <h2>👋 Üdv a Dark Tycoonban!</h2>
-            <p style="font-size:13px; color:#ccc; text-align:left; margin: 15px 0;">
-                1. <b>Kattints</b> és gyűjtsd a 💎 Gyémántot.<br>
-                2. <b>Fogy az energia?</b> Nézz reklámot vagy várj.<br>
-                3. <b>Unod?</b> Fektess be <b>LTC-t</b>, vegyél Gépeket, és termeld a pénzt alvás közben!<br>
-                4. <b>Cél:</b> Vedd meg a Mystery Boxot a Shopban!
-            </p>
-            <button class="btn-action" onclick="closeTutorial()">KEZDÉS</button>
-        </div>
-    </div>
-
     <div class="header">
-        <div class="balance-val">💎 <span id="balance">0</span></div>
-        <div style="font-size:12px; color:#aaa;">Energia: <span id="energy">100</span>%</div>
+        <div class="brand"><i class="fas fa-cloud"></i> SkyHash</div>
+        <div class="user-badge" id="username">User</div>
     </div>
 
-    <div id="page-home" class="page active">
-        <div class="clicker-zone">
-            <div class="main-btn" id="click-btn">💻</div>
+    <div id="page-dash" class="page active">
+        <div class="stats-grid">
+            <div class="card">
+                <div class="card-label">Bányászott (SKY)</div>
+                <div class="card-value" id="balance">0.00</div>
+                <div class="card-sub">≈ $<span id="usd-val">0.00</span></div>
+            </div>
+            <div class="card">
+                <div class="card-label">Sebesség (GH/s)</div>
+                <div class="card-value" id="hashrate">10</div>
+                <div class="card-sub"><i class="fas fa-arrow-up"></i> Ingyenes</div>
+            </div>
         </div>
+
+        <div class="mining-vis">
+            <div class="hash-rate" id="live-hash">0000</div>
+            <div class="mining-status"><div class="blink"></div> BÁNYÁSZAT AKTÍV</div>
+            <div style="font-size:10px; color:#64748b; margin-top:10px;">Algorithm: SHA-256 (Cloud)</div>
+        </div>
+
+        <div style="padding:20px; height: 150px;">
+            <canvas id="miningChart"></canvas>
+        </div>
+    </div>
+
+    <div id="page-shop" class="page">
+        <h3 style="margin:20px; font-size:16px;">Szerver Bérlés (Upgrade)</h3>
         
-        <div class="controls">
-            <div class="energy-bar-bg"><div class="energy-fill" id="energy-fill"></div></div>
-            <button class="btn-action" onclick="watchAd()">📺 Reklám (+50% Energia)</button>
+        <div class="miner-item">
+            <div class="miner-icon">💻</div>
+            <div class="miner-info">
+                <h4>Starter Rig (GPU)</h4>
+                <p>+500 SKY / nap</p>
+                <div style="font-size:10px; color:#64748b;">Megtérülés: 20 nap</div>
+            </div>
+            <button class="btn-buy" onclick="openPayment(10, 'Starter Rig')">$10</button>
         </div>
-    </div>
 
-    <div id="page-casino" class="page">
-        <h2 style="text-align:center;">Szerencsekerék</h2>
-        <div class="wheel-container">
-            <div class="pointer"></div>
-            <div class="wheel" id="wheel" style="background: conic-gradient(red 0 25%, green 25% 50%, blue 50% 75%, orange 75% 100%);"></div>
+        <div class="miner-item" style="border-color: var(--accent);">
+            <div class="miner-icon" style="color:var(--accent);">🚀</div>
+            <div class="miner-info">
+                <h4>Pro ASIC Miner</h4>
+                <p>+3000 SKY / nap</p>
+                <div style="font-size:10px; color:#64748b;">Megtérülés: 15 nap</div>
+            </div>
+            <button class="btn-buy" onclick="openPayment(50, 'Pro ASIC')">$50</button>
         </div>
-        <button id="spin-btn" class="btn-action" onclick="spinWheel()" style="background:var(--gold); color:black; margin-top:20px;">PÖRGETÉS (Ingyen)</button>
+
+        <div class="miner-item" style="border-color: #f59e0b;">
+            <div class="miner-icon" style="color:#f59e0b;">⚛️</div>
+            <div class="miner-info">
+                <h4>Quantum Server</h4>
+                <p>+10,000 SKY / nap</p>
+                <div style="font-size:10px; color:#64748b;">Megtérülés: 10 nap</div>
+            </div>
+            <button class="btn-buy" onclick="openPayment(100, 'Quantum')">$100</button>
+        </div>
     </div>
 
     <div id="page-wallet" class="page">
-        <h2>💰 Befektetés & Shop</h2>
-        <p style="font-size:12px; color:#888;">Nincs türelmed kattintani? Tölts fel egyenleget és vedd meg azonnal!</p>
-        
-        <div class="wallet-box">
-            <h3>LTC Feltöltés</h3>
-            <p style="font-size:11px;">Utalj bármennyit erre a címre. A rendszer automatikusan átváltja <b>Gyémántra</b>.</p>
-            
-            <div class="crypto-addr">ltc1qv5aape3pah2f954k5jjx9kgnrnkxzytm6f7an8</div>
-            <button onclick="navigator.clipboard.writeText(document.querySelector('.crypto-addr').innerText)" style="background:#333; color:white; border:none; padding:5px; border-radius:5px;">Cím másolása</button>
+        <div style="padding:20px;">
+            <div class="card" style="text-align:center; margin-bottom:20px;">
+                <div class="card-label">Teljes Egyenleg</div>
+                <div class="card-value" style="color:var(--accent);"><span id="total-sky">0</span> SKY</div>
+                <button onclick="requestWithdraw()" style="margin-top:15px; width:100%; padding:10px; background:var(--panel); border:1px solid #334155; color:var(--text-mut); border-radius:8px;">
+                    💸 Kifizetés Kérése
+                </button>
+                <div style="font-size:10px; color:#64748b; margin-top:5px;">Min. kifizetés: 500,000 SKY ($50)</div>
+            </div>
 
-            <input type="text" id="txid-input" placeholder="Másold be a TXID-t..." style="width:90%; padding:10px; margin:15px 0; background:#000; border:1px solid #444; color:white;">
-            <button class="btn-action" onclick="checkPayment()" style="background:var(--accent);">ELLENŐRZÉS</button>
-        </div>
-
-        <br>
-        <div class="wallet-box" style="border-color:var(--gold);">
-            <h3>📦 Bronz Mystery Box</h3>
-            <p style="font-size:11px;">Tartalma: Titkos koordináta Budapest/Debrecen</p>
-            <h4 style="color:var(--gold);">Ár: 500.000 💎</h4>
-            <button class="btn-action" onclick="buyBox(500000)">MEGVESZ</button>
+            <h4 style="margin-bottom:10px;">Befizetés (Egyenleg feltöltés)</h4>
+            <div style="background:var(--panel); padding:15px; border-radius:12px; font-size:12px;">
+                <p>Utalj Litecoint (LTC) a bányászgépek bérléséhez.</p>
+                <div style="background:#0f172a; padding:10px; border-radius:6px; font-family:monospace; word-break:break-all; color:var(--accent);">
+                    ltc1qv5aape3pah2f954k5jjx9kgnrnkxzytm6f7an8
+                </div>
+                <br>
+                <input type="text" id="txid-input" placeholder="Illeszd be a TXID-t..." style="width:90%; padding:10px; background:#0f172a; border:1px solid #334155; color:white; border-radius:6px;">
+                <button onclick="checkPayment()" style="width:100%; margin-top:10px; padding:10px; background:var(--success); border:none; border-radius:6px; color:black; font-weight:bold;">
+                    Jóváírás
+                </button>
+            </div>
         </div>
     </div>
 
-    <div class="bottom-nav">
-        <div class="nav-item active" onclick="nav('home', this)"><i class="fas fa-hammer"></i>Bányász</div>
-        <div class="nav-item" onclick="nav('casino', this)"><i class="fas fa-dice"></i>Casino</div>
-        <div class="nav-item" onclick="nav('wallet', this)"><i class="fas fa-shopping-cart"></i>Shop</div>
+    <div id="pay-modal" class="modal">
+        <div class="modal-box">
+            <h3 id="pay-title">Vásárlás</h3>
+            <p>Küldj <b id="pay-amt" style="color:var(--accent)">0</b> USD értékű LTC-t.</p>
+            <p style="font-size:12px; color:#94a3b8;">A vásárláshoz menj a <b>Tárca</b> menübe és töltsd fel az egyenleged!</p>
+            <button onclick="document.getElementById('pay-modal').style.display='none'; nav('wallet')" style="width:100%; padding:10px; background:var(--accent); border:none; border-radius:8px; color:white;">
+                Tovább a Tárcához
+            </button>
+            <button onclick="document.getElementById('pay-modal').style.display='none'" style="margin-top:10px; background:transparent; border:none; color:#64748b;">Mégsem</button>
+        </div>
+    </div>
+
+    <div class="nav">
+        <div class="nav-item active" onclick="nav('dash', this)"><i class="fas fa-tachometer-alt"></i>Dash</div>
+        <div class="nav-item" onclick="nav('shop', this)"><i class="fas fa-server"></i>Shop</div>
+        <div class="nav-item" onclick="nav('wallet', this)"><i class="fas fa-wallet"></i>Tárca</div>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        // JÁTÉK VÁLTOZÓK
-        let balance = localStorage.getItem('balance') ? parseInt(localStorage.getItem('balance')) : 0;
-        let energy = 100; // Százalékban
-        let canSpin = true;
+        // CORE VARIABLES
+        let skyBalance = localStorage.getItem('sky') ? parseFloat(localStorage.getItem('sky')) : 0.00;
+        let hashrate = localStorage.getItem('hash') ? parseInt(localStorage.getItem('hash')) : 10; // 10 GH/s start
+        
+        // UI UPDATER
+        const balEl = document.getElementById('balance');
+        const usdEl = document.getElementById('usd-val');
+        const hashEl = document.getElementById('hashrate');
+        const liveHash = document.getElementById('live-hash');
+        const totalSky = document.getElementById('total-sky');
 
-        // UI Frissítés
-        updateUI();
+        // INIT
+        const user = tg.initDataUnsafe.user;
+        if(user) document.getElementById('username').innerText = user.first_name;
 
-        // 1. TUTORIAL
-        function closeTutorial() {
-            document.getElementById('tutorial').style.display = 'none';
-        }
-
-        // 2. KATTINTÁS LOGIKA (Javított)
-        document.getElementById('click-btn').addEventListener('click', (e) => {
-            if(energy >= 5) { // Egy kattintás = 5% energia
-                balance += 1;
-                energy -= 5; 
-                
-                showFloat(e.clientX, e.clientY);
-                updateUI();
-                
-                // Gomb animáció
-                const btn = document.getElementById('click-btn');
-                btn.style.transform = "scale(0.95)";
-                setTimeout(()=> btn.style.transform = "scale(1)", 100);
-            } else {
-                tg.showAlert("Elfogyott az energiád! Nézz reklámot vagy pihenj.");
-            }
-        });
-
-        // Energia vissatöltés (Lassú!)
+        // MINING LOOP (Szimuláció)
         setInterval(() => {
-            if(energy < 100) {
-                energy += 1; // 1% másodpercenként
-                updateUI();
-            }
+            // Minden másodpercben jön egy kicsi, a hashrate alapján
+            let mined = hashrate / 1000; 
+            skyBalance += mined;
+            updateUI();
+            
+            // Random számok a "Live Hash" hatáshoz
+            liveHash.innerText = Math.floor(Math.random() * 100000);
         }, 1000);
 
-        function showFloat(x, y) {
-            const el = document.createElement('div');
-            el.className = 'float-num';
-            el.innerText = "+1 💎";
-            el.style.left = x + 'px'; el.style.top = y + 'px';
-            document.body.appendChild(el);
-            setTimeout(()=> el.remove(), 800);
+        function updateUI() {
+            balEl.innerText = skyBalance.toFixed(4);
+            // Árfolyam: 10,000 SKY = 1 USD (Példa)
+            let usd = skyBalance / 10000;
+            usdEl.innerText = usd.toFixed(4);
+            hashEl.innerText = hashrate;
+            totalSky.innerText = Math.floor(skyBalance);
+            
+            localStorage.setItem('sky', skyBalance);
+            localStorage.setItem('hash', hashrate);
         }
 
-        // 3. SZERENCSEKERÉK (Reális)
-        function spinWheel() {
-            if(!canSpin) return tg.showAlert("Ma már pörgettél! Gyere vissza holnap (vagy fizess).");
-            
-            const wheel = document.getElementById('wheel');
-            // Véletlen forgás + véletlen eredmény
-            // Ha < 0.5 akkor nyer, ha > 0.5 akkor veszít
-            const isWin = Math.random() > 0.6; // 40% esély nyerni
-            const deg = 3600 + (isWin ? 90 : 45) + Math.random() * 20; 
-            
-            wheel.style.transform = `rotate(${deg}deg)`;
-            
-            setTimeout(() => {
-                if(isWin) {
-                    const reward = 500;
-                    balance += reward;
-                    tg.showAlert(`🎉 GRATULÁLOK! Nyereményed: ${reward} Gyémánt!`);
-                } else {
-                    tg.showAlert("😢 Sajnos most nem nyertél. Próbáld újra!");
-                }
-                updateUI();
-                canSpin = false;
-                document.getElementById('spin-btn').style.opacity = "0.5";
-                document.getElementById('spin-btn').innerText = "Holnap újra...";
-            }, 3200);
+        // NAVIGÁCIÓ
+        function nav(page, btn) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            if(btn) document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById('page-' + page).classList.add('active');
+            if(btn) btn.classList.add('active');
         }
 
-        // 4. BEFIZETÉS ELLENŐRZÉS (Automatikus)
+        // SHOP & PAYMENT
+        function openPayment(price, name) {
+            document.getElementById('pay-modal').style.display = 'flex';
+            document.getElementById('pay-title').innerText = name;
+            document.getElementById('pay-amt').innerText = price;
+        }
+
         async function checkPayment() {
             const txid = document.getElementById('txid-input').value.trim();
-            if(txid.length < 10) return tg.showAlert("Hibás TXID!");
+            if(txid.length < 5) return tg.showAlert("Hibás TXID");
 
             tg.MainButton.showProgress();
             
+            // Itt a valóságban a verify.js-t hívjuk
+            // MOST DEMO CÉLBÓL: Ha bármit beír, adunk hashratet
             try {
-                // A verify.js backendet hívjuk
+                // Szimulált backend hívás
                 const res = await fetch('/api/verify', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ 
-                        txid: txid, 
-                        myAddress: "ltc1qv5aape3pah2f954k5jjx9kgnrnkxzytm6f7an8" // Biztonság kedvéért itt is
-                    })
+                    body: JSON.stringify({ txid: txid, myAddress: "ltc1qv5aape3pah2f954k5jjx9kgnrnkxzytm6f7an8" })
                 });
                 const data = await res.json();
+                
                 tg.MainButton.hideProgress();
 
                 if(data.success) {
-                    // Itt a varázslat: A backend megmondja mennyi HUF volt az utalás
-                    // Mi ezt átváltjuk Gyémántra (pl. 1 Ft = 100 Gyémánt)
-                    const diamonds = data.amount_huf * 100; 
-                    
-                    balance += diamonds;
+                    // Ha a játékos $10-t küldött, kap +500 hashratet
+                    // Ez a backend dolga lenne, de most itt egyszerűsítünk:
+                    let boost = Math.floor(data.amount_huf / 10); // Pl 1000 Ft = 100 Hash
+                    hashrate += boost;
                     updateUI();
-                    tg.showAlert(`✅ SIKER! Beérkezett: ${data.amount_huf} Ft.\nJóváírva: ${diamonds} Gyémánt!`);
+                    tg.showAlert(`✅ SIKER! Gépek telepítve. Sebességed nőtt: +${boost} GH/s`);
                     document.getElementById('txid-input').value = "";
                 } else {
                     tg.showAlert("Hiba: " + data.error);
                 }
             } catch(e) {
-                tg.MainButton.hideProgress();
-                tg.showAlert("Hálózati hiba!");
+                 tg.MainButton.hideProgress();
+                 tg.showAlert("Hálózati hiba!");
             }
         }
 
-        // 5. VÁSÁRLÁS
-        function buyBox(price) {
-            if(balance >= price) {
-                tg.showConfirm("Biztos megveszed a koordinátákat?", (ok) => {
-                    if(ok) {
-                        balance -= price;
-                        updateUI();
-                        tg.showAlert("Vásárlás sikeres! A koordinátákat elküldtük a chaten (Demó).");
-                        // Itt hívnád meg a botot, hogy küldje a képet
-                    }
-                });
+        function requestWithdraw() {
+            if(skyBalance < 500000) {
+                tg.showAlert("⚠️ Nincs elég fedezet!\nMinimum kifizetés: 500,000 SKY ($50).\nVásárolj erősebb gépet a Shopban a gyorsabb termelésért!");
             } else {
-                tg.showAlert("Nincs elég Gyémántod! Tölts fel egyenleget (LTC) a gyorsabb haladásért.");
+                tg.showAlert("Kifizetési kérelem elküldve! (Feldolgozás: 48 óra)");
             }
         }
 
-        function watchAd() {
-            tg.showAlert("Reklám betöltése... (Képzeletbeli +50% Energia)");
-            setTimeout(() => {
-                energy = 100;
-                updateUI();
-            }, 2000);
-        }
+        // CHART (Grafikon rajzolás)
+        const ctx = document.getElementById('miningChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['10:00', '10:05', '10:10', '10:15', '10:20'],
+                datasets: [{
+                    label: 'Hashrate Activity',
+                    data: [10, 12, 11, 14, 13],
+                    borderColor: '#3b82f6',
+                    tension: 0.4,
+                    pointRadius: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: { x: { display: false }, y: { display: false } }
+            }
+        });
 
-        // HELPER
-        function updateUI() {
-            document.getElementById('balance').innerText = balance.toLocaleString();
-            document.getElementById('energy').innerText = Math.floor(energy);
-            document.getElementById('energy-fill').style.width = energy + "%";
-            localStorage.setItem('balance', balance);
-        }
-
-        function nav(page, btn) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            document.getElementById('page-' + page).classList.add('active');
-            btn.classList.add('active');
-        }
     </script>
 </body>
 </html>
