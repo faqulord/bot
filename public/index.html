@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SkyTech Cloud</title>
+    <title>SkyTech Mining</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
@@ -21,148 +21,109 @@
     <div id="app">
         
         <div class="header">
-            <div class="logo"><i class="fas fa-satellite-dish"></i> SKY-TECH</div>
-            <div class="user-balance"><span id="header-balance">0.0000</span> SKY</div>
+            <div class="logo"><i class="fas fa-bolt"></i> SKY-TECH <span class="vip-badge" id="vip-badge">VIP 0</span></div>
+            <div class="user-balance">$<span id="header-balance">5.00</span></div>
         </div>
 
-        <div id="page-news" class="page active">
-            <h3 style="margin-bottom:15px;">📢 Friss Hírek</h3>
-            <div class="card-box">
-                <div class="news-img">🚀</div>
-                <div class="news-date">2026.01.30.</div>
-                <div class="news-title">Indul a SkyTech v2.0 - $5 Bónusz!</div>
-                <div class="news-text">Minden új regisztráló <b>$5 Kezdő Bónuszt</b> kap! A kifizetési limit $20. Építsd a csapatodat és bányássz minden nap!</div>
-            </div>
+        <div id="page-mining" class="page active">
             
-            <div class="card-box" onclick="switchPage('team', document.querySelectorAll('.nav-item')[3])">
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <h4>🏆 TOP BÁNYÁSZOK</h4>
-                    <span style="font-size:12px; color:#fbbf24;">Megnézem &rarr;</span>
-                </div>
-                <div class="leader-row">1. 🥇 AlexCrypto - <span style="color:#10b981;">$4,520</span></div>
-                <div class="leader-row">2. 🥈 Bence_K - <span style="color:#10b981;">$3,100</span></div>
-                <div class="leader-row">3. 🥉 NagyGabor - <span style="color:#10b981;">$2,850</span></div>
+            <div class="balance-container">
+                <div style="font-size:12px; color:#94a3b8; letter-spacing:1px;">JELENLEGI EGYENLEG</div>
+                <div class="main-balance">$<span id="live-balance">5.0000</span></div>
+                <div style="font-size:11px; color:#10b981;">+ $0.000001 / sec (Aktív)</div>
             </div>
-        </div>
 
-        <div id="page-mining" class="page">
-            <div class="mining-status">
-                <div class="miner-circle" id="miner-circle">
+            <div class="mining-area">
+                <div class="energy-info">
+                    <span>⚡ Energia</span>
+                    <span><span id="energy-val">100</span>/100</span>
+                </div>
+                <div class="energy-bar-bg"><div class="energy-fill" id="energy-bar"></div></div>
+
+                <div class="miner-circle" id="miner-btn" onclick="tapMining()">
                     <div class="spinner-inner"></div>
-                    
-                    <div style="font-size:12px; color:#94a3b8; position:relative; z-index:2;">Jelenlegi Profit</div>
-                    <div style="font-size:20px; font-weight:bold; color:white; position:relative; z-index:2; margin:5px 0;">
-                        $<span id="live-counter">0.000000</span>
-                    </div>
-                    <div style="font-size:10px; color:#06b6d4; position:relative; z-index:2;" id="mining-timer">ÁLL</div>
+                    <i class="fas fa-fingerprint" style="font-size:40px; color:white; z-index:2;"></i>
+                    <div class="tap-text">TAP</div>
                 </div>
-                <button class="start-btn" id="start-btn" onclick="startMining()">START MINING (24H)</button>
             </div>
 
-            <h4 style="margin:20px 0 10px 0; color:#64748b; font-size:12px; text-transform:uppercase;">Aktív Szerverek</h4>
+            <div class="section-title">SZERVER ÁLLAPOT</div>
             <div class="machine-card active">
                 <div class="m-icon"><i class="fas fa-server"></i></div>
                 <div class="m-info">
-                    <h4>Starter CPU</h4>
-                    <p style="color:#10b981;">● Online (Mining)</p>
+                    <h4>Starter Node (Ingyenes)</h4>
+                    <p style="color:#10b981;">● Online • $0.10/nap</p>
                 </div>
-                <div class="m-profit">+$0.10/nap</div>
-            </div>
-            <div class="machine-card locked">
-                <div class="m-icon"><i class="fas fa-lock"></i></div>
-                <div class="m-info">
-                    <h4>Cloud GPU (Zárolva)</h4>
-                    <p>Vásárolj a Profil menüben!</p>
-                </div>
-                <div class="m-profit">+$2.00/nap</div>
             </div>
         </div>
 
-        <div id="page-game" class="page">
-            <div class="game-area">
-                <h3>💎 Gyémánt & Szerencse</h3>
-                
-                <div class="wheel-container">
-                    <div class="wheel-pointer">▼</div>
-                    <div class="wheel" id="wheel">
-                        <div class="segment" style="--i:1; --clr:#f44336;"><span>$0</span></div>
-                        <div class="segment" style="--i:2; --clr:#fbbf24;"><span>$0.1</span></div>
-                        <div class="segment" style="--i:3; --clr:#4caf50;"><span>$1</span></div>
-                        <div class="segment" style="--i:4; --clr:#2196f3;"><span>💎</span></div>
-                        <div class="segment" style="--i:5; --clr:#9c27b0;"><span>$0.05</span></div>
-                        <div class="segment" style="--i:6; --clr:#ff9800;"><span>$0.01</span></div>
-                    </div>
-                </div>
-                
-                <button class="btn-action" style="background:#fbbf24; color:black; margin-top:20px;" onclick="spinWheel()">
-                    PÖRGETÉS (500 💎)
-                </button>
+        <div id="page-shop" class="page">
+            <h3 style="text-align:center; margin-bottom:5px;">🚀 Szerver Bérlés (VIP)</h3>
+            <p style="text-align:center; font-size:12px; color:#94a3b8; margin-bottom:20px;">Vásárolj gépet a kifizetés feloldásához!</p>
 
-                <div style="margin-top:30px; display:flex; justify-content:center; align-items:center; gap:10px;">
-                    <div class="diamond-display"><span id="diamond-val">0</span> 💎</div>
-                    <button class="tap-btn-small" onclick="tapDiamond()">+</button>
+            <div class="vip-card" onclick="openDeposit(10, 'Cloud GPU v1', 2.00)">
+                <div class="vip-header">
+                    <span class="vip-name">🔥 VIP 1 - Cloud GPU</span>
+                    <span class="vip-price">$10</span>
                 </div>
-                <p style="font-size:12px; color:#64748b;">Kattints a + gombra gyémántért!</p>
+                <div class="vip-body">
+                    <div class="vip-stat"><i class="fas fa-chart-line"></i> Napi Profit: <b>$2.00</b></div>
+                    <div class="vip-stat"><i class="fas fa-clock"></i> Megtérülés: <b>5 Nap</b></div>
+                    <div class="vip-stat" style="color:#10b981;"><i class="fas fa-check-circle"></i> Kifizetés: <b>ENGEDÉLYEZVE</b></div>
+                </div>
+                <button class="btn-buy">AKTIVÁLÁS (LTC)</button>
+            </div>
+
+            <div class="vip-card gold" onclick="openDeposit(50, 'Quantum Rig', 12.00)">
+                <div class="vip-header">
+                    <span class="vip-name">⚛️ VIP 2 - Quantum Rig</span>
+                    <span class="vip-price">$50</span>
+                </div>
+                <div class="vip-body">
+                    <div class="vip-stat"><i class="fas fa-chart-line"></i> Napi Profit: <b>$12.00</b></div>
+                    <div class="vip-stat"><i class="fas fa-clock"></i> Megtérülés: <b>4 Nap</b></div>
+                    <div class="vip-stat" style="color:#10b981;"><i class="fas fa-check-circle"></i> Kifizetés: <b>ENGEDÉLYEZVE</b></div>
+                </div>
+                <button class="btn-buy" style="background:#fbbf24; color:black;">AKTIVÁLÁS (LTC)</button>
             </div>
         </div>
 
         <div id="page-team" class="page">
-            <h3>🏆 Ranglista & Csapat</h3>
-            
-            <div class="card-box">
-                <h4>TOP 5 LEGGAZDAGABB</h4>
-                <div id="leaderboard-list">
-                    </div>
-                <div class="my-rank-row">
-                    <span>158. <b style="color:#06b6d4;">TE</b></span>
-                    <span id="my-rank-bal">$5.00</span>
+            <div class="card-box" style="text-align:center;">
+                <h2 style="color:#10b981; margin:0;">💰 $3 JUTALOM</h2>
+                <p style="font-size:12px; margin-top:5px;">Minden meghívott barát után, aki VIP 1-et vásárol!</p>
+                
+                <div class="ref-box">
+                    <div style="font-size:10px; color:#64748b;">A TE LINKED:</div>
+                    <div id="ref-link" style="color:#06b6d4; font-weight:bold; margin:5px 0;">Betöltés...</div>
+                    <button class="btn-action" onclick="copyRef()">MÁSOLÁS</button>
                 </div>
             </div>
 
-            <div class="card-box">
-                <div class="team-stats">
-                    <div><div class="ts-val">0</div><div class="ts-label">Tagok</div></div>
-                    <div><div class="ts-val">$0.00</div><div class="ts-label">Jutalék</div></div>
-                </div>
-                <button class="btn-action" style="font-size:12px; padding:10px; margin-top:0;" onclick="copyRef()">Meghívó Link Másolása</button>
+            <h4 style="margin-left:10px;">Csapat Statisztika</h4>
+            <div class="level-row">
+                <div>👥 Meghívottak</div>
+                <div style="font-weight:bold;">0 Fő</div>
+            </div>
+            <div class="level-row">
+                <div>💵 Jutalék</div>
+                <div style="font-weight:bold; color:#10b981;">$0.00</div>
             </div>
         </div>
 
         <div id="page-wallet" class="page">
-            <h3>👤 Profil</h3>
-            
-            <div class="level-box">
-                <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:5px;">
-                    <span style="color:#fbbf24;">★ Kezdő Bányász</span>
-                    <span>Szint 1/10</span>
-                </div>
-                <div class="progress-bg"><div class="progress-fill" style="width:10%;"></div></div>
-                <p style="font-size:10px; color:#64748b; margin-top:5px;">Fizess be még $5-t a következő szinthez (Ezüst)</p>
-            </div>
-
             <div class="wallet-card">
-                <div style="font-size:11px; color:#94a3b8; letter-spacing:1px;">EGYENLEG</div>
-                <div class="balance-huge">$<span id="wallet-bal">5.0000</span></div>
-                <button class="btn-action btn-dep" onclick="openDeposit()">⚡ GÉP VÁSÁRLÁS (LTC)</button>
-                <button class="btn-action btn-with" onclick="openWithdraw()">💸 KIFIZETÉS</button>
+                <div style="font-size:11px; color:#94a3b8;">TELJES EGYENLEG</div>
+                <div class="balance-huge">$<span id="wallet-bal">5.00</span></div>
+                
+                <div style="display:flex; gap:10px;">
+                    <button class="btn-action btn-dep" onclick="switchPage('shop', document.querySelectorAll('.nav-item')[1])">BEFIZETÉS</button>
+                    <button class="btn-action btn-with" onclick="openWithdraw()">KIFIZETÉS</button>
+                </div>
             </div>
-
-            <div class="card-box">
-                <h4 style="margin:0 0 15px 0; border-bottom:1px solid #334155; padding-bottom:10px;">🛒 SHOP</h4>
-                <div class="level-row" onclick="openDeposit()">
-                    <div>
-                        <div style="font-weight:bold; font-size:13px;">🚀 Cloud GPU v1</div>
-                        <div style="font-size:10px; color:#64748b;">Profit: $2.00 / nap</div>
-                    </div>
-                    <button style="background:#06b6d4; color:white; border:none; padding:5px 10px; border-radius:5px; font-weight:bold;">$10</button>
-                </div>
-                <div class="level-row" onclick="openDeposit()">
-                    <div>
-                        <div style="font-weight:bold; font-size:13px;">⚛️ Quantum Rig</div>
-                        <div style="font-size:10px; color:#64748b;">Profit: $12.00 / nap</div>
-                    </div>
-                    <button style="background:#fbbf24; color:black; border:none; padding:5px 10px; border-radius:5px; font-weight:bold;">$50</button>
-                </div>
+            
+            <div style="padding:10px; font-size:11px; color:#64748b; text-align:center;">
+                <i class="fas fa-info-circle"></i> A kifizetéshez legalább <b>VIP 1</b> szint szükséges.
             </div>
         </div>
 
@@ -171,23 +132,22 @@
     <div id="deposit-modal" class="modal">
         <div class="modal-content">
             <span class="close-icon" onclick="closeModal()">&times;</span>
-            <h3 style="margin-top:0;">Gép Vásárlás (LTC)</h3>
-            <p style="font-size:12px; color:#94a3b8; line-height:1.5;">Utalj Litecoint (LTC) az alábbi címre.</p>
-            <div style="background:#0f172a; padding:12px; border-radius:8px; font-family:monospace; color:#06b6d4; word-break:break-all; font-size:11px; margin: 15px 0; border: 1px dashed #64748b;">
-                ltc1qv5aape3pah2f954k5jjx9kgnrnkxzytm6f7an8
-            </div>
-            <button onclick="copyAddress()" style="background:#334155; color:white; border:none; padding:5px 10px; border-radius:5px; font-size:11px; margin-bottom:15px;">Cím másolása</button>
-            <input type="text" id="txid-input" placeholder="Illeszd be a TXID-t..." style="width:90%; padding:12px; margin-bottom:15px; background:#0f172a; border:1px solid #334155; color:white; border-radius:8px;">
+            <h3 id="modal-title">VIP Vásárlás</h3>
+            <p style="font-size:12px; color:#94a3b8;">Küldj pontosan <b style="color:white;" id="modal-price">$10</b> értékű Litecoint.</p>
+            
+            <div class="crypto-address">ltc1qv5aape3pah2f954k5jjx9kgnrnkxzytm6f7an8</div>
+            <button class="copy-btn" onclick="copyAddress()">Cím Másolása</button>
+
+            <input type="text" id="txid-input" placeholder="TXID (Tranzakció Hash)...">
             <button class="btn-action btn-dep" onclick="checkPayment()">ELLENŐRZÉS</button>
         </div>
     </div>
 
     <div class="nav">
-        <div class="nav-item active" onclick="switchPage('news', this)"><i class="fas fa-newspaper"></i>Hírek</div>
-        <div class="nav-item" onclick="switchPage('mining', this)"><i class="fas fa-server"></i>Farm</div>
-        <div class="nav-item" onclick="switchPage('game', this)"><i class="fas fa-gem"></i>Game</div>
-        <div class="nav-item" onclick="switchPage('team', this)"><i class="fas fa-trophy"></i>Top</div>
-        <div class="nav-item" onclick="switchPage('wallet', this)"><i class="fas fa-user"></i>Profil</div>
+        <div class="nav-item active" onclick="switchPage('mining', this)"><i class="fas fa-hammer"></i>Bányász</div>
+        <div class="nav-item" onclick="switchPage('shop', this)"><i class="fas fa-rocket"></i>VIP Shop</div>
+        <div class="nav-item" onclick="switchPage('team', this)"><i class="fas fa-users"></i>Csapat</div>
+        <div class="nav-item" onclick="switchPage('wallet', this)"><i class="fas fa-wallet"></i>Tárca</div>
     </div>
 
     <script src="script.js"></script>
