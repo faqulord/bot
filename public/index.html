@@ -7,39 +7,57 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        /* --- PROFI SKY-TECH DESIGN --- */
+        /* --- PROFI SKY-TECH DESIGN v3.0 --- */
         :root { 
             --bg: #0f172a; 
             --panel: #1e293b; 
-            --primary: #3b82f6; /* Kék */
-            --accent: #06b6d4; /* Cián */
+            --primary: #3b82f6; 
+            --accent: #06b6d4; 
             --gold: #fbbf24;
             --text: #f1f5f9;
             --muted: #64748b;
         }
 
-        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; padding-bottom: 90px; user-select: none; }
+        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; padding-bottom: 100px; user-select: none; overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
+
+        /* TELEGRAM ONLY BLOCKER */
+        #blocker { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 99999; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; color: red; }
+        .hidden { display: none !important; }
+
+        /* KAMU ÉRTESÍTÉS (TOAST) */
+        .fake-toast {
+            position: fixed; top: 80px; right: -300px;
+            background: rgba(30, 41, 59, 0.95); border-left: 4px solid var(--gold);
+            padding: 12px 15px; border-radius: 8px; display: flex; align-items: center; gap: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.6); z-index: 9900; transition: right 0.5s ease;
+            width: auto; max-width: 85%; backdrop-filter: blur(5px);
+        }
+        .fake-toast.show { right: 15px; }
+        .toast-icon { font-size: 20px; }
+        .toast-text { font-size: 12px; color: white; font-weight: 500; }
+        .toast-time { font-size: 10px; color: var(--muted); display: block; margin-top: 2px; }
 
         /* HEADER */
-        .header { background: rgba(30,41,59,0.95); padding: 15px; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; }
+        .header { background: rgba(30,41,59,0.98); padding: 15px; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; }
         .logo { font-weight: 800; font-size: 18px; color: var(--text); display: flex; align-items: center; gap: 8px; }
         .logo i { color: var(--accent); }
         .user-balance { background: #0f172a; padding: 5px 12px; border-radius: 20px; font-weight: bold; font-size: 13px; color: var(--primary); border: 1px solid var(--primary); }
 
         /* OLDALAK */
-        .page { display: none; padding: 15px; animation: fadeIn 0.3s; }
+        .page { display: none; padding: 15px; animation: fadeIn 0.3s; padding-bottom: 120px; }
         .page.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* 1. HÍREK KÁRTYA */
-        .news-card { background: var(--panel); border-radius: 12px; overflow: hidden; margin-bottom: 15px; border: 1px solid #334155; }
-        .news-img { height: 120px; background: linear-gradient(45deg, #3b82f6, #06b6d4); display: flex; align-items: center; justify-content: center; font-size: 40px; color: rgba(255,255,255,0.3); }
-        .news-content { padding: 15px; }
+        /* KÁRTYÁK STÍLUSA */
+        .card-box { background: var(--panel); border-radius: 12px; overflow: hidden; margin-bottom: 15px; border: 1px solid #334155; padding: 15px; }
+        
+        /* HÍREK */
+        .news-img { height: 120px; background: linear-gradient(45deg, #3b82f6, #06b6d4); display: flex; align-items: center; justify-content: center; font-size: 40px; color: rgba(255,255,255,0.3); border-radius: 8px; margin-bottom: 10px; }
         .news-date { font-size: 10px; color: var(--muted); margin-bottom: 5px; }
         .news-title { font-weight: bold; margin-bottom: 5px; font-size: 14px; }
         .news-text { font-size: 12px; color: #94a3b8; line-height: 1.4; }
 
-        /* 2. BÁNYÁSZAT */
+        /* BÁNYÁSZAT */
         .mining-status { text-align: center; margin: 20px 0; }
         .miner-circle { 
             width: 180px; height: 180px; margin: 0 auto; border-radius: 50%; 
@@ -47,12 +65,11 @@
             background: radial-gradient(circle, #1e293b, #0f172a); position: relative;
             transition: 0.3s;
         }
-        .miner-circle.active { border-color: var(--accent); box-shadow: 0 0 30px rgba(6,182,212,0.3); }
-        
+        .miner-circle.active { border-color: var(--accent); box-shadow: 0 0 40px rgba(6,182,212,0.2); }
         .start-btn { 
             background: linear-gradient(90deg, var(--primary), var(--accent)); color: white; border: none; 
-            padding: 12px 30px; border-radius: 25px; font-weight: bold; margin-top: -20px; position: relative; z-index: 10; cursor: pointer;
-            box-shadow: 0 4px 15px rgba(6,182,212,0.4);
+            padding: 14px 35px; border-radius: 30px; font-weight: bold; margin-top: -25px; position: relative; z-index: 10; cursor: pointer;
+            box-shadow: 0 4px 15px rgba(6,182,212,0.4); font-size: 14px;
         }
         .start-btn:disabled { background: #334155; cursor: not-allowed; box-shadow: none; color: #94a3b8; }
 
@@ -64,338 +81,259 @@
         .m-info p { margin: 2px 0 0 0; font-size: 10px; color: var(--muted); }
         .m-profit { text-align: right; font-weight: bold; color: var(--accent); font-size: 13px; }
 
-        /* 3. JÁTÉK (Gyémánt) */
+        /* JÁTÉK */
         .game-area { text-align: center; padding: 20px; }
         .diamond-display { font-size: 30px; color: var(--gold); margin-bottom: 20px; font-weight: bold; }
-        .tap-btn { width: 120px; height: 120px; background: var(--panel); border: 2px solid var(--gold); border-radius: 50%; font-size: 40px; color: var(--gold); cursor: pointer; margin: 0 auto; display: flex; align-items: center; justify-content: center; }
+        .tap-btn { width: 130px; height: 130px; background: var(--panel); border: 2px solid var(--gold); border-radius: 50%; font-size: 40px; color: var(--gold); cursor: pointer; margin: 0 auto; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 20px rgba(251, 191, 36, 0.2); }
         .tap-btn:active { transform: scale(0.95); background: rgba(251,191,36,0.1); }
         
-        /* 4. CSAPAT (Ponzi) */
-        .team-box { background: var(--panel); border-radius: 12px; padding: 15px; margin-bottom: 15px; }
+        /* CSAPAT */
         .team-stats { display: flex; justify-content: space-around; text-align: center; margin-bottom: 15px; }
         .ts-val { font-size: 18px; font-weight: bold; color: var(--primary); }
         .ts-label { font-size: 10px; color: var(--muted); }
-        .ref-link { background: #0f172a; padding: 10px; border-radius: 8px; font-size: 11px; word-break: break-all; color: var(--accent); margin-bottom: 10px; }
-        
-        .level-row { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid #334155; font-size: 12px; }
-        .level-badge { padding: 2px 8px; border-radius: 4px; background: #334155; font-size: 10px; }
+        .ref-link { background: #0f172a; padding: 12px; border-radius: 8px; font-size: 11px; word-break: break-all; color: var(--accent); margin-bottom: 10px; border: 1px dashed var(--muted); }
+        .level-row { display: flex; justify-content: space-between; padding: 12px; border-bottom: 1px solid #334155; font-size: 12px; align-items: center; }
+        .level-badge { padding: 3px 8px; border-radius: 4px; background: #334155; font-size: 10px; font-weight: bold; margin-right: 5px;}
 
-        /* 5. PROFIL / WALLET */
-        .wallet-card { background: linear-gradient(135deg, #1e293b, #0f172a); border: 1px solid #334155; border-radius: 15px; padding: 20px; text-align: center; margin-bottom: 20px; }
-        .balance-huge { font-size: 32px; font-weight: bold; color: var(--primary); margin: 10px 0; }
-        .btn-action { width: 100%; padding: 12px; border-radius: 8px; border: none; font-weight: bold; margin-top: 10px; cursor: pointer; }
-        .btn-dep { background: var(--accent); color: white; }
+        /* WALLET */
+        .wallet-card { background: linear-gradient(135deg, #1e293b, #0f172a); border: 1px solid #334155; border-radius: 15px; padding: 25px 20px; text-align: center; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+        .balance-huge { font-size: 36px; font-weight: 800; color: var(--primary); margin: 10px 0; letter-spacing: -1px; }
+        .btn-action { width: 100%; padding: 14px; border-radius: 10px; border: none; font-weight: bold; margin-top: 10px; cursor: pointer; font-size: 14px; transition: 0.2s; }
+        .btn-dep { background: var(--accent); color: white; box-shadow: 0 4px 15px rgba(6, 182, 212, 0.3); }
+        .btn-dep:active { transform: scale(0.98); }
         .btn-with { background: transparent; border: 1px solid var(--muted); color: var(--muted); }
 
-        /* ALSÓ MENÜ */
-        .nav { position: fixed; bottom: 0; width: 100%; background: #1e293b; border-top: 1px solid #334155; display: flex; justify-content: space-around; padding: 10px 0 25px 0; z-index: 99; }
-        .nav-item { text-align: center; color: #64748b; font-size: 10px; flex: 1; transition: 0.2s; }
-        .nav-item.active { color: var(--accent); transform: translateY(-3px); }
-        .nav-item i { font-size: 20px; margin-bottom: 4px; display: block; }
+        /* ALSÓ MENÜ (JAVÍTOTT - KATTINTHATÓ) */
+        .nav { 
+            position: fixed; bottom: 0; left: 0; width: 100%; height: 75px;
+            background: rgba(30, 41, 59, 0.98); border-top: 1px solid #334155; 
+            display: flex; justify-content: space-around; align-items: center; 
+            z-index: 20000; /* Legfelső réteg */
+            padding-bottom: 15px; /* iPhone bar miatt */
+            backdrop-filter: blur(10px);
+            box-shadow: 0 -5px 20px rgba(0,0,0,0.5);
+        }
+        .nav-item { 
+            text-align: center; color: #64748b; font-size: 10px; flex: 1; cursor: pointer; 
+            height: 100%; display: flex; flex-direction: column; justify-content: center;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .nav-item.active { color: var(--accent); }
+        .nav-item i { font-size: 22px; margin-bottom: 5px; display: block; }
 
         /* MODAL */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 200; align-items: center; justify-content: center; }
-        .modal-content { background: var(--panel); padding: 20px; border-radius: 15px; width: 85%; border: 1px solid var(--accent); text-align: center; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 30000; align-items: center; justify-content: center; }
+        .modal-content { background: var(--panel); padding: 25px; border-radius: 16px; width: 85%; border: 1px solid var(--accent); text-align: center; position: relative; }
+        .close-icon { position: absolute; top: 10px; right: 15px; font-size: 20px; color: #64748b; cursor: pointer; }
 
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <div class="logo"><i class="fas fa-satellite-dish"></i> SKY-TECH</div>
-        <div class="user-balance"><span id="header-balance">0.00</span> SKY</div>
+    <div id="blocker">
+        <h1 style="font-size:60px; margin-bottom:0;">🚫</h1>
+        <h2>HOZZÁFÉRÉS MEGTAGADVA</h2>
+        <p>Kérlek nyisd meg a Telegramon belül!</p>
     </div>
 
-    <div id="page-news" class="page active">
-        <h3 style="margin-bottom:15px;">📢 Hírek & Frissítések</h3>
+    <div id="toast" class="fake-toast">
+        <div class="toast-icon">💸</div>
+        <div>
+            <div class="toast-text" id="toast-msg">Gábor kivett $50-t</div>
+            <span class="toast-time">Épp most</span>
+        </div>
+    </div>
+
+    <div id="app" class="hidden">
         
-        <div class="news-card">
-            <div class="news-img">🚀</div>
-            <div class="news-content">
+        <div class="header">
+            <div class="logo"><i class="fas fa-satellite-dish"></i> SKY-TECH</div>
+            <div class="user-balance"><span id="header-balance">0.00</span> SKY</div>
+        </div>
+
+        <div id="page-news" class="page active">
+            <h3 style="margin-bottom:15px;">📢 Friss Hírek</h3>
+            
+            <div class="card-box">
+                <div class="news-img">🚀</div>
                 <div class="news-date">2026.01.30.</div>
-                <div class="news-title">Indul a SkyTech v2.0!</div>
-                <div class="news-text">Üdvözlünk minden új bányászt! A mai napon mindenki, aki elindítja a farmját, extra 10% teljesítményt kap. Ne felejtsd el meghívni a barátaidat!</div>
+                <div class="news-title">Indul a SkyTech v2.0 - $5 Bónusz!</div>
+                <div class="news-text">Minden új regisztráló <b>$5 Kezdő Bónuszt</b> kap! A kifizetési limit $20. Építsd a csapatodat és bányássz minden nap!</div>
             </div>
-        </div>
 
-        <div class="news-card">
-            <div class="news-img">💸</div>
-            <div class="news-content">
+            <div class="card-box">
+                <div class="news-img">💸</div>
                 <div class="news-date">2026.01.29.</div>
-                <div class="news-title">Kifizetési Bizonylatok</div>
-                <div class="news-text">Gratulálunk a Top 10 vezetőnek, akik tegnap összesen $500 értékben vettek ki pénzt. A kifizetések automatikusak és gyorsak.</div>
+                <div class="news-title">Kifizetési Rekord</div>
+                <div class="news-text">Tegnap összesen <b>$1,450</b> értékű Litecoint fizettünk ki a tagoknak. A rendszer stabil és gyors.</div>
             </div>
         </div>
-    </div>
 
-    <div id="page-mining" class="page">
-        <div class="mining-status">
-            <div class="miner-circle" id="miner-circle">
-                <div style="font-size:12px; color:#94a3b8;">Napi Profit</div>
-                <div style="font-size:24px; font-weight:bold; color:white;">$<span id="daily-profit">0.10</span></div>
-                <div style="font-size:10px; color:#06b6d4; margin-top:5px;" id="mining-timer">ÁLL</div>
-            </div>
-            <button class="start-btn" id="start-btn" onclick="startMining()">START MINING (24H)</button>
-        </div>
-
-        <h4 style="margin:20px 0 10px 0;">Aktív Gépeid</h4>
-        
-        <div class="machine-card active">
-            <div class="m-icon">💻</div>
-            <div class="m-info">
-                <h4>Free Starter CPU</h4>
-                <p>Szint: 1 (Ingyenes)</p>
-            </div>
-            <div class="m-profit">+$0.10/nap</div>
-        </div>
-
-        <div class="machine-card" style="opacity: 0.5; border-left-color: transparent;">
-            <div class="m-icon">🚀</div>
-            <div class="m-info">
-                <h4>Cloud GPU v1 (Locked)</h4>
-                <p>Vásárolj a Shopban!</p>
-            </div>
-            <div class="m-profit">+$2.00/nap</div>
-        </div>
-    </div>
-
-    <div id="page-game" class="page">
-        <div class="game-area">
-            <h3>💎 Gyémánt Klikkelő</h3>
-            <p style="font-size:12px; color:#94a3b8; margin-bottom:20px;">Gyűjts gyémántot, hogy feloldj extra funkciókat!</p>
-            
-            <div class="diamond-display"><span id="diamond-val">0</span> 💎</div>
-            <div class="tap-btn" onclick="tapDiamond()">💎</div>
-            
-            <div style="margin-top:30px; padding:15px; background:var(--panel); border-radius:10px;">
-                <h4>Szerencsekerék 🎰</h4>
-                <p style="font-size:11px; color:#94a3b8;">Ár: 500 Gyémánt / pörgetés</p>
-                <button class="btn-action" style="background:var(--gold); color:black;" onclick="spinWheel()">PÖRGETÉS</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="page-team" class="page">
-        <h3>👥 Csapatom (MLM)</h3>
-        <p style="font-size:12px; color:#94a3b8;">Építs 3 szintes hálózatot! Jutalékot kapsz a csapatod napi bevételeiből.</p>
-        
-        <div class="team-box">
-            <div class="team-stats">
-                <div>
-                    <div class="ts-val">0</div>
-                    <div class="ts-label">Tagok</div>
+        <div id="page-mining" class="page">
+            <div class="mining-status">
+                <div class="miner-circle" id="miner-circle">
+                    <div style="font-size:12px; color:#94a3b8;">Napi Profit</div>
+                    <div style="font-size:24px; font-weight:bold; color:white;">$<span id="daily-profit">0.10</span></div>
+                    <div style="font-size:10px; color:#06b6d4; margin-top:5px;" id="mining-timer">ÁLL</div>
                 </div>
-                <div>
-                    <div class="ts-val">$0.00</div>
-                    <div class="ts-label">Jutalék</div>
+                <button class="start-btn" id="start-btn" onclick="startMining()">START MINING (24H)</button>
+            </div>
+
+            <h4 style="margin:20px 0 10px 0; color:var(--muted); font-size:12px; text-transform:uppercase;">Aktív Szerverek</h4>
+            <div class="machine-card active">
+                <div class="m-icon">💻</div>
+                <div class="m-info">
+                    <h4>Starter CPU (Ingyenes)</h4>
+                    <p>Status: Online</p>
+                </div>
+                <div class="m-profit">+$0.10/nap</div>
+            </div>
+            
+            <div class="machine-card" style="opacity: 0.6; border-left-color: #334155;">
+                <div class="m-icon">🔒</div>
+                <div class="m-info">
+                    <h4>Cloud GPU (Zárolva)</h4>
+                    <p>Vásárolj a Profil menüben!</p>
+                </div>
+                <div class="m-profit">+$2.00/nap</div>
+            </div>
+        </div>
+
+        <div id="page-game" class="page">
+            <div class="game-area">
+                <h3>💎 Gyémánt Farm</h3>
+                <div class="diamond-display"><span id="diamond-val">0</span> 💎</div>
+                <div class="tap-btn" onclick="tapDiamond()">💎</div>
+                
+                <div style="margin-top:30px; padding:15px; background:var(--panel); border-radius:10px; border:1px solid #334155;">
+                    <h4>Szerencsekerék 🎰</h4>
+                    <p style="font-size:11px; color:#94a3b8;">Ár: 500 Gyémánt / pörgetés</p>
+                    <button class="btn-action" style="background:var(--gold); color:black;" onclick="spinWheel()">PÖRGETÉS</button>
                 </div>
             </div>
-            <div class="ref-link" id="ref-link">https://t.me/Offcourse77_bot?start=12345</div>
-            <button class="btn-action" style="font-size:12px; padding:8px; margin-top:0;" onclick="copyRef()">Link Másolása</button>
         </div>
 
-        <h4>Jutalék Szintek</h4>
-        <div class="level-row">
-            <div><span class="level-badge" style="color:#fbbf24;">LVL 1</span> Közvetlen</div>
-            <div>10% Jutalék</div>
-        </div>
-        <div class="level-row">
-            <div><span class="level-badge" style="color:#94a3b8;">LVL 2</span> Barátok</div>
-            <div>5% Jutalék</div>
-        </div>
-        <div class="level-row">
-            <div><span class="level-badge" style="color:#94a3b8;">LVL 3</span> Hálózat</div>
-            <div>1% Jutalék</div>
-        </div>
-    </div>
+        <div id="page-team" class="page">
+            <h3>👥 Csapatom (MLM)</h3>
+            <div class="card-box">
+                <div class="team-stats">
+                    <div><div class="ts-val">0</div><div class="ts-label">Tagok</div></div>
+                    <div><div class="ts-val">$0.00</div><div class="ts-label">Jutalék</div></div>
+                </div>
+                <div style="font-size:11px; color:var(--muted); margin-bottom:5px;">A te meghívó linked:</div>
+                <div class="ref-link" id="ref-link">Betöltés...</div>
+                <button class="btn-action" style="font-size:12px; padding:10px; margin-top:0;" onclick="copyRef()">Link Másolása</button>
+            </div>
 
-    <div id="page-wallet" class="page">
-        <h3>👤 Fiók & Tárca</h3>
-        
-        <div class="wallet-card">
-            <div style="font-size:12px; color:#94a3b8;">EGYENLEG (KIVEHETŐ)</div>
-            <div class="balance-huge">$<span id="wallet-bal">5.00</span></div> <div style="font-size:10px; color:var(--accent);">1 SKY = 1 USD (Fix árfolyam)</div>
-
-            <button class="btn-action btn-dep" onclick="openDeposit()">BEFIZETÉS (Vásárlás)</button>
-            <button class="btn-action btn-with" onclick="openWithdraw()">KIFIZETÉS</button>
+            <h4 style="font-size:12px; color:var(--muted); margin-bottom:10px;">JUTALÉK SZINTEK</h4>
+            <div class="level-row"><div><span class="level-badge" style="color:#fbbf24;">LVL 1</span> Közvetlen</div><div style="color:var(--success); font-weight:bold;">10%</div></div>
+            <div class="level-row"><div><span class="level-badge" style="color:#94a3b8;">LVL 2</span> Barátok</div><div style="color:var(--success); font-weight:bold;">5%</div></div>
+            <div class="level-row"><div><span class="level-badge" style="color:#94a3b8;">LVL 3</span> Hálózat</div><div style="color:var(--success); font-weight:bold;">1%</div></div>
         </div>
 
-        <div class="team-box">
-            <h4 style="margin:0 0 10px 0;">ℹ️ Hogyan működik?</h4>
-            <div style="font-size:12px; color:#94a3b8; text-align:left;">
-                <b>1. Regisztráció:</b> Kaptál $5 bónuszt!<br>
-                <b>2. Bányászat:</b> Indítsd el minden nap a gépeket.<br>
-                <b>3. Fejlődés:</b> Vegyél erősebb gépet a Shopban (Befizetés menü), hogy elérd a kifizetési limitet ($20).<br>
-                <b>4. Csapat:</b> Hívj embereket és kapj 10%-ot!
+        <div id="page-wallet" class="page">
+            <h3>👤 Fiók & Vásárlás</h3>
+            <div class="wallet-card">
+                <div style="font-size:11px; color:#94a3b8; letter-spacing:1px;">EGYENLEG (KIVEHETŐ)</div>
+                <div class="balance-huge">$<span id="wallet-bal">5.00</span></div>
+                <div style="font-size:11px; color:var(--accent); margin-bottom:15px; background:rgba(6,182,212,0.1); display:inline-block; padding:3px 8px; border-radius:4px;">Start Bónusz Aktív</div>
+                
+                <button class="btn-action btn-dep" onclick="openDeposit()">⚡ BEFIZETÉS (Gép Vétel)</button>
+                <button class="btn-action btn-with" onclick="openWithdraw()">💸 KIFIZETÉS</button>
+            </div>
+
+            <div class="card-box">
+                <h4 style="margin:0 0 15px 0; border-bottom:1px solid #334155; padding-bottom:10px;">🛒 SHOP AJÁNLATOK</h4>
+                <div class="level-row" onclick="openDeposit()">
+                    <div>
+                        <div style="font-weight:bold; font-size:13px;">🚀 Cloud GPU v1</div>
+                        <div style="font-size:10px; color:var(--muted);">Profit: $2.00 / nap</div>
+                    </div>
+                    <button style="background:var(--accent); color:white; border:none; padding:5px 10px; border-radius:5px; font-weight:bold;">$10.00</button>
+                </div>
+                <div class="level-row" onclick="openDeposit()">
+                    <div>
+                        <div style="font-weight:bold; font-size:13px;">⚛️ Quantum Rig</div>
+                        <div style="font-size:10px; color:var(--muted);">Profit: $12.00 / nap</div>
+                    </div>
+                    <button style="background:var(--gold); color:black; border:none; padding:5px 10px; border-radius:5px; font-weight:bold;">$50.00</button>
+                </div>
             </div>
         </div>
+
     </div>
 
     <div id="deposit-modal" class="modal">
         <div class="modal-content">
-            <h3>Befizetés (Gép Vásárlás)</h3>
-            <p style="font-size:12px; color:#94a3b8;">Utalj Litecoint (LTC) a gépek bérléséhez.</p>
+            <span class="close-icon" onclick="closeModal()">&times;</span>
+            <h3 style="margin-top:0;">Gép Vásárlás (LTC)</h3>
+            <p style="font-size:12px; color:#94a3b8; line-height:1.5;">Utalj Litecoint (LTC) az alábbi címre.<br>A rendszer automatikusan jóváírja és elindítja a gépet.</p>
             
-            <div style="background:#0f172a; padding:10px; border-radius:8px; font-family:monospace; color:var(--accent); word-break:break-all; font-size:11px;">
+            <div style="background:#0f172a; padding:12px; border-radius:8px; font-family:monospace; color:var(--accent); word-break:break-all; font-size:11px; margin: 15px 0; border: 1px dashed var(--muted);">
                 ltc1qv5aape3pah2f954k5jjx9kgnrnkxzytm6f7an8
             </div>
             
-            <input type="text" id="txid-input" placeholder="TXID (Tranzakció Azonosító)..." style="width:90%; padding:10px; margin:15px 0; background:#0f172a; border:1px solid #334155; color:white;">
+            <button onclick="navigator.clipboard.writeText('ltc1qv5aape3pah2f954k5jjx9kgnrnkxzytm6f7an8'); tg.showAlert('Cím másolva!')" style="background:#334155; color:white; border:none; padding:5px 10px; border-radius:5px; font-size:11px; margin-bottom:15px;">Cím másolása</button>
+
+            <input type="text" id="txid-input" placeholder="Illeszd be a TXID-t..." style="width:90%; padding:12px; margin-bottom:15px; background:#0f172a; border:1px solid #334155; color:white; border-radius:8px;">
             
-            <button class="btn-action btn-dep" onclick="checkPayment()">ELLENŐRZÉS</button>
-            <button class="btn-action" style="background:transparent; color:#64748b;" onclick="closeModal()">Bezárás</button>
+            <button class="btn-action btn-dep" onclick="checkPayment()">ELLENŐRZÉS & AKTIVÁLÁS</button>
         </div>
     </div>
 
     <div class="nav">
-        <div class="nav-item active" onclick="nav('news', this)"><i class="fas fa-newspaper"></i>Hírek</div>
-        <div class="nav-item" onclick="nav('mining', this)"><i class="fas fa-hammer"></i>Farm</div>
-        <div class="nav-item" onclick="nav('game', this)"><i class="fas fa-gem"></i>Game</div>
-        <div class="nav-item" onclick="nav('team', this)"><i class="fas fa-users"></i>Team</div>
-        <div class="nav-item" onclick="nav('wallet', this)"><i class="fas fa-user"></i>Profil</div>
+        <div class="nav-item active" onclick="switchPage('news', this)"><i class="fas fa-newspaper"></i>Hírek</div>
+        <div class="nav-item" onclick="switchPage('mining', this)"><i class="fas fa-server"></i>Farm</div>
+        <div class="nav-item" onclick="switchPage('game', this)"><i class="fas fa-gem"></i>Game</div>
+        <div class="nav-item" onclick="switchPage('team', this)"><i class="fas fa-users"></i>Csapat</div>
+        <div class="nav-item" onclick="switchPage('wallet', this)"><i class="fas fa-user"></i>Profil</div>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        // ADATOK
-        let skyBalance = localStorage.getItem('sky') ? parseFloat(localStorage.getItem('sky')) : 5.00; // $5 START BÓNUSZ!
+        // 1. BLOKKOLÓ (Telegram Only)
+        if (tg.platform === 'unknown' && !tg.initData) {
+           // Böngésző -> Blokk marad
+        } else {
+           // Telegram -> Mehet
+           document.getElementById('blocker').classList.add('hidden');
+           document.getElementById('app').classList.remove('hidden');
+        }
+
+        // ADATOK BETÖLTÉSE
+        let skyBalance = localStorage.getItem('sky') ? parseFloat(localStorage.getItem('sky')) : 5.00;
         let diamonds = localStorage.getItem('diamonds') ? parseInt(localStorage.getItem('diamonds')) : 0;
         let miningActive = localStorage.getItem('miningActive') === 'true';
         let miningEndTime = localStorage.getItem('miningEndTime') ? parseInt(localStorage.getItem('miningEndTime')) : 0;
 
-        // UI UPDATER
         updateUI();
 
-        // 1. MINING LOGIKA (24H Loop)
+        // 2. NAVIGÁCIÓ (JAVÍTVA)
+        function switchPage(pageId, element) {
+            document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            document.getElementById('page-' + pageId).classList.add('active');
+            element.classList.add('active');
+            window.scrollTo(0,0);
+        }
+
+        // 3. KAMU ÉRTESÍTÉSEK (SOCIAL PROOF)
+        const fakeNames = ['Gábor', 'Bence', 'Anna', 'Zoli', 'Péter', 'László', 'Dávid', 'Krisztián', 'Attila'];
+        const fakeActions = ['kivett $25-t', 'kivett $50-t', 'vásárolt GPU-t', 'indította a bányászt', 'meghívott egy barátot', 'szintet lépett'];
+        
+        setInterval(() => {
+            const name = fakeNames[Math.floor(Math.random() * fakeNames.length)];
+            const action = fakeActions[Math.floor(Math.random() * fakeActions.length)];
+            const toast = document.getElementById('toast');
+            
+            document.getElementById('toast-msg').innerText = `${name} ${action}`;
+            toast.classList.add('show');
+            setTimeout(() => { toast.classList.remove('show'); }, 4000);
+        }, 12000); // 12 másodpercenként
+
+        // 4. BÁNYÁSZAT (Logic)
         function startMining() {
             if(miningActive) return;
-            
-            miningActive = true;
-            miningEndTime = Date.now() + (24 * 60 * 60 * 1000); // 24 óra
-            localStorage.setItem('miningActive', 'true');
-            localStorage.setItem('miningEndTime', miningEndTime);
-            
-            updateUI();
-            tg.showAlert("✅ Bányászat elindítva! Gyere vissza 24 óra múlva.");
-        }
-
-        // Timer Loop
-        setInterval(() => {
-            if(miningActive) {
-                const now = Date.now();
-                if(now > miningEndTime) {
-                    miningActive = false;
-                    localStorage.setItem('miningActive', 'false');
-                    // Jóváírás (Napi $0.10)
-                    skyBalance += 0.10;
-                    updateUI();
-                    tg.showAlert("💰 A bányászat lejárt! +$0.10 jóváírva. Indítsd újra!");
-                } else {
-                    // Hátralévő idő
-                    const diff = miningEndTime - now;
-                    const hours = Math.floor(diff / (1000 * 60 * 60));
-                    const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-                    document.getElementById('mining-timer').innerText = `${hours}ó ${mins}p`;
-                }
-            } else {
-                document.getElementById('mining-timer').innerText = "ÁLL";
-            }
-        }, 1000);
-
-        // 2. JÁTÉK (Gyémánt)
-        function tapDiamond() {
-            diamonds++;
-            updateUI();
-        }
-
-        function spinWheel() {
-            if(diamonds >= 500) {
-                diamonds -= 500;
-                tg.showConfirm("Pörgetés... (Eredmény: +$0.05 SKY bónusz!)", (ok) => {
-                    skyBalance += 0.05;
-                    updateUI();
-                });
-            } else {
-                tg.showAlert("Nincs elég gyémántod (500 kell). Kattints többet!");
-            }
-        }
-
-        // 3. WALLET & PAY
-        function openDeposit() { document.getElementById('deposit-modal').style.display = 'flex'; }
-        function closeModal() { document.getElementById('deposit-modal').style.display = 'none'; }
-        
-        function openWithdraw() {
-            if(skyBalance >= 20.00) {
-                tg.showAlert("Kifizetési kérelem rögzítve! (48 óra)");
-            } else {
-                tg.showAlert(`⚠️ A minimum kifizetés $20.00.\nJelenleg: $${skyBalance.toFixed(2)}.\n\nTipp: Vegyél gépet a gyorsabb haladásért!`);
-            }
-        }
-
-        async function checkPayment() {
-            const txid = document.getElementById('txid-input').value;
-            if(txid.length < 5) return tg.showAlert("Hibás TXID");
-
-            tg.MainButton.showProgress();
-            
-            // DEMO SIMULATION (Backend nélkül)
-            try {
-                const res = await fetch('/api/verify', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ txid: txid, myAddress: "ltc1qv5aape3pah2f954k5jjx9kgnrnkxzytm6f7an8" })
-                });
-                const data = await res.json();
-                tg.MainButton.hideProgress();
-
-                if(data.success) {
-                    // Ha fizetett, adjunk hozzá $ összeget a befizetés alapján
-                    // Pl: 1000 Ft = $3 SKY
-                    let skyAdd = (data.amount_huf / 380); // Árfolyam
-                    skyBalance += skyAdd;
-                    updateUI();
-                    tg.showAlert(`✅ BEFIZETÉS SIKERES!\n+$${skyAdd.toFixed(2)} SKY jóváírva.`);
-                    closeModal();
-                } else {
-                    tg.showAlert("Hiba: " + data.error);
-                }
-            } catch(e) {
-                 tg.MainButton.hideProgress();
-                 tg.showAlert("Hálózati hiba!");
-            }
-        }
-
-        // 4. MLM LINK
-        const user = tg.initDataUnsafe.user;
-        if(user) {
-            document.getElementById('ref-link').innerText = `https://t.me/Offcourse77_bot?start=${user.id}`;
-        }
-        function copyRef() {
-            const txt = document.getElementById('ref-link').innerText;
-            navigator.clipboard.writeText(txt);
-            tg.showAlert("Link másolva! Küldd el barátaidnak.");
-        }
-
-        // HELPER
-        function updateUI() {
-            document.getElementById('header-balance').innerText = skyBalance.toFixed(2);
-            document.getElementById('wallet-bal').innerText = skyBalance.toFixed(2);
-            document.getElementById('diamond-val').innerText = diamonds;
-            
-            const minerCircle = document.getElementById('miner-circle');
-            const startBtn = document.getElementById('start-btn');
-            
-            if(miningActive) {
-                minerCircle.classList.add('active');
-                startBtn.disabled = true;
-                startBtn.innerText = "BÁNYÁSZAT AKTÍV...";
-            } else {
-                minerCircle.classList.remove('active');
-                startBtn.disabled = false;
-                startBtn.innerText = "START MINING (24H)";
-            }
-
-            localStorage.setItem('sky', skyBalance);
-            localStorage.setItem('diamon
+    
