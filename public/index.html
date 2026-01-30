@@ -1,12 +1,58 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hu">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SkyTech Quantum</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Clay Mystery Shop</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* CLAY THEME */
+        :root { 
+            --primary: #A0522D; /* Terrakotta/Agyag barna */
+            --secondary: #D2B48C; /* Homokszín */
+            --bg: #2C2420; /* Sötétbarna háttér */
+            --card-bg: #3E322C;
+            --text-light: #F5DEB3;
+        }
+        body { background-color: var(--bg); color: var(--text-light); font-family: 'Helvetica Neue', sans-serif; }
+        
+        .hero-card { 
+            background: linear-gradient(135deg, var(--primary), #8B4513); 
+            border: none; 
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            border-radius: 16px;
+        }
+        .machine-card { background: var(--card-bg); border: 1px solid #55433B; border-radius: 12px; }
+        .rent-btn { background: var(--primary); color: #fff; border: none; border-radius: 20px; }
+        .nav-item.active { color: var(--primary); }
+        .vip-tag { background: var(--secondary); color: #2C2420; font-weight: bold;}
+        h3 { color: var(--secondary); letter-spacing: 1px; }
+        .section-header small { color: #aaa; }
+
+        /* ÚJ: Jutalék Modal Stílus */
+        #modal-reward .modal-content {
+            background: #F5DEB3; /* Világos papír szín */
+            color: #2C2420;
+            text-align: center;
+            border: 3px solid var(--primary);
+        }
+        .reward-coords {
+            font-family: monospace;
+            background: #fff;
+            padding: 10px;
+            border: 2px dashed var(--primary);
+            margin: 15px 0;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .reward-message {
+            font-style: italic;
+            color: #55433B;
+            margin-bottom: 20px;
+        }
+    </style>
 </head>
 <body>
 
@@ -14,232 +60,106 @@
 
     <div id="app">
         <div class="header">
-            <div class="header-left">
-                <div class="tut-btn" onclick="openModal('guide')">
-                    <i class="fas fa-book-open"></i> <span data-lang="guide">Guide</span>
-                </div>
-            </div>
-            <div class="header-right">
-                <div class="lang-switch" onclick="toggleLanguage()">
-                    <i class="fas fa-globe"></i> <span>EN</span>
-                </div>
+            <div class="header-left" style="font-weight: bold; letter-spacing: 1px;">
+                <i class="fas fa-cube" style="color:var(--primary);"></i> CLAY
             </div>
         </div>
 
         <div class="hero-card">
             <div class="hero-top">
                 <div class="user-badge">
-                    <i class="fas fa-user-astronaut"></i> <span id="username">User</span>
-                    <span class="vip-tag" id="vip-display">VIP 0</span>
+                    <i class="far fa-user-circle"></i> <span id="username">Felfedező</span>
+                    <span class="vip-tag" id="vip-display">Tag</span>
                 </div>
             </div>
-            <div class="hero-label">Total Assets (USDT)</div>
+            <div class="hero-label" style="color: #F5DEB3; opacity: 0.8;">Elérhető Egyenleg</div>
             <div class="hero-balance">$<span id="main-balance">0.00</span></div>
-            <div class="hero-profit">
-                Today's Profit: <span style="color:#00ff88">Safe & Stable</span>
-            </div>
 
             <div class="hero-actions">
-                <button class="action-btn dep" onclick="openModal('deposit')">
-                    <i class="fas fa-plus-circle"></i> <span>Deposit</span>
+                <button class="action-btn dep" onclick="openModal('deposit')" style="background:var(--secondary); color:#2C2420;">
+                    <i class="fas fa-plus-circle"></i> <span>Feltöltés</span>
                 </button>
-                <button class="action-btn with" onclick="openWithdrawModal()">
-                    <i class="fas fa-arrow-circle-down"></i> <span>Withdraw</span>
-                </button>
-            </div>
-        </div>
-
-        <div class="marquee-container">
-            <div class="marquee-icon"><i class="fas fa-bullhorn"></i></div>
-            <div class="marquee-wrapper">
-                <div class="marquee-content">
-                    🚀 SkyTech Quantum v3.0 Live! Stable income for everyone. New users get bonus tasks. Withdrawals are instant.
-                </div>
             </div>
         </div>
 
         <div id="page-home" class="page active">
             <div class="section-header">
-                <h3>Investment Hall</h3>
-                <span class="status-dot"></span> <small style="color:#00ff88">Network Stable</small>
+                <h3>Mystery Boxes</h3>
+                <small>Vásárolj egy dobozt, és fedd fel a titkos lokációt.</small>
             </div>
-            <div id="machine-list">
-                </div> 
-            
-            <div class="partners-container">
-                <p style="text-align:center; font-size:10px; color:#555; margin-bottom:10px;">Strategic Partners</p>
-                <div class="partners">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/1/12/Binance_logo.svg" alt="Binance">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Coinbase_logo.png" alt="Coinbase">
-                    <img src="https://cryptologos.cc/logos/trust-wallet-token-twt-logo.png" alt="Trust">
-                </div>
-            </div>
-        </div>
-
-        <div id="page-miners" class="page">
-            <div class="section-header">
-                <h3>My Active Miners</h3>
-                <button class="refresh-btn" onclick="renderMyMiners()"><i class="fas fa-sync"></i></button>
-            </div>
-            <div id="my-miners-list">
-                </div>
-        </div>
-
-        <div id="page-task" class="page">
-            <div class="section-header"><h3>Task Center</h3></div>
-            <div class="task-card">
-                <div class="task-icon tg"><i class="fab fa-telegram-plane"></i></div>
-                <div class="task-info">
-                    <h4>Join Official Channel</h4>
-                    <p>Reward: <span style="color:#00ff88">$0.50</span></p>
-                </div>
-                <button class="task-btn" id="btn-task-1" onclick="doTask(1)">Claim</button>
-            </div>
-            <div class="task-card">
-                <div class="task-icon tw"><i class="fab fa-twitter"></i></div>
-                <div class="task-info">
-                    <h4>Follow on X (Twitter)</h4>
-                    <p>Reward: <span style="color:#00ff88">$0.50</span></p>
-                </div>
-                <button class="task-btn" id="btn-task-2" onclick="doTask(2)">Claim</button>
-            </div>
+            <div id="shop-list"></div>
         </div>
 
         <div id="page-team" class="page">
             <div class="team-header">
-                <div><span>Team Size</span><h3>0</h3></div>
-                <div><span>Commission</span><h3 style="color:#00ff88">$0.00</h3></div>
+                <div><span>Meghívottak</span><h3>0</h3></div>
+                <div><span>Jutalék</span><h3 style="color:var(--secondary)">$0.00</h3></div>
             </div>
-
-            <div class="invite-box">
-                <p>Your Exclusive Invite Link</p>
+            <div class="invite-box" style="border: 1px solid var(--primary); background: var(--card-bg);">
+                <p>Oszd meg a Clay élményt:</p>
                 <div class="link-input">
-                    <input type="text" id="ref-link" value="Loading..." readonly>
-                    <button onclick="copyRef()"><i class="fas fa-copy"></i> Copy</button>
-                </div>
-            </div>
-
-            <div class="salary-section">
-                <h4><i class="fas fa-crown" style="color:#ffd700;"></i> Regional Manager Salary</h4>
-                <p style="font-size:11px; color:#aaa; margin-bottom:15px;">Build your team to unlock fixed daily income!</p>
-
-                <div class="salary-table">
-                    <div class="st-row header">
-                        <div>Rank</div>
-                        <div>Target (VIP1+)</div>
-                        <div>Daily Salary</div>
-                    </div>
-                    <div class="st-row">
-                        <div><i class="fas fa-medal" style="color:#cd7f32"></i> Junior</div>
-                        <div>Invite 5</div>
-                        <div style="color:#00ff88;">$5 / Day</div>
-                    </div>
-                    <div class="st-row">
-                        <div><i class="fas fa-medal" style="color:#c0c0c0"></i> Senior</div>
-                        <div>Invite 15</div>
-                        <div style="color:#00ff88; font-weight:bold;">$20 / Day</div>
-                    </div>
-                    <div class="st-row">
-                        <div><i class="fas fa-medal" style="color:#ffd700"></i> Director</div>
-                        <div>Invite 50</div>
-                        <div style="color:#00ff88; font-weight:bold;">$80 / Day</div>
-                    </div>
+                    <input type="text" id="ref-link" value="Loading..." readonly style="color: var(--text-light);">
+                    <button onclick="copyRef()" style="background: var(--primary);"><i class="fas fa-copy"></i></button>
                 </div>
             </div>
         </div>
 
         <div id="page-mine" class="page">
             <div class="profile-menu">
-                <div class="menu-item" onclick="openWithdrawModal()">
-                    <i class="fas fa-wallet" style="color:#00ff88"></i>
-                    <span>Withdrawal Record</span>
-                    <i class="fas fa-chevron-right"></i>
-                </div>
-                <div class="menu-item" onclick="showToast('History is empty')">
-                    <i class="fas fa-history" style="color:#00bfff"></i>
-                    <span>Account History</span>
-                    <i class="fas fa-chevron-right"></i>
-                </div>
-                <div class="menu-item" onclick="nav('team', document.querySelectorAll('.nav-item')[3])">
-                    <i class="fas fa-users" style="color:#ffcc00"></i>
-                    <span>My Team</span>
-                    <i class="fas fa-chevron-right"></i>
-                </div>
-                <div class="menu-item" onclick="showToast('2FA is active (Telegram)')">
-                    <i class="fas fa-shield-alt" style="color:#ff4d4d"></i>
-                    <span>Security Center</span>
-                    <i class="fas fa-chevron-right"></i>
-                </div>
-                <div class="menu-item" onclick="window.open('https://t.me/SkyTechSupport', '_blank')">
-                    <i class="fas fa-headset" style="color:#fff"></i>
-                    <span>Online Support</span>
-                    <i class="fas fa-external-link-alt" style="font-size:10px;"></i>
-                </div>
-                 <div class="menu-item" onclick="showToast('App download coming soon!')">
-                    <i class="fas fa-mobile-alt" style="color:#aaa"></i>
-                    <span>Download App</span>
-                    <i class="fas fa-chevron-right"></i>
+                 <div class="menu-item" onclick="window.Telegram.WebApp.close()">
+                    <i class="fas fa-sign-out-alt" style="color:#aaa"></i>
+                    <span>Bezárás</span>
                 </div>
             </div>
-            <button class="logout-btn" onclick="window.Telegram.WebApp.close()">Exit App</button>
         </div>
 
     </div>
 
     <div id="modal-deposit" class="modal">
-        <div class="modal-content">
+        <div class="modal-content" style="background: var(--card-bg); border: 1px solid var(--primary);">
             <span class="close" onclick="closeModal('deposit')">&times;</span>
-            <h3>Deposit LTC</h3>
-            <div class="copy-box">
-                <span id="wallet-addr" style="font-size:10px;">ltc1qv5aape3pah2f954k5jjx9kgnrnkxzytm6f7an8</span>
+            <h3 style="color:var(--secondary)">Egyenleg Feltöltés (LTC)</h3>
+            <p style="font-size:12px; color:#aaa;">Küldj Litecoin-t a lenti címre a vásárláshoz.</p>
+            <div class="copy-box" style="background: #222;">
+                <span id="wallet-addr" style="font-size:10px; color:#fff;">ltc1qv5aape3pah2f954k5jjx9kgnrnkxzytm6f7an8</span>
                 <i class="fas fa-copy" onclick="copyAddr()"></i>
             </div>
-            <input type="number" id="dep-amount" placeholder="Amount (USD)" class="input-field">
-            <input type="text" id="txid" placeholder="Paste TXID..." class="input-field">
-            <button class="confirm-btn" onclick="verifyPayment()">I Have Paid</button>
-        </div>
-    </div>
-    
-    <div id="modal-guide" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal('guide')">&times;</span>
-            <h3>How it works</h3>
-            <p style="font-size:12px; color:#aaa; text-align:left;">
-                1. Rent a Miner in "Investment Hall".<br>
-                2. Go to "Miners" tab.<br>
-                3. Click <b>START</b> to begin mining.<br>
-                4. Wait 24 hours.<br>
-                5. Click <b>CLAIM</b> to get profit.<br>
-            </p>
+            <input type="number" id="dep-amount" placeholder="Összeg ($)" class="input-field" style="background: #222; color:#fff;">
+            <input type="text" id="txid" placeholder="Tranzakció ID (TXID)" class="input-field" style="background: #222; color:#fff;">
+            <button class="confirm-btn" onclick="verifyPayment()" style="background:var(--primary);">Beküldés</button>
         </div>
     </div>
 
-    <div id="modal-withdraw" class="modal">
+    <div id="modal-reward" class="modal" style="z-index: 2000;">
         <div class="modal-content">
-            <span class="close" onclick="closeModal('withdraw')">&times;</span>
-            <h3>Withdraw</h3>
-            <p>Available: <span style="color:#00ff88">$<span id="with-bal">0.00</span></span></p>
-            <input type="text" placeholder="Wallet Address" class="input-field">
-            <input type="number" placeholder="Amount" class="input-field">
-            <button class="confirm-btn" onclick="showToast('Withdrawal sent!')">Withdraw</button>
+            <h2 style="color:var(--primary);">🎉 Titkos Lokáció Felfedve! 🎉</h2>
+            <p id="reward-location-name" style="font-size: 18px; font-weight: bold;">Helyszín Neve</p>
+            
+            <p style="font-size: 12px; color: #555;">Koordináták (Másold ki):</p>
+            <div class="reward-coords" id="reward-coords">
+                XX.XXXXXX, YY.YYYYYY
+            </div>
+            
+            <p style="font-size: 12px; color: #555;">Titkos üzenet:</p>
+            <div class="reward-message" id="reward-message">
+                "Az üzenet itt jelenik meg..."
+            </div>
+
+            <button class="confirm-btn" onclick="closeModal('reward')" style="background:var(--primary); width: 100%;">Értettem, indulok!</button>
+             <button class="confirm-btn" onclick="copyCoords()" style="background:var(--secondary); color:#2C2420; width: 100%; margin-top: 10px;">Koordináta Másolása</button>
         </div>
     </div>
 
-    <div class="nav-bar">
-        <div class="nav-item active" onclick="nav('home', this)">
-            <i class="fas fa-home"></i><span>Home</span>
+
+    <div class="nav-bar" style="background: var(--card-bg); border-top: 1px solid #55433B;">
+        <div class="nav-item active" onclick="nav('home')">
+            <i class="fas fa-box-open"></i><span>Mystery</span>
         </div>
-        <div class="nav-item" onclick="nav('miners', this)">
-            <i class="fas fa-server"></i><span>Miners</span>
+        <div class="nav-item" onclick="nav('team')">
+            <i class="fas fa-users"></i><span>Csapat</span>
         </div>
-        <div class="nav-item" onclick="nav('task', this)">
-            <i class="fas fa-check-square"></i><span>Task</span>
-        </div>
-        <div class="nav-item" onclick="nav('team', this)">
-            <i class="fas fa-users"></i><span>Team</span>
-        </div>
-        <div class="nav-item" onclick="nav('mine', this)">
-            <i class="fas fa-user"></i><span>Me</span>
+        <div class="nav-item" onclick="nav('mine')">
+            <i class="fas fa-user"></i><span>Profil</span>
         </div>
     </div>
 
