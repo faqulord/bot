@@ -1,54 +1,75 @@
 const TelegramBot = require('node-telegram-bot-api');
+import connectToDatabase from '../lib/mongodb';
+import User from '../models/User';
 
-// A titkos kulcsot a Verceltől kérjük el
 const token = process.env.TELEGRAM_TOKEN;
-// Fontos: polling: false, mert Webhookot használunk!
 const bot = new TelegramBot(token, { polling: false });
 
 export default async function handler(req, res) {
-    // Csak a POST kérésekkel foglalkozunk (amiket a Telegram küld)
     if (req.method === 'POST') {
         const { body } = req;
-        
-        // Ellenőrizzük, hogy van-e üzenet
+
         if (body.message) {
             const chatId = body.message.chat.id;
-            const text = body.message.text;
+            const text = body.message.text || "";
+            const username = body.message.chat.username;
+            const firstName = body.message.chat.first_name;
+            const telegramId = body.message.from.id;
 
             try {
-                // 1. /start parancs
-                if (text === '/start') {
-                    await bot.sendMessage(chatId, "👋 Üdv a Titkos Shopban!\n\nItt kriptóért vehetsz koordinátákat.\n\nParancsok:\n💰 /balance - Egyenleged\n📦 /shop - Kínálat\n🛒 /buy - Vásárlás");
-                }
-                
-                // 2. /balance (Kamu egyenleg)
-                else if (text === '/balance') {
-                    // Itt később adatbázisból kérdezzük le, most fix 50.000
-                    await bot.sendMessage(chatId, "💳 Egyenleged: 50,000 COIN\n(Feltöltéshez utalj erre a címre: ...)");
+                // Adatbázis csatlakozás
+                await connectToDatabase();
+
+                // 1. Megnézzük, létezik-e már a felhasználó
+                let user = await User.findOne({ telegramId: telegramId });
+
+                // 2. /start parancs kezelése (Meghívókóddal)
+                if (text.startsWith('/start')) {
+                    // Ha még nincs regisztrálva a felhasználó
+                    if (!user) {
+                        const params = text.split(' ');
+                        let referrerId = null;
+
+                        // Ha van paraméter (pl. /start 12345), az a meghívó ID-ja
+                        if (params.length > 1 && params[1] !== String(telegramId)) {
+                            referrerId = Number(params[1]);
+                        }
+
+                        // Létrehozzuk az új felhasználót
+                        user = await User.create({
+                            telegramId: telegramId,
+                            username: username,
+                            firstName: firstName,
+                            referrer: referrerId
+                        });
+
+                        // Ha volt meghívó, növeljük a meghívó statisztikáját
+                        if (referrerId) {
+                            await User.findOneAndUpdate(
+                                { telegramId: referrerId },
+                                { $inc: { totalInvited: 1 } }
+                            );
+                            // Opcionális: Értesítjük a meghívót
+                            try {
+                                await bot.sendMessage(referrerId, `🚀 Valaki regisztrált a linkeddel: ${firstName}!`);
+                            } catch (e) { /* Ha blokkolta a botot, nem baj */ }
+                        }
+                    }
+
+                    // Üdvözlő üzenet + Web App Gomb
+                    await bot.sendMessage(chatId, `👋 Üdvözöllek a SkyTech Quantumban, ${firstName}!\n\nIndítsd el az appot a bányászathoz és a jutalékokhoz!`, {
+                        reply_markup: {
+                            inline_keyboard: [
+                                [{ text: "🚀 SkyTech App Indítása", web_app: { url: process.env.WEBAPP_URL } }]
+                            ]
+                        }
+                    });
                 }
 
-                // 3. /shop (Kínálat)
-                else if (text === '/shop') {
-                    await bot.sendMessage(chatId, "📦 **MYSTERY BOXOK:**\n\n1. 🥇 ARANY CSOMAG - 50,000 Coin\n(Tartalom: 1db Koordináta + Fotó)\n\nVásárláshoz írd be: /buy");
-                }
-
-                // 4. /buy (Vásárlás szimuláció)
-                else if (text === '/buy') {
-                    // Itt szimuláljuk, hogy levonjuk a pénzt és elküldjük a helyet
-                    await bot.sendMessage(chatId, "✅ Tranzakció sikeres! -50,000 Coin");
-                    
-                    // Koordináta küldése (pl. Széchenyi tér)
-                    await bot.sendLocation(chatId, 47.4979, 19.0402);
-                    
-                    await bot.sendMessage(chatId, "📍 Menj a fenti pontra!\nJelszó: KRYPTO-KING-2026\nSok szerencsét!");
-                }
-                
             } catch (error) {
-                console.error("Hiba az üzenet küldésekor:", error);
+                console.error("Hiba:", error);
             }
         }
     }
-    
-    // Válasz a Telegramnak/Vercelnek, hogy megkaptuk (fontos, különben újrapróbálja)
     res.status(200).send('OK');
 }
