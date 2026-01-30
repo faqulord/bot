@@ -2,164 +2,134 @@
 <html lang="hu">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Clay Mystery Shop</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Clay Premium Shop</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
-    <style>
-        /* CLAY THEME */
-        :root { 
-            --primary: #A0522D; /* Terrakotta/Agyag barna */
-            --secondary: #D2B48C; /* Homokszín */
-            --bg: #2C2420; /* Sötétbarna háttér */
-            --card-bg: #3E322C;
-            --text-light: #F5DEB3;
-        }
-        body { background-color: var(--bg); color: var(--text-light); font-family: 'Helvetica Neue', sans-serif; }
-        
-        .hero-card { 
-            background: linear-gradient(135deg, var(--primary), #8B4513); 
-            border: none; 
-            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-            border-radius: 16px;
-        }
-        .machine-card { background: var(--card-bg); border: 1px solid #55433B; border-radius: 12px; }
-        .rent-btn { background: var(--primary); color: #fff; border: none; border-radius: 20px; }
-        .nav-item.active { color: var(--primary); }
-        .vip-tag { background: var(--secondary); color: #2C2420; font-weight: bold;}
-        h3 { color: var(--secondary); letter-spacing: 1px; }
-        .section-header small { color: #aaa; }
-
-        /* ÚJ: Jutalék Modal Stílus */
-        #modal-reward .modal-content {
-            background: #F5DEB3; /* Világos papír szín */
-            color: #2C2420;
-            text-align: center;
-            border: 3px solid var(--primary);
-        }
-        .reward-coords {
-            font-family: monospace;
-            background: #fff;
-            padding: 10px;
-            border: 2px dashed var(--primary);
-            margin: 15px 0;
-            font-size: 16px;
-            font-weight: bold;
-        }
-        .reward-message {
-            font-style: italic;
-            color: #55433B;
-            margin-bottom: 20px;
-        }
-    </style>
 </head>
 <body>
 
     <div id="notification-container"></div>
 
     <div id="app">
-        <div class="header">
-            <div class="header-left" style="font-weight: bold; letter-spacing: 1px;">
-                <i class="fas fa-cube" style="color:var(--primary);"></i> CLAY
+        <div class="top-nav">
+            <div class="logo">
+                <i class="fas fa-cube" style="color:var(--gold);"></i> CLAY
+            </div>
+            <div class="balance-pill" onclick="openModal('deposit')">
+                <i class="fas fa-wallet"></i> $<span id="main-balance">0.00</span>
+                <div class="add-btn">+</div>
             </div>
         </div>
 
-        <div class="hero-card">
-            <div class="hero-top">
-                <div class="user-badge">
-                    <i class="far fa-user-circle"></i> <span id="username">Felfedező</span>
-                    <span class="vip-tag" id="vip-display">Tag</span>
-                </div>
+        <div class="promo-banner">
+            <div class="promo-content">
+                <span class="promo-tag">GRAND OPENING</span>
+                <h1>50% OFF</h1>
+                <p>Minden Mystery Box féláron a készlet erejéig!</p>
             </div>
-            <div class="hero-label" style="color: #F5DEB3; opacity: 0.8;">Elérhető Egyenleg</div>
-            <div class="hero-balance">$<span id="main-balance">0.00</span></div>
+            <div class="promo-icon">🎁</div>
+        </div>
 
-            <div class="hero-actions">
-                <button class="action-btn dep" onclick="openModal('deposit')" style="background:var(--secondary); color:#2C2420;">
-                    <i class="fas fa-plus-circle"></i> <span>Feltöltés</span>
-                </button>
-            </div>
+        <div class="category-scroll">
+            <div class="cat-item active" onclick="filterShop('all', this)">Összes</div>
+            <div class="cat-item" onclick="filterShop('starter', this)">Kezdő</div>
+            <div class="cat-item" onclick="filterShop('pro', this)">Profi</div>
+            <div class="cat-item" onclick="filterShop('vip', this)">VIP</div>
         </div>
 
         <div id="page-home" class="page active">
-            <div class="section-header">
-                <h3>Mystery Boxes</h3>
-                <small>Vásárolj egy dobozt, és fedd fel a titkos lokációt.</small>
-            </div>
-            <div id="shop-list"></div>
+            <div class="section-title">Kiemelt Ajánlatok</div>
+            <div id="shop-grid" class="shop-grid">
+                </div>
         </div>
 
-        <div id="page-team" class="page">
-            <div class="team-header">
-                <div><span>Meghívottak</span><h3>0</h3></div>
-                <div><span>Jutalék</span><h3 style="color:var(--secondary)">$0.00</h3></div>
+        <div id="page-team" class="page" style="display:none;">
+            <div class="section-title">Partner Program</div>
+            <div class="stats-card">
+                <div>
+                    <div class="stat-val" id="team-count">0</div>
+                    <div class="stat-label">Meghívottak</div>
+                </div>
+                <div>
+                    <div class="stat-val" style="color:var(--gold)">$<span id="team-earn">0.00</span></div>
+                    <div class="stat-label">Jutalék</div>
+                </div>
             </div>
-            <div class="invite-box" style="border: 1px solid var(--primary); background: var(--card-bg);">
-                <p>Oszd meg a Clay élményt:</p>
-                <div class="link-input">
-                    <input type="text" id="ref-link" value="Loading..." readonly style="color: var(--text-light);">
-                    <button onclick="copyRef()" style="background: var(--primary);"><i class="fas fa-copy"></i></button>
+            <div class="invite-card">
+                <p>Hívd meg barátaidat és részesedj a vásárlásaikból!</p>
+                <div class="copy-row">
+                    <input type="text" id="ref-link" readonly value="...">
+                    <button onclick="copyRef()">MÁSOLÁS</button>
                 </div>
             </div>
         </div>
 
-        <div id="page-mine" class="page">
-            <div class="profile-menu">
-                 <div class="menu-item" onclick="window.Telegram.WebApp.close()">
-                    <i class="fas fa-sign-out-alt" style="color:#aaa"></i>
-                    <span>Bezárás</span>
-                </div>
-            </div>
-        </div>
+    </div>
 
+    <div class="tab-bar">
+        <div class="tab-item active" onclick="nav('home')">
+            <i class="fas fa-store"></i>
+            <span>Shop</span>
+        </div>
+        <div class="tab-item" onclick="showInventory()">
+            <i class="fas fa-box-open"></i>
+            <span>Raktár</span>
+        </div>
+        <div class="tab-item" onclick="nav('team')">
+            <i class="fas fa-users"></i>
+            <span>Csapat</span>
+        </div>
     </div>
 
     <div id="modal-deposit" class="modal">
-        <div class="modal-content" style="background: var(--card-bg); border: 1px solid var(--primary);">
-            <span class="close" onclick="closeModal('deposit')">&times;</span>
-            <h3 style="color:var(--secondary)">Egyenleg Feltöltés (LTC)</h3>
-            <p style="font-size:12px; color:#aaa;">Küldj Litecoin-t a lenti címre a vásárláshoz.</p>
-            <div class="copy-box" style="background: #222;">
-                <span id="wallet-addr" style="font-size:10px; color:#fff;">ltc1qv5aape3pah2f954k5jjx9kgnrnkxzytm6f7an8</span>
-                <i class="fas fa-copy" onclick="copyAddr()"></i>
-            </div>
-            <input type="number" id="dep-amount" placeholder="Összeg ($)" class="input-field" style="background: #222; color:#fff;">
-            <input type="text" id="txid" placeholder="Tranzakció ID (TXID)" class="input-field" style="background: #222; color:#fff;">
-            <button class="confirm-btn" onclick="verifyPayment()" style="background:var(--primary);">Beküldés</button>
-        </div>
-    </div>
-
-    <div id="modal-reward" class="modal" style="z-index: 2000;">
         <div class="modal-content">
-            <h2 style="color:var(--primary);">🎉 Titkos Lokáció Felfedve! 🎉</h2>
-            <p id="reward-location-name" style="font-size: 18px; font-weight: bold;">Helyszín Neve</p>
-            
-            <p style="font-size: 12px; color: #555;">Koordináták (Másold ki):</p>
-            <div class="reward-coords" id="reward-coords">
-                XX.XXXXXX, YY.YYYYYY
+            <div class="modal-header">
+                <h3>Egyenleg Feltöltés</h3>
+                <span class="close" onclick="closeModal('deposit')">&times;</span>
             </div>
-            
-            <p style="font-size: 12px; color: #555;">Titkos üzenet:</p>
-            <div class="reward-message" id="reward-message">
-                "Az üzenet itt jelenik meg..."
+            <div class="deposit-body">
+                <p>Küldj Litecoin-t (LTC) a vásárláshoz:</p>
+                <div class="qr-placeholder"><i class="fas fa-qrcode"></i></div>
+                <div class="wallet-address" id="wallet-addr" onclick="copyAddr()">ltc1qv5aape3pah2f954k5jjx9kgnrnkxzytm6f7an8 <i class="far fa-copy"></i></div>
+                
+                <label>Befizetett összeg ($)</label>
+                <input type="number" id="dep-amount" class="pro-input" placeholder="pl. 50">
+                
+                <label>Tranzakció ID (TXID)</label>
+                <input type="text" id="txid" class="pro-input" placeholder="Illeszd be a TXID-t...">
+                
+                <button class="pro-btn full" onclick="verifyPayment()">Jóváírás Kérése</button>
             </div>
-
-            <button class="confirm-btn" onclick="closeModal('reward')" style="background:var(--primary); width: 100%;">Értettem, indulok!</button>
-             <button class="confirm-btn" onclick="copyCoords()" style="background:var(--secondary); color:#2C2420; width: 100%; margin-top: 10px;">Koordináta Másolása</button>
         </div>
     </div>
 
+    <div id="modal-reward" class="modal">
+        <div class="modal-content reward-content">
+            <div class="confetti">🎉</div>
+            <h2>SIKERES VÁSÁRLÁS!</h2>
+            <p>A Mystery Box tartalma:</p>
+            
+            <div class="reward-box">
+                <h3 id="reward-location-name">Helyszín</h3>
+                <div class="coords" id="reward-coords">XX.XXX, YY.YYY</div>
+                <div class="secret-msg" id="reward-message">Titkos üzenet...</div>
+            </div>
+            
+            <button class="pro-btn full" onclick="closeModal('reward')">RENDBEN</button>
+        </div>
+    </div>
 
-    <div class="nav-bar" style="background: var(--card-bg); border-top: 1px solid #55433B;">
-        <div class="nav-item active" onclick="nav('home')">
-            <i class="fas fa-box-open"></i><span>Mystery</span>
-        </div>
-        <div class="nav-item" onclick="nav('team')">
-            <i class="fas fa-users"></i><span>Csapat</span>
-        </div>
-        <div class="nav-item" onclick="nav('mine')">
-            <i class="fas fa-user"></i><span>Profil</span>
+    <div id="modal-inventory" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Saját Dobozaim</h3>
+                <span class="close" onclick="closeModal('inventory')">&times;</span>
+            </div>
+            <div id="inventory-list" class="inventory-list">
+                </div>
         </div>
     </div>
 
