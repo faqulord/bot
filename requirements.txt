@@ -1,5 +1,6 @@
 streamlit
 openai
-elevenlabs
 feedparser
 moviepy
+requests
+imageio-ffmpeg
