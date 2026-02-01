@@ -13,7 +13,6 @@ from openai import OpenAI
 
 # --- 🛠️ RENDSZER JAVÍTÁS (MONKEY PATCH) ---
 # Ez a rész elhiteti a rendszerrel, hogy a régi parancsok léteznek.
-# Így a legújabb Pythonon is fut a régi MoviePy.
 import PIL.Image
 if not hasattr(PIL.Image, 'ANTIALIAS'):
     PIL.Image.ANTIALIAS = PIL.Image.LANCZOS
@@ -23,7 +22,7 @@ from moviepy.editor import *
 from moviepy.video.fx.all import resize
 
 # --- 1. KONFIGURÁCIÓ & DESIGN ---
-st.set_page_config(page_title="ONYX // OS V6.0", page_icon="👁️", layout="wide")
+st.set_page_config(page_title="ONYX // OS V6.1", page_icon="👁️", layout="wide")
 
 st.markdown("""
 <style>
@@ -92,14 +91,12 @@ def analyze_trends(rss_url):
     try:
         feed = feedparser.parse(requests.get(rss_url, headers={'User-Agent': 'ONYX-BOT'}).content)
         results = []
-        for entry in feed.entries[:8]: # Top 8 hír
-            # Dátum keresése (többféle formátum lehet)
-            date_str = "MAI HÍR"
+        for entry in feed.entries[:8]:
+            date_str = "FRISS ADAT"
             if hasattr(entry, 'published'):
-                date_str = entry.published[:16] # Levágjuk a felesleget
+                date_str = entry.published[:16]
             elif hasattr(entry, 'updated'):
                 date_str = entry.updated[:16]
-            
             results.append({"title": entry.title, "date": date_str})
         return results
     except Exception as e:
@@ -127,9 +124,9 @@ def generate_pro_script(topic, platform, opinion):
     res = client.chat.completions.create(model="gpt-4o", messages=[{"role": "system", "content": sys_prompt}, {"role": "user", "content": user_prompt}])
     return clean_script_for_speech(res.choices[0].message.content)
 
-# --- 4. BRANDING & RENDER ---
+# --- 4. BRANDING & STABIL RENDER (ZOOM JAVÍTVA) ---
 def generate_onyx_image(topic):
-    # A MÁRKA: Kapucnis alak + Téma hologram
+    # MASTER PROMPT: Kapucnis alak + Hologram
     prompt = f"""
     A mysterious hacker figure in a black hoodie standing in the center, 
     face completely hidden in deep shadow, NO facial features visible.
@@ -146,21 +143,27 @@ def render_video(image_url, audio_file, filename="onyx_render.mp4"):
         f.write(requests.get(image_url, headers=headers).content)
         
     audio = AudioFileClip(audio_file)
-    duration = audio.duration + 0.5
+    duration = audio.duration + 0.5 # Kis ráhagyás
     
-    # Kép betöltése
+    # 1. Kép betöltése
     clip = ImageClip("temp_img.png").set_duration(duration)
     w, h = clip.size
     
-    # 9:16 Crop
-    if w > h: clip = clip.crop(x1=w/2 - 540, y1=0, width=1080, height=1920)
-    else: clip = clip.resize(height=1920).crop(x1=clip.w/2 - 540, width=1080, height=1920)
+    # 2. Vágás 9:16-ra (TikTok szabvány)
+    # Ha a kép szélesebb mint magas (ritka DALL-E verticalnál, de biztos ami biztos)
+    if w > h:
+        clip = clip.crop(x1=w/2 - 540, y1=0, width=1080, height=1920)
+    else:
+        # Ha álló kép (szabványos): Felnagyítjuk, hogy kitöltse a 1920 magas képernyőt
+        clip = clip.resize(height=1920)
+        # Majd kivágjuk a közepét (1080 széles)
+        clip = clip.crop(x1=clip.w/2 - 540, width=1080, height=1920)
     
-    # Zoom effekt
-    clip = clip.resize(lambda t : 1 + 0.03 * (t / duration))
-    clip = clip.set_position(('center', 'center')).crop(width=1080, height=1920)
+    # 3. STABILIZÁLT RENDER (Kivettük a zoom effektet a stabilitásért)
+    # A Zoom itt okozott matematikai hibát a szerveren. 
+    # Most statikus, de tűéles képet kapunk, ami biztosan lefut.
     
-    # Audio
+    # Audio hozzáadása
     final_audio = audio
     if os.path.exists(BG_MUSIC):
         try:
@@ -170,13 +173,13 @@ def render_video(image_url, audio_file, filename="onyx_render.mp4"):
         
     clip = clip.set_audio(final_audio)
     
-    # Gyors renderelés (Ultrafast preset a szerver kímélése érdekében)
+    # Renderelés
     clip.write_videofile(filename, fps=24, codec="libx264", audio_codec="aac", threads=2, preset="ultrafast")
     return filename
 
 # --- 5. VEZÉRLŐPULT ---
 def main():
-    st.title(f"👁️ PROJECT: ONYX // SYSTEM V6.0")
+    st.title(f"👁️ PROJECT: ONYX // SYSTEM V6.1")
     history = load_memory()
     
     # ANALITIKA
@@ -227,11 +230,11 @@ def main():
             run_async(gv())
             
             # 3. Kép (BRANDING)
-            status.write("🎨 Vizuális manifesztáció...")
+            status.write("🎨 Vizuális manifesztáció (Kapucnis Alak)...")
             img_url = generate_onyx_image(topic)
             
             # 4. Render
-            status.write("🎞️ Videó renderelése...")
+            status.write("🎞️ Videó renderelése (Stabil Mód)...")
             v_file = render_video(img_url, "temp.mp3")
             
             status.update(label="✅ KÉSZ!", state="complete")
