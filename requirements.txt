@@ -1,6 +1,5 @@
 
-streamlit
-openai
+stream
 feedparser
 requests
 edge-tts
