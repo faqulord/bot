@@ -9,14 +9,12 @@ import edge_tts
 import re
 from datetime import datetime
 from openai import OpenAI
-# MoviePy a videóhoz
 from moviepy.editor import *
 from moviepy.video.fx.all import resize
 
 # --- 1. KONFIGURÁCIÓ & DESIGN ---
-st.set_page_config(page_title="ONYX // OS V4.0", page_icon="👁️", layout="wide")
+st.set_page_config(page_title="ONYX // OS V5.0", page_icon="👁️", layout="wide")
 
-# Egyedi CSS a Cyberpunk Designhoz
 st.markdown("""
 <style>
     .stApp { background-color: #050505; color: #e0e0e0; }
@@ -25,11 +23,10 @@ st.markdown("""
     .stButton>button:hover { background: #00ffcc; color: black; box-shadow: 0 0 15px #00ffcc; }
     .stat-box { border: 1px solid #333; padding: 15px; border-radius: 5px; background: rgba(255, 255, 255, 0.05); text-align: center; margin-bottom: 10px; }
     .stat-num { font-size: 24px; font-weight: bold; color: #ff004c; }
-    div[data-testid="stExpander"] { background-color: #0a0a0a; border: 1px solid #333; }
 </style>
 """, unsafe_allow_html=True)
 
-# API Kulcs kezelése (Biztonságos + Fallback)
+# API Kulcs
 api_key = None
 try:
     api_key = st.secrets["OPENAI_API_KEY"]
@@ -37,15 +34,14 @@ except:
     api_key = os.getenv("OPENAI_API_KEY")
 
 if not api_key:
-    st.error("⚠️ RENDKÍVÜLI HIBA: NINCS API KULCS! Állítsd be a Streamlit Secrets menüben!")
+    st.error("⚠️ NINCS API KULCS! Állítsd be a Secrets-ben!")
     st.stop()
 
 client = OpenAI(api_key=api_key)
-BRAND_NAME = "PROJECT: ONYX"
 HISTORY_FILE = "onyx_memory.json"
 BG_MUSIC = "background.mp3"
 
-# --- 2. LOGIKA & MEMÓRIA ---
+# --- 2. LOGIKA ---
 def run_async(coroutine):
     try:
         loop = asyncio.get_event_loop()
@@ -67,8 +63,7 @@ def save_to_memory(topic, platform, stance, script):
         "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         "topic": topic,
         "platform": platform,
-        "stance": stance,
-        "short_script": script[:50] + "..."
+        "stance": stance
     }
     history.insert(0, entry)
     with open(HISTORY_FILE, "w", encoding="utf-8") as f:
@@ -85,70 +80,59 @@ def analyze_trends(rss_url):
     try:
         feed = feedparser.parse(requests.get(rss_url, headers={'User-Agent': 'ONYX-BOT'}).content)
         return [entry for entry in feed.entries[:6]]
-    except Exception as e:
-        return []
+    except: return []
 
 def get_onyx_opinion(topic, history):
     recent_context = " | ".join([h['topic'] for h in history[:3]])
     prompt = f"""
-    Te vagy ONYX. Identitás: Sötét, cinikus, technokrata, mindent látó entitás.
+    Te vagy ONYX. Identitás: Sötét, cinikus, technokrata.
     Téma: "{topic}"
-    Múltbeli témáid: {recent_context}
-    
-    FELADAT: Alkoss egy ÉLES, MEGOSZTÓ véleményt erről.
-    Ne legyél semleges. Támadd a naivitást. Ha a téma kapcsolódik a múlthoz, kösd össze.
-    Válasz hossza: Max 2 velős mondat.
+    Múlt: {recent_context}
+    Alkoss egy ÉLES, MEGOSZTÓ véleményt. Támadd a naivitást. Max 2 mondat.
     """
     res = client.chat.completions.create(model="gpt-4o", messages=[{"role": "user", "content": prompt}])
     return res.choices[0].message.content
 
 def generate_pro_script(topic, platform, opinion):
     if platform == "TikTok (Csali)":
-        sys_prompt = """
-        PLATFORM: TikTok. CÉL: Átterelés YouTube-ra.
-        STRATÉGIA:
-        1. 0-2mp: Sokkoló állítás (Pattern Interrupt).
-        2. Tárgyalás: Csak a probléma felvetése, titokzatosan.
-        3. VÉGE: Cliffhanger + "A teljes igazság a YouTube-on. Link a bioban."
-        """
+        sys_prompt = "CÉL: TikTok videó. Rövid, sokkoló, átterel YouTube-ra. Nincs köszönés, csak a lényeg."
     else:
-        sys_prompt = """
-        PLATFORM: YouTube Shorts/Video. CÉL: Brand építés.
-        STRATÉGIA:
-        1. Hook: Utalás a TikTok videóra ("Ha onnan jöttél, itt a válasz...").
-        2. Elemzés: Mély, filozófiai okfejtés.
-        3. Konklúzió: Sötét jövőkép.
-        """
+        sys_prompt = "CÉL: YouTube tartalom. Mély, filozófiai elemzés."
     
-    user_prompt = f"Téma: {topic}. ONYX Álláspontja: {opinion}. Írd meg a szkriptet magyarul."
+    user_prompt = f"Téma: {topic}. Vélemény: {opinion}. Írd meg a szöveget magyarul."
     res = client.chat.completions.create(model="gpt-4o", messages=[{"role": "system", "content": sys_prompt}, {"role": "user", "content": user_prompt}])
     return clean_script_for_speech(res.choices[0].message.content)
 
-# --- 4. VIDEÓ GENERÁLÁS (OPTIMALIZÁLT) ---
+# --- 4. MASTER VISUAL GENERÁTOR (BRANDING) ---
+def generate_onyx_image(topic):
+    # EZ A LÉNYEG: A MASTER PROMPT
+    prompt = f"""
+    A mysterious hacker figure in a black hoodie standing in the center, 
+    face completely hidden in deep shadow, NO facial features visible.
+    The figure is looking at a large holographic data projection showing: {topic}.
+    Dark cinematic lighting, neon green and black color palette, 
+    cyberpunk atmosphere, highly detailed, 8k resolution, vertical 9:16 aspect ratio.
+    """
+    img_res = client.images.generate(model="dall-e-3", prompt=prompt, size="1024x1792", quality="hd")
+    return img_res.data[0].url
+
 def render_video(image_url, audio_file, filename="onyx_render.mp4"):
-    # Kép letöltése
-    with open("temp_img.png", "wb") as f:
-        f.write(requests.get(image_url).content)
-    
+    with open("temp_img.png", "wb") as f: f.write(requests.get(image_url).content)
     audio = AudioFileClip(audio_file)
-    # Biztonsági ráhagyás a hosszra
     duration = audio.duration + 0.5
     
-    # Kép betöltése és effekt
     clip = ImageClip("temp_img.png").set_duration(duration)
+    w, h = clip.size
     
     # 9:16 Crop
-    w, h = clip.size
-    if w > h:
-        clip = clip.crop(x1=w/2 - 540, y1=0, width=1080, height=1920)
-    else:
-        clip = clip.resize(height=1920).crop(x1=clip.w/2 - 540, width=1080, height=1920)
+    if w > h: clip = clip.crop(x1=w/2 - 540, y1=0, width=1080, height=1920)
+    else: clip = clip.resize(height=1920).crop(x1=clip.w/2 - 540, width=1080, height=1920)
     
-    # Zoom animáció (Kicsit lassabb, hogy stabilabb legyen a render)
+    # Zoom
     clip = clip.resize(lambda t : 1 + 0.03 * (t / duration))
     clip = clip.set_position(('center', 'center')).crop(width=1080, height=1920)
     
-    # Zene kezelés (Hiba esetén csendben folytatja)
+    # Audio
     final_audio = audio
     if os.path.exists(BG_MUSIC):
         try:
@@ -157,126 +141,47 @@ def render_video(image_url, audio_file, filename="onyx_render.mp4"):
         except: pass
         
     clip = clip.set_audio(final_audio)
-    
-    # Renderelés alacsonyabb szálkezeléssel a stabilitásért
     clip.write_videofile(filename, fps=24, codec="libx264", audio_codec="aac", threads=2, preset="ultrafast")
     return filename
 
-# --- 5. VEZÉRLŐPULT (UI) ---
+# --- 5. UI ---
 def main():
-    st.title(f"👁️ {BRAND_NAME} // NEURAL INTERFACE")
+    st.title(f"👁️ PROJECT: ONYX // V5.0")
     history = load_memory()
-
-    # FELSŐ SÁV: ANALITIKA
-    c1, c2, c3 = st.columns(3)
-    with c1: st.markdown(f'<div class="stat-box"><span class="stat-num">{len(history)}</span><br>MEMÓRIA MODULOK</div>', unsafe_allow_html=True)
-    with c2: st.markdown(f'<div class="stat-box"><span class="stat-num">ONLINE</span><br>ONYX ÁLLAPOT</div>', unsafe_allow_html=True)
-    with c3: st.markdown(f'<div class="stat-box"><span class="stat-num">V4.0</span><br>RENDSZER VERZIÓ</div>', unsafe_allow_html=True)
-
-    st.write("---")
-
-    # 1. MODUL: HÁLÓZATI PÁSZTAZÁS
-    st.subheader("📡 1. GLOBÁLIS ADATGYŰJTÉS")
     
-    rss_sources = {
-        "Futurology (Jövőkutatás)": "https://www.reddit.com/r/Futurology/top/.rss",
-        "Conspiracy (Összeesküvés)": "https://www.reddit.com/r/conspiracy/top/.rss",
-        "Artificial Intel (AI)": "https://www.reddit.com/r/ArtificialInteligence/top/.rss"
-    }
-    
-    col_scan, col_res = st.columns([1, 2])
-    with col_scan:
-        source_key = st.selectbox("CÉLPONT FORRÁS:", list(rss_sources.keys()))
-        if st.button("🚀 SZKENNELÉS INDÍTÁSA"):
-            with st.spinner("Adatcsomagok dekódolása..."):
-                entries = analyze_trends(rss_sources[source_key])
-                st.session_state['scan_results'] = entries
-    
-    if 'scan_results' in st.session_state:
-        with col_res:
-            st.success(f"{len(st.session_state['scan_results'])} potenciális anomália észlelve.")
-            # Szép lista dátummal
-            topic_options = {f"[{e.published[5:16]}] {e.title}": e.title for e in st.session_state['scan_results']}
-            selected_label = st.selectbox("VÁLASSZ EGYT:", list(topic_options.keys()))
-            selected_topic = topic_options[selected_label]
-
-        st.write("---")
+    # SCANNER
+    rss_url = "https://www.reddit.com/r/Futurology/top/.rss"
+    if st.button("📡 SCAN NETWORK"):
+        entries = analyze_trends(rss_url)
+        st.session_state['scan'] = entries
         
-        # 2. MODUL: STRATÉGIA
-        st.subheader("🧠 2. ONYX TUDAT & STRATÉGIA")
+    if 'scan' in st.session_state:
+        opts = {e.title: e.title for e in st.session_state['scan']}
+        topic = st.selectbox("CÉLPONT:", list(opts.keys()))
+        platform = st.radio("PLATFORM:", ["TikTok (Csali)", "YouTube"])
         
-        col_plat, col_op = st.columns(2)
-        with col_plat:
-            target_platform = st.radio("CÉL PLATFORM", ["TikTok (Csali)", "YouTube (Tartalom)"], horizontal=True)
-        
-        if st.button("⚡ VÉLEMÉNY GENERÁLÁSA"):
-            with st.spinner("Logikai áramkörök izzítása..."):
-                opinion = get_onyx_opinion(selected_topic, history)
-                st.session_state['current_opinion'] = opinion
-                st.session_state['current_topic'] = selected_topic
-                st.session_state['current_platform'] = target_platform
-
-        if 'current_opinion' in st.session_state:
-            with col_op:
-                st.info(f"**GENERÁLT ÁLLÁSPONT:**\n\n_{st.session_state['current_opinion']}_")
-            
-            # 3. MODUL: GYÁRTÁS
-            st.write("---")
-            st.subheader("🎬 3. TARTALOM MANIFESZTÁLÁSA")
-            
-            if st.button("🔥 VIDEÓ LEGYÁRTÁSA (TELJES FOLYAMAT)"):
-                progress_bar = st.progress(0)
-                status_text = st.empty()
+        if st.button("🔥 EXECUTE PROTOCOL"):
+            with st.spinner("Generálás..."):
+                # 1. Vélemény & Script
+                op = get_onyx_opinion(topic, history)
+                script = generate_pro_script(topic, platform, op)
+                st.info(f"Vélemény: {op}")
                 
-                try:
-                    # 1. SZKRIPT
-                    status_text.text("📝 Forgatókönyv írása...")
-                    progress_bar.progress(20)
-                    script = generate_pro_script(st.session_state['current_topic'], st.session_state['current_platform'], st.session_state['current_opinion'])
-                    st.text_area("VÉGLEGES SZKRIPT:", script, height=150)
-                    
-                    # 2. HANG
-                    status_text.text("🔊 Neurális hang generálása...")
-                    progress_bar.progress(40)
-                    async def gen_voice():
-                        rate = "+15%" if "TikTok" in st.session_state['current_platform'] else "+5%"
-                        c = edge_tts.Communicate(script, "hu-HU-TamasNeural", rate=rate)
-                        await c.save("temp_voice.mp3")
-                    run_async(gen_voice())
-                    
-                    # 3. VIZUÁL
-                    status_text.text("🎨 DALL-E 3 Kép generálása...")
-                    progress_bar.progress(60)
-                    img_prompt = f"Dark cinematic vertical masterpiece, {st.session_state['current_topic']}, mysterious, glitch art style, 8k, dark aesthetic"
-                    img_res = client.images.generate(model="dall-e-3", prompt=img_prompt, size="1024x1792", quality="hd")
-                    img_url = img_res.data[0].url
-                    
-                    # 4. RENDER
-                    status_text.text("🎞️ Videó renderelése (Zoom effekttel)...")
-                    progress_bar.progress(80)
-                    filename = f"onyx_{datetime.now().strftime('%H%M%S')}.mp4"
-                    final_video = render_video(img_url, "temp_voice.mp3", filename)
-                    
-                    progress_bar.progress(100)
-                    status_text.text("✅ KÉSZ!")
-                    
-                    # EREDMÉNY
-                    c_vid, c_data = st.columns(2)
-                    with c_vid:
-                        st.video(final_video)
-                    with c_data:
-                        st.success("TARTALOM KÉSZ A FELTÖLTÉSRE.")
-                        save_to_memory(st.session_state['current_topic'], st.session_state['current_platform'], st.session_state['current_opinion'], script)
-                        with open(final_video, "rb") as f:
-                            st.download_button("📥 LETÖLTÉS (.MP4)", f, filename)
-                            
-                except Exception as e:
-                    st.error(f"HIBA A GYÁRTÁSBAN: {e}")
-
-    # LÁBLÉC: MEMÓRIA
-    st.write("---")
-    with st.expander("📂 ONYX MEMÓRIA NAPLÓ (HISTÓRIA)"):
-        st.dataframe(history)
+                # 2. Hang
+                async def gv():
+                    rate = "+15%" if "TikTok" in platform else "+5%"
+                    c = edge_tts.Communicate(script, "hu-HU-TamasNeural", rate=rate)
+                    await c.save("temp.mp3")
+                run_async(gv())
+                
+                # 3. Kép (BRANDING)
+                img_url = generate_onyx_image(topic)
+                
+                # 4. Render
+                v_file = render_video(img_url, "temp.mp3")
+                st.video(v_file)
+                save_to_memory(topic, platform, op, script)
+                with open(v_file, "rb") as f: st.download_button("📥 LETÖLTÉS", f, "onyx_v5.mp4")
 
 if __name__ == "__main__":
     main()
