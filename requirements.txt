@@ -4,3 +4,5 @@ feedparser
 moviepy==1.0.3
 requests
 imageio-ffmpeg
+edge-tts
+asyncio
