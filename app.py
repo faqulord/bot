@@ -9,6 +9,14 @@ import edge_tts
 import re
 from datetime import datetime
 from openai import OpenAI
+
+# --- HACKER JAVÍTÁS (MONKEY PATCH) ---
+# Ez a rész "becsapja" a rendszert, hogy működjön az új szerveren is a régi videóvágó
+import PIL.Image
+if not hasattr(PIL.Image, 'ANTIALIAS'):
+    PIL.Image.ANTIALIAS = PIL.Image.LANCZOS
+# -------------------------------------
+
 from moviepy.editor import *
 from moviepy.video.fx.all import resize
 
@@ -117,7 +125,10 @@ def generate_onyx_image(topic):
     return img_res.data[0].url
 
 def render_video(image_url, audio_file, filename="onyx_render.mp4"):
-    with open("temp_img.png", "wb") as f: f.write(requests.get(image_url).content)
+    headers = {'User-Agent': 'Mozilla/5.0'} # Fejléc a képletöltéshez
+    with open("temp_img.png", "wb") as f: 
+        f.write(requests.get(image_url, headers=headers).content)
+        
     audio = AudioFileClip(audio_file)
     duration = audio.duration + 0.5
     
@@ -141,6 +152,7 @@ def render_video(image_url, audio_file, filename="onyx_render.mp4"):
         except: pass
         
     clip = clip.set_audio(final_audio)
+    # Biztonságos renderelési beállítások
     clip.write_videofile(filename, fps=24, codec="libx264", audio_codec="aac", threads=2, preset="ultrafast")
     return filename
 
@@ -161,7 +173,7 @@ def main():
         platform = st.radio("PLATFORM:", ["TikTok (Csali)", "YouTube"])
         
         if st.button("🔥 EXECUTE PROTOCOL"):
-            with st.spinner("Generálás..."):
+            with st.spinner("Generálás (Ez eltarthat 1 percig)..."):
                 # 1. Vélemény & Script
                 op = get_onyx_opinion(topic, history)
                 script = generate_pro_script(topic, platform, op)
