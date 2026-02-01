@@ -20,7 +20,7 @@ if not hasattr(PIL.Image, 'ANTIALIAS'):
 from moviepy.editor import *
 
 # --- 1. DESIGN: ULTIMATE PURPLE ---
-st.set_page_config(page_title="ONYX // V13 ULTIMATE", page_icon="🟣", layout="wide")
+st.set_page_config(page_title="ONYX // V13.1 STABLE", page_icon="🟣", layout="wide")
 
 st.markdown("""
 <style>
@@ -46,7 +46,7 @@ st.markdown("""
     
     /* SIDEBAR (ELŐZMÉNYEK) */
     [data-testid="stSidebar"] { background-color: #0a0014; border-right: 1px solid #b829ff; }
-    .history-item { padding: 10px; border-bottom: 1px solid #333; font-size: 0.8em; color: #aaa; }
+    .history-item { padding: 10px; border-bottom: 1px solid #333; font-size: 0.8em; color: #aaa; margin-bottom: 5px; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -67,7 +67,7 @@ BG_MUSIC = "background.mp3"
 MASTER_IMG = "onyx_master_v13.png" 
 OUTRO_IMG = "onyx_outro_v13.png"
 
-# --- 2. MEMÓRIA & ELŐZMÉNYEK (VISSZATÉRT!) ---
+# --- 2. MEMÓRIA & ELŐZMÉNYEK (JAVÍTVA) ---
 def run_async(coroutine):
     try:
         loop = asyncio.get_event_loop()
@@ -92,9 +92,12 @@ def save_to_memory(topic):
     history.insert(0, entry)
     with open(HISTORY_FILE, "w", encoding="utf-8") as f: json.dump(history[:50], f, ensure_ascii=False, indent=4)
 
+def clear_memory():
+    if os.path.exists(HISTORY_FILE):
+        os.remove(HISTORY_FILE)
+
 # --- 3. MASTER ASSET GENERÁTOR (4D LILA STÍLUS) ---
 def generate_master_assets():
-    # A TE KÉRÉSED SZERINTI PROMPT
     prompt_intro = """
     A futuristic 4D render masterpiece of a mysterious character named ONYX. 
     A figure in a high-tech black hoodie sits in a command center in front of supercomputers.
@@ -125,7 +128,6 @@ def generate_master_assets():
 
 # --- 4. DEEP BRAIN & SZKRIPT (KUTATÓ MÓD) ---
 def deep_research(topic):
-    # Először gondolkodik
     prompt = f"""
     Téma: "{topic}"
     FELADAT: Elemezd ezt a hírt.
@@ -166,47 +168,38 @@ def generate_script(topic, research, source_name, platform):
 
 # --- 5. HANG GENERÁLÁS (MODDED TAMÁS) ---
 async def generate_voice(text, filename):
-    # -8% sebesség, -20Hz mélység = ONYX HANGJA
     communicate = edge_tts.Communicate(text, "hu-HU-TamasNeural", rate="-8%", pitch="-20Hz")
     await communicate.save(filename)
 
 # --- 6. RENDER MOTOR (DUAL CORE) ---
 def render_video(topic_img_url, script, platform):
-    # Kép mentés (ha még nincs)
     if not os.path.exists("temp_topic.png"):
         with open("temp_topic.png", "wb") as f: f.write(requests.get(topic_img_url).content)
     
-    # Hang
     audio_file = f"temp_audio_{platform}.mp3"
     run_async(generate_voice(script, audio_file))
     
     audio = AudioFileClip(audio_file)
     duration = audio.duration + 1.0
     
-    # Klipek vágása
-    intro_dur = 4.0 # 4 másodperc intro
+    intro_dur = 4.0
     topic_dur = duration - intro_dur
     if topic_dur < 1: topic_dur = 1
     
-    # Intro Clip (Master Kép)
     clip_intro = ImageClip(MASTER_IMG).set_duration(intro_dur)
     clip_intro = clip_intro.resize(height=1920).crop(width=1080, height=1920, x_center=540, y_center=960)
     
-    # Topic Clip (Téma Kép)
     clip_topic = ImageClip("temp_topic.png").set_duration(topic_dur)
     clip_topic = clip_topic.resize(height=1920).crop(width=1080, height=1920, x_center=540, y_center=960)
     
-    # Összefűzés
     clips = [clip_intro, clip_topic]
     
-    # Outro (Csak YouTube)
     if platform == "YouTube" and os.path.exists(OUTRO_IMG):
         clip_outro = ImageClip(OUTRO_IMG).set_duration(4.0).resize(height=1920).crop(width=1080, height=1920, x_center=540, y_center=960)
         clips.append(clip_outro)
     
     final_video = concatenate_videoclips(clips)
     
-    # Háttérzene
     if os.path.exists(BG_MUSIC):
         bg = AudioFileClip(BG_MUSIC).volumex(0.08)
         if bg.duration < final_video.duration:
@@ -224,24 +217,31 @@ def render_video(topic_img_url, script, platform):
 
 # --- 7. VEZÉRLŐPULT (MAIN UI) ---
 def main():
-    # --- SIDEBAR: MEMÓRIA ---
+    # --- SIDEBAR: MEMÓRIA (JAVÍTVA) ---
     with st.sidebar:
         st.header("🗄️ MEMÓRIA BANK")
+        if st.button("🗑️ MEMÓRIA TÖRLÉSE"):
+            clear_memory()
+            st.rerun()
+            
         history = load_memory()
         if not history:
             st.write("Az adatbázis üres.")
-        for item in history:
-            st.markdown(f"""
-            <div class="history-item">
-                <b>{item['timestamp']}</b><br>
-                {item['topic'][:30]}...
-            </div>
-            """, unsafe_allow_html=True)
+        else:
+            for item in history:
+                # GOLYÓÁLLÓ VÉDELEM: Ha hiányzik adat, nem omlik össze
+                ts = item.get('timestamp', 'Ismeretlen idő')
+                tp = item.get('topic', 'Ismeretlen téma')
+                st.markdown(f"""
+                <div class="history-item">
+                    <b>{ts}</b><br>
+                    {tp[:30]}...
+                </div>
+                """, unsafe_allow_html=True)
             
     # --- MAIN PAGE ---
-    st.title("🟣 PROJECT: ONYX // V13 FINAL")
+    st.title("🟣 PROJECT: ONYX // V13.1 STABLE")
     
-    # SETUP CHECK
     if not os.path.exists(MASTER_IMG):
         st.warning("⚠️ AZ ÚJ RENDSZER TELEPÍTÉST IGÉNYEL!")
         if st.button("🛠️ SETUP: ONYX 4D LILA RENDSZER ÉLESÍTÉSE"):
@@ -251,7 +251,6 @@ def main():
                     st.rerun()
         st.stop()
     
-    # STATS
     c1, c2, c3 = st.columns(3)
     c1.image(MASTER_IMG, width=120)
     c2.markdown('<div class="stat-card">🧠 DUAL CORE<br>ONLINE</div>', unsafe_allow_html=True)
@@ -259,7 +258,6 @@ def main():
     
     st.write("---")
     
-    # HÍREK
     rss_url = "https://www.reddit.com/r/Futurology/top/.rss"
     if st.button("🔄 HÁLÓZAT SZKENNELÉSE (RSS)"):
         feed = feedparser.parse(requests.get(rss_url, headers={'User-Agent': 'ONYX'}).content)
@@ -285,34 +283,28 @@ def main():
         if st.button("🚀 EXECUTE FULL PROTOCOL"):
             status = st.status("ONYX dolgozik...", expanded=True)
             
-            # 1. KUTATÁS
             status.write("🧠 Mély kutatás (Deep Research)...")
             research = deep_research(selected_item['title'])
             
-            # 2. KÉP (Közös)
             status.write("🎨 Téma kép generálása (Lila esztétika)...")
             t_prompt = f"Cyberpunk illustration of {selected_item['title']}. Purple and black neon lighting, dark atmosphere, 4D render style. No text."
             t_res = client.images.generate(model="dall-e-3", prompt=t_prompt, size="1024x1792", quality="hd")
             t_url = t_res.data[0].url
             
-            # 3. SZKRIPTEK
             status.write("📝 Forgatókönyvek írása...")
             script_tk = generate_script(selected_item['title'], research, selected_item['source'], "TikTok")
             script_yt = generate_script(selected_item['title'], research, selected_item['source'], "YouTube")
             
-            # 4. RENDER (Parallel flow)
             status.write("🎞️ TikTok verzió renderelése...")
             file_tk = render_video(t_url, script_tk, "TikTok")
             
             status.write("🎞️ YouTube verzió renderelése (Hosszú)...")
             file_yt = render_video(t_url, script_yt, "YouTube")
             
-            # 5. MENTÉS
             save_to_memory(selected_item['title'])
             
             status.update(label="✅ GYÁRTÁS BEFEJEZŐDÖTT!", state="complete")
             
-            # EREDMÉNYEK
             st.write("---")
             col_a, col_b = st.columns(2)
             
