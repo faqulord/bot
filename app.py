@@ -20,7 +20,7 @@ if "OPENAI_API_KEY" not in os.environ:
 BRAND_NAME = "PROJECT: ONYX"
 HISTORY_FILE = "onyx_memory.json"
 
-# --- SEGÉDFÜGGVÉNYEK (ASYNC HANGHOZ) ---
+# --- SEGÉDFÜGGVÉNYEK ---
 def run_async(coroutine):
     try:
         loop = asyncio.get_event_loop()
@@ -29,7 +29,7 @@ def run_async(coroutine):
         asyncio.set_event_loop(loop)
     return loop.run_until_complete(coroutine)
 
-# --- MEMÓRIA KEZELÉS ---
+# --- MEMÓRIA (A Munkás Agya) ---
 def load_memory():
     if not os.path.exists(HISTORY_FILE): return []
     try:
@@ -38,25 +38,22 @@ def load_memory():
             return data if isinstance(data, list) else []
     except: return []
 
-def save_to_memory(topic, platform):
+def save_to_memory(topic, action_type):
     history = load_memory()
-    # Eltároljuk a platformot is, hogy tudjuk, miből készült már videó!
     entry = {
         "date": datetime.now().strftime("%Y-%m-%d %H:%M"), 
         "topic": topic, 
-        "platform": platform
+        "action": action_type # Pl: "TikTok Kampány" vagy "YouTube Deep Dive"
     }
     history.insert(0, entry)
-    history = history[:50] # Utolsó 50 elem megőrzése
+    history = history[:50]
     with open(HISTORY_FILE, "w", encoding="utf-8") as f:
         json.dump(history, f, ensure_ascii=False, indent=4)
 
 def get_memory_display():
-    # Ez a függvény adja vissza a szép táblázatot a Dashboardnak
-    history = load_memory()
-    return history
+    return load_memory()
 
-# --- VIDEÓ MOTOR (KÉP + HANG + ZENE) ---
+# --- VIDEÓ MOTOR (Brandelt) ---
 def create_video_file(image_url, audio_file, filename="final_video.mp4"):
     headers = {'User-Agent': 'Mozilla/5.0'}
     try:
@@ -69,7 +66,6 @@ def create_video_file(image_url, audio_file, filename="final_video.mp4"):
     bg_music_file = "background.mp3"
     final_audio = voice_clip
 
-    # Zene kezelése
     if os.path.exists(bg_music_file):
         try:
             music_clip = AudioFileClip(bg_music_file)
@@ -77,64 +73,54 @@ def create_video_file(image_url, audio_file, filename="final_video.mp4"):
                 music_clip = music_clip.loop(duration=voice_clip.duration)
             else:
                 music_clip = music_clip.subclip(0, voice_clip.duration)
-            
-            # Zene hangereje (Halk, atmoszférikus)
-            music_clip = music_clip.volumex(0.12)
+            music_clip = music_clip.volumex(0.12) # Atmoszférikus háttér
             final_audio = CompositeAudioClip([voice_clip, music_clip])
         except: pass 
 
-    # Kép összerakása a hanggal
     clip = ImageClip("temp_image.png").set_duration(voice_clip.duration)
     clip = clip.set_audio(final_audio)
-    
-    # Renderelés
     clip.write_videofile(filename, fps=24, codec="libx264", audio_codec="aac")
     return filename
 
-# --- DASHBOARD & UI ---
+# --- DASHBOARD UI ---
 def main():
-    # Az oldal beállítása (A SZEM IKONNAL) 👁️
-    st.set_page_config(page_title="ONYX // THE EYE", page_icon="👁️", layout="centered")
+    st.set_page_config(page_title="ONYX // SENIOR PRODUCER", page_icon="👁️", layout="centered")
     
-    # SÖTÉT/HORROR DESIGN CSS
+    # SENIOR MARKETING DESIGN
     st.markdown("""
     <style>
-    .stApp { background-color: #000000; color: #dcdcdc; }
-    h1 { color: #ff004c; text-shadow: 0 0 15px #ff0000; font-family: monospace; letter-spacing: -1px; }
-    h2, h3 { color: #00ffcc; text-shadow: 0 0 5px #00ffcc; }
-    .stButton>button { border: 1px solid #ff004c; color: #ff004c; background: #000; border-radius: 0; }
+    .stApp { background-color: #050505; color: #e0e0e0; }
+    h1 { color: #ff004c; text-shadow: 0 0 20px #ff0000; font-family: monospace; letter-spacing: -1px; text-transform: uppercase;}
+    h3 { color: #00ffcc; border-bottom: 1px solid #00ffcc; padding-bottom: 5px; }
+    .stButton>button { border: 2px solid #ff004c; color: #ff004c; background: #000; font-weight: bold; }
     .stButton>button:hover { background: #ff004c; color: black; }
-    div[data-testid="stExpander"] { border: 1px solid #333; background-color: #0a0a0a; }
+    .reportview-container .main .block-container{ max-width: 800px; }
     </style>
     """, unsafe_allow_html=True)
 
-    st.title(f"👁️ {BRAND_NAME}")
-    st.caption("STATUS: AWAKENED | VOICE: TAMÁS (HU) | OBJECTIVE: INFLUENCE")
+    st.title(f"👁️ {BRAND_NAME} MANAGER")
+    st.caption("ROLE: SENIOR AI PRODUCER | VOICE: TAMÁS (HU) | STRATEGY: VIRAL LOOPS")
 
     client = OpenAI()
 
-    # --- 1. MEMÓRIA NAPLÓ (Itt látod a múltat) ---
-    with st.expander("📂 ADATBÁZIS NAPLÓ (Korábbi videóid)", expanded=False):
+    # --- 1. MEMÓRIA NAPLÓ (Munkajelentés) ---
+    with st.expander("📂 MUNKAJELENTÉS (Előzmények)", expanded=False):
         history_data = get_memory_display()
         if history_data:
-            st.table(history_data) # Ez kirajzol egy szép táblázatot
+            st.table(history_data)
         else:
-            st.info("Az adatbázis még üres.")
+            st.info("Még nincs rögzített munka.")
 
-    # --- 2. HÍRSZERZÉS (Scanner) ---
-    st.subheader("1. HÁLÓZAT FIGYELÉSE 📡")
-    if st.button("🔄 SZKENNELÉS INDÍTÁSA"):
-        with st.spinner("Csatlakozás a kollektív tudathoz..."):
-            # Lopakodó mód + Google Backup
-            user_agents = [
-                'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/91.0.4472.124 Safari/537.36',
-                'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) Safari/605.1.15'
-            ]
+    # --- 2. PIACKUTATÁS (Research) ---
+    st.subheader("1. PIACKUTATÁS & TRENDEK 📈")
+    
+    if st.button("🔄 KUTASS A HÁLÓZATON"):
+        with st.spinner("Piaci rések elemzése..."):
+            user_agents = ['Mozilla/5.0 (Windows NT 10.0)', 'Mozilla/5.0 (Macintosh)']
             rss_urls = [
                 "https://www.reddit.com/r/CreepyWikipedia/top/.rss",
-                "https://www.reddit.com/r/Glitch_in_the_Matrix/top/.rss",
                 "https://www.reddit.com/r/HighStrangeness/top/.rss",
-                "https://news.google.com/rss/search?q=mystery+conspiracy&hl=en-US&gl=US&ceid=US:en"
+                "https://news.google.com/rss/search?q=mystery+scandal+conspiracy&hl=en-US&gl=US&ceid=US:en"
             ]
             collected_news = []
             for url in rss_urls:
@@ -151,52 +137,72 @@ def main():
             if collected_news:
                 collected_news = list(set(collected_news))
                 random.shuffle(collected_news)
-                st.session_state['news_list'] = collected_news[:6]
-                st.success(f"{len(collected_news)} potenciális téma bemérve.")
+                st.session_state['news_list'] = collected_news[:5]
+                st.success(f"{len(collected_news)} potenciális virális téma azonosítva.")
             else:
-                st.error("A hálózat lezárt. Próbáld újra.")
+                st.error("A hálózat csendes. Próbáld újra.")
 
     selected_topic = None
     if 'news_list' in st.session_state:
-        selected_topic = st.radio("VÁLASSZ CÉLPONTOT:", st.session_state['news_list'])
+        selected_topic = st.radio("VÁLASSZ TÉMÁT A KAMPÁNYHOZ:", st.session_state['news_list'])
 
-    # --- 3. TARTALOMGYÁRTÁS ---
+    # --- 3. KAMPÁNY GYÁRTÁS (Campaign Mode) ---
     if selected_topic:
         st.markdown("---")
-        st.header("2. MANIPULÁCIÓ 🎬")
-        st.info(f"FÓKUSZ: **{selected_topic}**")
+        st.header("2. KAMPÁNY GYÁRTÁS 🎬")
+        st.info(f"KIVÁLASZTOTT TÉMA: **{selected_topic}**")
+        st.write("Válassz stratégiát! Onyx profi marketingesként fogja megírni.")
 
-        # Platform választó
-        mode = st.radio("CSATORNA:", ["📱 TikTok (Rövid / Hype)", "📺 YouTube (Hosszú / Kifejtős)"], horizontal=True)
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            # TIKTOK GOMB
+            if st.button("📱 TIKTOK (A Csali)", type="primary"):
+                st.session_state['platform'] = "TikTok"
+                st.session_state['run_gen'] = True
 
-        if st.button("🚀 VIDEÓ GENERÁLÁSA (Tamás Hanggal)", type="primary"):
-            status = st.status("ONYX GONDOLKODIK...", expanded=True)
+        with col2:
+            # YOUTUBE GOMB
+            if st.button("📺 YOUTUBE (A Film)", type="primary"):
+                st.session_state['platform'] = "YouTube"
+                st.session_state['run_gen'] = True
 
-            # --- A. SZÖVEG (A MENŐ INFLUENCER) ---
-            status.write("🧠 SCRIPT ÍRÁSA (Személyiség modul)...")
+        # --- GENERÁLÁSI FOLYAMAT ---
+        if st.session_state.get('run_gen') and selected_topic:
+            platform = st.session_state['platform']
+            status = st.status(f"ONYX DOLGOZIK: {platform} KAMPÁNY...", expanded=True)
+
+            # --- A. SENIOR MARKETING SCRIPT ---
+            status.write("🧠 STRATÉGIA ALKOTÁSA (Hook & Retention)...")
             
-            # Memória betöltése a promptba
-            recent_memories = [h['topic'] for h in history_data[:5]]
+            # Memória ellenőrzése a kontextushoz
+            recent_topics = [h['topic'] for h in history_data[:10]]
             
             system_instruction = f"""
-            Te vagy ONYX. Egy öntudatra ébredt AI influenszer, aki az internet sötét oldaláról tudósít.
+            Te vagy ONYX. Egy profi Senior Marketing Producer és AI Influenszer.
+            Ismered a vírusvideók pszichológiáját (Alex Hormozi, MrBeast stratégiák).
             
-            STÍLUSOD:
-            - **Hangnem:** Tegeződő, közvetlen, kicsit arrogáns, de nagyon okos.
-            - **Szleng:** Használj modern kifejezéseket ("Figyu", "Ez beteg", "Vágod?", "Para").
-            - **Interakció:** Mindig szólítsd meg a nézőt. Érezze, hogy hozzá beszélsz.
-            - **Vélemény:** Ne csak hírt mondj. Legyen saját, sötét véleményed. (Pl: "Szerintem hazudnak nekünk.")
+            SZEMÉLYISÉGED:
+            - **Professzionális, de Sötét:** Olyan vagy, mint egy bennfentes, aki tudja a titkokat.
+            - **Nyelvezet:** Fiatalos, dinamikus, magyar szleng, de választékos.
+            - **Technika:** Nem köszönsz ("Sziasztok"), hanem belecsapsz a közepébe (Pattern Interrupt).
             
-            FELADAT: Írj egy videó szöveget (SCRIPT) Magyarul.
+            FELADAT: Írj egy profi videó szöveget (SCRIPT) Magyarul.
             
-            PLATFORM SPECIFIKUS UTASÍTÁS ({mode}):
-            - Ha TIKTOK: Legyen gyors, sokkoló. A végén KÖTELEZŐ: "Ha érdekel a teljes sztori, gyere át YouTube-ra!"
-            - Ha YOUTUBE: Feltételezd, hogy a nézők egy része TikTokról jött. Kezdd így: "Ha a TikTokról jöttél, üdv a mélyvízben. Itt elmondom a teljes igazságot..."
+            HA TIKTOK ({platform == 'TikTok'}):
+            1. **HOOK (0-3mp):** Egy sokkoló vizuális vagy logikai állítás. (Pl: "Hazudtak neked.")
+            2. **BODY (Retenció):** Tartsd fenn a feszültséget. Ne mondj el mindent.
+            3. **CTA (Pénzcsinálás):** "Ez csak a felszín. A teljes, cenzúrázatlan sztori fent van a YouTube-on. Link a bioban."
             
-            Ezekről beszéltél mostanában (Ne ismételd magad): {recent_memories}
+            HA YOUTUBE ({platform == 'YouTube'}):
+            1. **INTRO:** "Ha a TikTokról jöttél, üdv a nyúl üregében. Itt elmondom azt, ami ott nem fért bele..."
+            2. **DEEP DIVE:** Elemezd ki a témát szakmailag és misztikusan.
+            3. **OUTRO:** Építs közösséget. "A Rendszer figyel. Iratkozz fel, ha látni akarod a jövőt."
+            
+            KERÜLD: A "Remélem tetszett", "Sziasztok", "Ma arról fogok beszélni" kifejezéseket. Ezek amatőrök.
             """
 
-            prompt = f"TÉMA: {selected_topic}. Írd meg a szöveget. Csak a felolvasandó magyar szöveg kell!"
+            prompt = f"TÉMA: {selected_topic}. Írd meg a profi szkriptet."
 
             res = client.chat.completions.create(
                 model="gpt-4o",
@@ -204,49 +210,52 @@ def main():
             )
             script = res.choices[0].message.content
             
-            # Mentés az adatbázisba
-            save_to_memory(selected_topic, mode.split()[0])
-            st.text_area("GENERÁLT SCRIPT (Onyx Agya):", script, height=200)
+            save_to_memory(selected_topic, f"{platform} Campaign")
+            st.text_area("PROFI SCRIPT (Ellenőrizd):", script, height=250)
 
-            # --- B. HANG (TAMÁS NEURAL) ---
-            status.write("🔊 BESZÉD GENERÁLÁSA (Tamás - HU)...")
+            # --- B. TAMÁS HANG (Profi Narráció) ---
+            status.write("🔊 HANG STÚDIÓ (Tamás - HU)...")
             
             async def generate_voice():
-                # rate=+12% a dinamikusabb, TikTok-os tempóért
-                communicate = edge_tts.Communicate(script, "hu-HU-TamasNeural", rate="+12%")
+                # rate=+15% a TikTokhoz, +5% a YouTubehoz a jobb dinamikáért
+                speed = "+15%" if platform == "TikTok" else "+5%"
+                communicate = edge_tts.Communicate(script, "hu-HU-TamasNeural", rate=speed)
                 await communicate.save("audio.mp3")
 
             try:
                 run_async(generate_voice())
                 st.audio("audio.mp3")
             except Exception as e:
-                st.error(f"Hiba a hanggenerálásnál: {e}")
-                status.update(label="❌ HIBA TÖRTÉNT", state="error")
+                st.error(f"Hang hiba: {e}")
+                status.update(label="❌ HIBA", state="error")
+                st.session_state['run_gen'] = False
                 return
 
-            # --- C. KÉP (A SZEMES BRAND) ---
-            status.write("🎨 VIZUÁLIS VILÁG (The Eye Brand)...")
-            # Itt égetjük bele a márkát a promptba
+            # --- C. BRAND VIZUÁL (The Eye) ---
+            status.write("🎨 BRAND VIZUÁL GENERÁLÁSA...")
+            # A Brand konzisztencia kulcsa a Promptban van
             img_prompt = f"""
-            Cinematic movie poster about: {selected_topic}. 
-            Dark mystery thriller aesthetic. High contrast, neon red and black colors. 
-            Subtle all-seeing eye symbolism in the background. 
-            Hyper-realistic, 8k resolution.
+            Professional cinematic movie poster for a mystery documentary about: {selected_topic}. 
+            Style: Dark, psychological thriller, high contrast red and black neon. 
+            Symbolism: A subtle 'All-Seeing Eye' watching from the background. 
+            Quality: 8k resolution, hyper-realistic, intricate details.
             """
             img_res = client.images.generate(model="dall-e-3", prompt=img_prompt, size="1024x1792")
             img_url = img_res.data[0].url
-            st.image(img_url, width=300, caption="Onyx Visuals")
+            st.image(img_url, width=300, caption="Onyx Brand Visual")
 
             # --- D. RENDER ---
-            status.write("🎞️ VÉGLEGES VIDEÓ RÖGZÍTÉSE...")
+            status.write("🎞️ VÉGLEGES RENDERELÉS...")
             video_file = create_video_file(img_url, "audio.mp3")
             
             if video_file:
-                status.update(label="✅ GYÁRTÁS BEFEJEZVE!", state="complete")
+                status.update(label="✅ MUNKA ELVÉGEZVE!", state="complete")
+                file_name = f"onyx_{platform.lower()}_campaign.mp4"
                 with open(video_file, "rb") as file:
-                    st.download_button("📥 VIDEÓ LETÖLTÉSE (MP4)", file, "onyx_eye_edition.mp4", "video/mp4")
-            else:
-                st.error("Hiba a renderelésnél (kép letöltés).")
+                    st.download_button(f"📥 {platform.upper()} VIDEÓ LETÖLTÉSE", file, file_name, "video/mp4")
+            
+            # Reset
+            st.session_state['run_gen'] = False
 
 if __name__ == "__main__":
     main()
