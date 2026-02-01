@@ -11,33 +11,32 @@ import time
 from datetime import datetime
 from openai import OpenAI
 
-# --- 🛠️ RENDSZER JAVÍTÁS (MONKEY PATCH) ---
-# Ez a rész elhiteti a rendszerrel, hogy a régi parancsok léteznek.
+# --- 🛠️ HACKER JAVÍTÁS (MONKEY PATCH) ---
+# Ez kötelező, hogy a MoviePy elinduljon
 import PIL.Image
 if not hasattr(PIL.Image, 'ANTIALIAS'):
     PIL.Image.ANTIALIAS = PIL.Image.LANCZOS
-# ------------------------------------------
+# ----------------------------------------
 
 from moviepy.editor import *
-from moviepy.video.fx.all import resize
+# Nem importáljuk a resize-t, hogy véletlenül se használjuk hibásan
+# from moviepy.video.fx.all import resize 
 
-# --- 1. KONFIGURÁCIÓ & DESIGN ---
-st.set_page_config(page_title="ONYX // OS V6.1", page_icon="👁️", layout="wide")
+# --- 1. KONFIGURÁCIÓ ---
+st.set_page_config(page_title="ONYX // OS V6.2", page_icon="👁️", layout="wide")
 
 st.markdown("""
 <style>
-    .stApp { background-color: #050505; color: #e0e0e0; }
+    .stApp { background-color: #000000; color: #e0e0e0; }
     h1, h2, h3 { color: #00ffcc; font-family: 'Courier New'; text-transform: uppercase; letter-spacing: 2px; text-shadow: 0 0 10px #00ffcc; }
-    .stButton>button { background: linear-gradient(45deg, #004433, #000000); color: #00ffcc; border: 1px solid #00ffcc; width: 100%; font-weight: bold; transition: 0.3s; }
-    .stButton>button:hover { background: #00ffcc; color: black; box-shadow: 0 0 15px #00ffcc; }
-    .stat-box { border: 1px solid #333; padding: 15px; border-radius: 5px; background: rgba(255, 255, 255, 0.05); text-align: center; margin-bottom: 10px; }
+    .stButton>button { background: #111; color: #00ffcc; border: 1px solid #00ffcc; width: 100%; font-weight: bold; }
+    .stButton>button:hover { background: #00ffcc; color: black; }
+    .stat-box { border: 1px solid #333; padding: 15px; border-radius: 5px; background: #0a0a0a; text-align: center; margin-bottom: 10px; }
     .stat-num { font-size: 24px; font-weight: bold; color: #ff004c; }
-    .news-item { padding: 10px; border-bottom: 1px solid #333; font-size: 0.9em; }
-    .news-date { color: #888; font-size: 0.8em; font-family: 'Courier New'; }
 </style>
 """, unsafe_allow_html=True)
 
-# API Kulcs kezelés
+# API Kulcs
 api_key = None
 try:
     api_key = st.secrets["OPENAI_API_KEY"]
@@ -52,7 +51,7 @@ client = OpenAI(api_key=api_key)
 HISTORY_FILE = "onyx_memory.json"
 BG_MUSIC = "background.mp3"
 
-# --- 2. ADATKEZELÉS ---
+# --- 2. LOGIKA ---
 def run_async(coroutine):
     try:
         loop = asyncio.get_event_loop()
@@ -86,22 +85,18 @@ def clean_script_for_speech(text):
     text = re.sub(r'(HOOK|SCENE|CUT|B-ROLL|INTRO|OUTRO):', '', text, flags=re.IGNORECASE)
     return text.strip()
 
-# --- 3. INTELLIGENCIA & DÁTUMOZÁS ---
+# --- 3. ONYX INTELLIGENCIA ---
 def analyze_trends(rss_url):
     try:
         feed = feedparser.parse(requests.get(rss_url, headers={'User-Agent': 'ONYX-BOT'}).content)
         results = []
         for entry in feed.entries[:8]:
             date_str = "FRISS ADAT"
-            if hasattr(entry, 'published'):
-                date_str = entry.published[:16]
-            elif hasattr(entry, 'updated'):
-                date_str = entry.updated[:16]
+            if hasattr(entry, 'published'): date_str = entry.published[:16]
+            elif hasattr(entry, 'updated'): date_str = entry.updated[:16]
             results.append({"title": entry.title, "date": date_str})
         return results
-    except Exception as e:
-        st.error(f"Hiba a szkennelésnél: {e}")
-        return []
+    except: return []
 
 def get_onyx_opinion(topic, history):
     recent_context = " | ".join([h['topic'] for h in history[:3]])
@@ -124,7 +119,7 @@ def generate_pro_script(topic, platform, opinion):
     res = client.chat.completions.create(model="gpt-4o", messages=[{"role": "system", "content": sys_prompt}, {"role": "user", "content": user_prompt}])
     return clean_script_for_speech(res.choices[0].message.content)
 
-# --- 4. BRANDING & STABIL RENDER (ZOOM JAVÍTVA) ---
+# --- 4. BRANDING & STABIL RENDER (V6.2) ---
 def generate_onyx_image(topic):
     # MASTER PROMPT: Kapucnis alak + Hologram
     prompt = f"""
@@ -138,32 +133,31 @@ def generate_onyx_image(topic):
     return img_res.data[0].url
 
 def render_video(image_url, audio_file, filename="onyx_render.mp4"):
+    # 1. Kép letöltése
     headers = {'User-Agent': 'Mozilla/5.0'}
     with open("temp_img.png", "wb") as f: 
         f.write(requests.get(image_url, headers=headers).content)
         
     audio = AudioFileClip(audio_file)
-    duration = audio.duration + 0.5 # Kis ráhagyás
+    duration = audio.duration + 0.5 
     
-    # 1. Kép betöltése
+    # 2. Kép betöltése
     clip = ImageClip("temp_img.png").set_duration(duration)
-    w, h = clip.size
     
-    # 2. Vágás 9:16-ra (TikTok szabvány)
-    # Ha a kép szélesebb mint magas (ritka DALL-E verticalnál, de biztos ami biztos)
-    if w > h:
-        clip = clip.crop(x1=w/2 - 540, y1=0, width=1080, height=1920)
-    else:
-        # Ha álló kép (szabványos): Felnagyítjuk, hogy kitöltse a 1920 magas képernyőt
-        clip = clip.resize(height=1920)
-        # Majd kivágjuk a közepét (1080 széles)
-        clip = clip.crop(x1=clip.w/2 - 540, width=1080, height=1920)
+    # 3. FIX MÉRETEZÉS (Nincs dinamikus zoom, ami a hibát okozta)
+    # Biztonságos méretezés egész számokkal
+    target_height = 1920
+    target_width = 1080
     
-    # 3. STABILIZÁLT RENDER (Kivettük a zoom effektet a stabilitásért)
-    # A Zoom itt okozott matematikai hibát a szerveren. 
-    # Most statikus, de tűéles képet kapunk, ami biztosan lefut.
+    # Átméretezés magasságra (int() használata a biztonságért)
+    clip = clip.resize(height=target_height)
     
-    # Audio hozzáadása
+    # Középre vágás
+    x_center = int(clip.w / 2)
+    y_center = int(clip.h / 2)
+    clip = clip.crop(width=target_width, height=target_height, x_center=x_center, y_center=y_center)
+    
+    # 4. Audio összefűzés
     final_audio = audio
     if os.path.exists(BG_MUSIC):
         try:
@@ -173,19 +167,19 @@ def render_video(image_url, audio_file, filename="onyx_render.mp4"):
         
     clip = clip.set_audio(final_audio)
     
-    # Renderelés
+    # 5. Renderelés (Biztonságos módban)
     clip.write_videofile(filename, fps=24, codec="libx264", audio_codec="aac", threads=2, preset="ultrafast")
     return filename
 
 # --- 5. VEZÉRLŐPULT ---
 def main():
-    st.title(f"👁️ PROJECT: ONYX // SYSTEM V6.1")
+    st.title(f"👁️ PROJECT: ONYX // SYSTEM V6.2")
     history = load_memory()
     
     # ANALITIKA
     c1, c2 = st.columns(2)
     with c1: st.markdown(f'<div class="stat-box"><span class="stat-num">{len(history)}</span><br>MEMÓRIA BEJEGYZÉS</div>', unsafe_allow_html=True)
-    with c2: st.markdown(f'<div class="stat-box"><span class="stat-num">ONLINE</span><br>NEURÁLIS KAPCSOLAT</div>', unsafe_allow_html=True)
+    with c2: st.markdown(f'<div class="stat-box"><span class="stat-num">STABIL</span><br>RENDER MOTOR</div>', unsafe_allow_html=True)
     
     st.write("---")
 
@@ -196,52 +190,53 @@ def main():
         "Kripto & Pénz": "https://www.reddit.com/r/CryptoCurrency/top/.rss"
     }
     
-    selected_source = st.selectbox("FORRÁS KIVÁLASZTÁSA:", list(rss_options.keys()))
+    source = st.selectbox("FORRÁS:", list(rss_options.keys()))
     
     if st.button("📡 SCAN NETWORK"):
         with st.spinner("Adatcsomagok elemzése..."):
-            entries = analyze_trends(rss_options[selected_source])
+            entries = analyze_trends(rss_options[source])
             st.session_state['scan'] = entries
         
     if 'scan' in st.session_state:
-        # Dátumozott lista megjelenítése
-        options_map = {f"[{item['date']}] {item['title']}": item['title'] for item in st.session_state['scan']}
-        selected_label = st.selectbox("CÉLPONT KIVÁLASZTÁSA:", list(options_map.keys()))
-        topic = options_map[selected_label]
+        # Dátumozott lista
+        options = {f"[{i['date']}] {i['title']}": i['title'] for i in st.session_state['scan']}
+        sel = st.selectbox("CÉLPONT:", list(options.keys()))
+        topic = options[sel]
         
         st.write("---")
         platform = st.radio("PLATFORM:", ["TikTok (Csali)", "YouTube"], horizontal=True)
         
-        if st.button("🔥 EXECUTE PROTOCOL (GENERÁLÁS)"):
+        if st.button("🔥 GENERÁLÁS INDÍTÁSA"):
             status = st.status("ONYX dolgozik...", expanded=True)
             
-            # 1. Vélemény & Script
-            status.write("🧠 Stratégia alkotása...")
+            # 1. Script
+            status.write("🧠 Stratégia...")
             op = get_onyx_opinion(topic, history)
             script = generate_pro_script(topic, platform, op)
-            st.info(f"**VÉLEMÉNY:** {op}")
+            st.info(f"{op}")
             
             # 2. Hang
-            status.write("🔊 Hangszintézis...")
+            status.write("🔊 Hang...")
             async def gv():
                 rate = "+15%" if "TikTok" in platform else "+5%"
                 c = edge_tts.Communicate(script, "hu-HU-TamasNeural", rate=rate)
                 await c.save("temp.mp3")
             run_async(gv())
             
-            # 3. Kép (BRANDING)
-            status.write("🎨 Vizuális manifesztáció (Kapucnis Alak)...")
-            img_url = generate_onyx_image(topic)
+            # 3. Kép
+            status.write("🎨 Vizuál...")
+            img = generate_onyx_image(topic)
             
             # 4. Render
-            status.write("🎞️ Videó renderelése (Stabil Mód)...")
-            v_file = render_video(img_url, "temp.mp3")
-            
-            status.update(label="✅ KÉSZ!", state="complete")
-            st.video(v_file)
-            
-            save_to_memory(topic, platform, op, script)
-            with open(v_file, "rb") as f: st.download_button("📥 MP4 LETÖLTÉSE", f, "onyx_v6.mp4")
+            status.write("🎞️ Renderelés (Biztonságos mód)...")
+            try:
+                v_file = render_video(img, "temp.mp3")
+                status.update(label="✅ KÉSZ!", state="complete")
+                st.video(v_file)
+                save_to_memory(topic, platform, op, script)
+                with open(v_file, "rb") as f: st.download_button("📥 MP4 LETÖLTÉSE", f, "onyx_v6_2.mp4")
+            except Exception as e:
+                st.error(f"Kritikus hiba: {e}")
 
 if __name__ == "__main__":
     main()
