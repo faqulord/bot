@@ -1,6 +1,6 @@
 streamlit
 openai
 feedparser
-moviepy
+moviepy==1.0.3
 requests
 imageio-ffmpeg
