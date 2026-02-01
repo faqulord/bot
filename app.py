@@ -10,7 +10,7 @@ import re
 import time
 from datetime import datetime, timedelta
 from openai import OpenAI
-from bs4 import BeautifulSoup # AZ ÚJ FEGYVER: Weboldal olvasó
+from bs4 import BeautifulSoup
 
 # --- 🛠️ HACKER JAVÍTÁS ---
 import PIL.Image
@@ -20,8 +20,8 @@ if not hasattr(PIL.Image, 'ANTIALIAS'):
 
 from moviepy.editor import *
 
-# --- 1. DESIGN: ULTIMATE PURPLE V14 ---
-st.set_page_config(page_title="ONYX // V14 INTELLIGENCE", page_icon="🟣", layout="wide")
+# --- 1. DESIGN: ULTIMATE PURPLE V14.1 ---
+st.set_page_config(page_title="ONYX // V14.1 STABLE", page_icon="🟣", layout="wide")
 
 st.markdown("""
 <style>
@@ -41,31 +41,29 @@ if not api_key: st.stop()
 client = OpenAI(api_key=api_key)
 HISTORY_FILE = "onyx_memory.json"
 BG_MUSIC = "background.mp3"
-MASTER_IMG = "onyx_master_v13.png" # Megtartjuk a jó képet
+MASTER_IMG = "onyx_master_v13.png"
 OUTRO_IMG = "onyx_outro_v13.png"
 
-# --- 2. WEBOLDAL OLVASÓ (SCRAPER) ---
+# --- 2. WEBOLDAL OLVASÓ ---
 def scrape_article(url):
     try:
-        headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'}
+        headers = {'User-Agent': 'Mozilla/5.0'}
         response = requests.get(url, headers=headers, timeout=10)
         soup = BeautifulSoup(response.content, 'html.parser')
-        
-        # Cím kinyerése
-        title = soup.find('h1').get_text().strip() if soup.find('h1') else "Ismeretlen Cikk"
-        
-        # Szöveg kinyerése (csak a p tagek)
+        title = soup.find('h1').get_text().strip() if soup.find('h1') else "Cím nem található"
         paragraphs = soup.find_all('p')
-        text = " ".join([p.get_text() for p in paragraphs[:10]]) # Csak az első 10 bekezdés elég
-        
+        text = " ".join([p.get_text() for p in paragraphs[:10]])
         return {"title": title, "content": text, "source": url.split('/')[2]}
-    except Exception as e:
-        return {"title": "Hiba az olvasáskor", "content": str(e), "source": "Error"}
+    except:
+        return {"title": "Hiba", "content": "", "source": "Error"}
 
-# --- 3. ALAP FÜGGVÉNYEK ---
+# --- 3. ALAPOK ---
 def run_async(coroutine):
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
+    try:
+        loop = asyncio.get_event_loop()
+    except RuntimeError:
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
     return loop.run_until_complete(coroutine)
 
 def load_memory():
@@ -79,48 +77,17 @@ def save_to_memory(topic):
     history.insert(0, {"timestamp": datetime.now().strftime("%Y-%m-%d %H:%M"), "topic": topic})
     with open(HISTORY_FILE, "w") as f: json.dump(history[:50], f, indent=4)
 
-# --- 4. VIRAL EDITOR (AI PONTOZÁS) ---
-def analyze_viral_potential(headlines):
-    # Ez a funkció megkéri a GPT-t, hogy válassza ki a legdurvább hírt
-    headlines_text = "\n".join([f"- {h['title']}" for h in headlines])
-    prompt = f"""
-    Te vagy a TikTok algoritmus szakértője. Itt van pár hír:
-    {headlines_text}
-    
-    Válaszd ki azt az EGYET, amelyiknek a legnagyobb a virális potenciálja (félelem, sokk, pénz).
-    Csak a címét írd vissza.
-    """
-    res = client.chat.completions.create(model="gpt-4o", messages=[{"role": "user", "content": prompt}])
-    return res.choices[0].message.content
-
-# --- 5. GENERÁTOROK (MARAD A V13 ERŐSSÉGE) ---
+# --- 4. GENERÁTOROK ---
 def deep_research_from_text(topic, context_text):
-    prompt = f"""
-    Téma: "{topic}"
-    Forrás szöveg: "{context_text[:2000]}..." 
-    
-    FELADAT: Elemezd ezt a szöveget.
-    1. Mi a rejtett veszély?
-    2. Mi a technokrata olvasat?
-    Írj 3 rövid, sötét vázlatpontot.
-    """
+    prompt = f"Téma: {topic}\nSzöveg: {context_text[:1500]}\nElemezd: 1. Sötét háttér? 2. Technológiai veszély? 3. Disztópikus párhuzam?"
     res = client.chat.completions.create(model="gpt-4o", messages=[{"role": "user", "content": prompt}])
     return res.choices[0].message.content
 
 def generate_script(topic, research, source_name, platform):
-    length = "Rövid, 120 szó" if platform == "TikTok" else "Podcast, 400 szó"
+    length = "120 szó" if platform == "TikTok" else "400 szó"
     structure = "Horog -> Tény -> Veszély -> Konklúzió" if platform == "TikTok" else "Intro -> Részletek -> Háttér -> Elemzés -> Lezárás"
-    
-    prompt = f"""
-    Te vagy ONYX.
-    Téma: {topic} ({source_name})
-    Kutatás: {research}
-    Platform: {platform} ({length})
-    
-    Stílus: Sötét, cinikus, tényfeltáró. Használj szüneteket (...).
-    Említsd a forrást.
-    """
-    res = client.chat.completions.create(model="gpt-4o", messages=[{"role": "system", "content": "Te vagy ONYX."}, {"role": "user", "content": prompt}])
+    prompt = f"Te vagy ONYX.\nTéma: {topic} ({source_name})\nKutatás: {research}\nPlatform: {platform} ({length})\nStílus: Sötét, cinikus. Említsd a forrást."
+    res = client.chat.completions.create(model="gpt-4o", messages=[{"role": "user", "content": prompt}])
     return re.sub(r'\*+', '', res.choices[0].message.content).strip()
 
 async def generate_voice(text, filename):
@@ -135,7 +102,6 @@ def render_video(topic_img_url, script, platform):
     audio = AudioFileClip(f"temp_audio_{platform}.mp3")
     duration = audio.duration + 1.0
     
-    # Klipek (4mp Intro + Téma)
     intro_dur = 4.0
     clips = [
         ImageClip(MASTER_IMG).set_duration(intro_dur).resize(height=1920).crop(width=1080, height=1920, x_center=540, y_center=960),
@@ -159,96 +125,88 @@ def render_video(topic_img_url, script, platform):
     final.write_videofile(out_file, fps=24, codec="libx264", audio_codec="aac", threads=2, preset="ultrafast")
     return out_file
 
-# --- 6. VEZÉRLŐPULT (INTELLIGENCE) ---
+# --- 5. VEZÉRLŐPULT ---
 def main():
     st.sidebar.header("🗄️ MEMÓRIA")
     if st.sidebar.button("🗑️ TÖRLÉS"):
         if os.path.exists(HISTORY_FILE): os.remove(HISTORY_FILE)
         st.rerun()
-    for i in load_memory(): st.sidebar.text(f"{i.get('timestamp','?')}\n{i.get('topic','?')[:20]}...")
+    for i in load_memory(): 
+        # Biztonságos kiolvasás, hogy ne omoljon össze régi adatoktól
+        st.sidebar.text(f"{i.get('timestamp','?')} - {i.get('topic','?')[:15]}...")
 
-    st.title("🟣 PROJECT: ONYX // V14 INTELLIGENCE")
+    st.title("🟣 PROJECT: ONYX // V14.1 STABLE")
     
+    # --- JAVÍTOTT ÁLLAPOT KEZELÉS ---
+    # Ha nincs kiválasztott adat, inicializáljuk üresre
+    if 'selected_data' not in st.session_state:
+        st.session_state['selected_data'] = None
+
     if not os.path.exists(MASTER_IMG):
-        st.warning("⚠️ SETUP SZÜKSÉGES!")
-        # Itt lenne a setup gomb (a kód egyszerűsítése miatt most kihagytam, feltételezzük, hogy megvan a V13-ból)
-        # Ha nincs, másold át a generate_master_assets függvényt a V13-ból.
+        st.warning("⚠️ SETUP SZÜKSÉGES! (Képek hiányoznak)")
         st.stop()
 
     # --- FORRÁS VÁLASZTÓ ---
-    tab1, tab2 = st.tabs(["📡 AUTO SCANNER (RSS)", "🔗 MANUÁLIS LINK (URL)"])
-    
-    selected_data = None # Ez lesz a kiválasztott hír objektum
+    tab1, tab2 = st.tabs(["📡 AUTO SCANNER", "🔗 MANUÁLIS LINK"])
     
     with tab1:
         rss_sources = {
-            "Futurology (Reddit)": "https://www.reddit.com/r/Futurology/top/.rss",
-            "AI News (Reddit)": "https://www.reddit.com/r/ArtificialInteligence/top/.rss",
-            "TechCrunch (Tech)": "https://techcrunch.com/feed/",
-            "CoinDesk (Crypto)": "https://www.coindesk.com/arc/outboundfeeds/rss/"
+            "Futurology": "https://www.reddit.com/r/Futurology/top/.rss",
+            "AI News": "https://www.reddit.com/r/ArtificialInteligence/top/.rss",
+            "TechCrunch": "https://techcrunch.com/feed/",
+            "CoinDesk": "https://www.coindesk.com/arc/outboundfeeds/rss/"
         }
-        src = st.selectbox("Forrás választása:", list(rss_sources.keys()))
+        src = st.selectbox("Forrás:", list(rss_sources.keys()))
         if st.button("Szkennelés"):
             feed = feedparser.parse(requests.get(rss_sources[src], headers={'User-Agent': 'ONYX'}).content)
-            items = [{"title": e.title, "source": src, "content": e.summary if hasattr(e,'summary') else e.title} for e in feed.entries[:6]]
-            st.session_state['rss_results'] = items
-            
-            # AI Elemzés
-            viral_pick = analyze_viral_potential(items)
-            st.info(f"🤖 AI TIPP: {viral_pick}")
+            st.session_state['rss_results'] = [{"title": e.title, "source": src, "content": e.summary if hasattr(e,'summary') else e.title} for e in feed.entries[:6]]
             
         if 'rss_results' in st.session_state:
             opts = {i['title']: i for i in st.session_state['rss_results']}
-            sel = st.selectbox("Válassz hírt:", list(opts.keys()))
-            if st.button("Ezt dolgozzuk fel"):
-                selected_data = opts[sel]
+            sel = st.selectbox("Hírek listája:", list(opts.keys()))
+            if st.button("EZT VÁLASZTOM ✅"):
+                st.session_state['selected_data'] = opts[sel]
+                st.success(f"Kiválasztva: {opts[sel]['title']}")
 
     with tab2:
-        url_input = st.text_input("Másold be a cikk linkjét (Bármilyen oldal):")
-        if st.button("Link Elemzése") and url_input:
-            with st.spinner("Weboldal olvasása..."):
-                article = scrape_article(url_input)
-                if article['title'] != "Hiba az olvasáskor":
-                    st.success(f"Sikeres olvasás: {article['title']}")
-                    selected_data = article
-                    st.session_state['manual_data'] = article
-                else:
-                    st.error("Nem sikerült elolvasni a cikket. Próbálj másik linket.")
-        
-        if 'manual_data' in st.session_state and not selected_data:
-            selected_data = st.session_state['manual_data']
+        url_input = st.text_input("Cikk linkje:")
+        if st.button("Link Betöltése") and url_input:
+            article = scrape_article(url_input)
+            if article['title'] != "Hiba":
+                st.session_state['selected_data'] = article
+                st.success(f"Betöltve: {article['title']}")
+            else:
+                st.error("Nem sikerült elolvasni.")
 
-    # --- GYÁRTÁS ---
-    if selected_data:
+    # --- GYÁRTÁS (MOST MÁR EMLÉKSZIK RÁ!) ---
+    data = st.session_state['selected_data']
+    
+    if data:
         st.write("---")
-        st.header(f"🔥 CÉLPONT: {selected_data['title']}")
-        st.write(f"Forrás: {selected_data['source']}")
+        st.header(f"🔥 CÉLPONT: {data['title']}")
+        st.write(f"Forrás: {data['source']}")
         
-        if st.button("🚀 EXECUTE DUAL PROTOCOL (V14)"):
+        # Ez a gomb most már működni fog, mert a 'data' a session_state-ből jön!
+        if st.button("🚀 EXECUTE DUAL PROTOCOL (FINAL)"):
             status = st.status("ONYX dolgozik...", expanded=True)
             
-            # 1. KUTATÁS
-            status.write("🧠 Szövegkörnyezet elemzése...")
-            # Itt a teljes cikk szövegét adjuk át a kutatónak!
-            research = deep_research_from_text(selected_data['title'], selected_data.get('content', ''))
+            status.write("🧠 Kutatás...")
+            research = deep_research_from_text(data['title'], data.get('content', ''))
             
-            # 2. KÉP
             status.write("🎨 Kép generálása...")
-            t_prompt = f"Cyberpunk illustration of {selected_data['title']}. Purple neon, dark. 4D render."
+            t_prompt = f"Cyberpunk illustration of {data['title']}. Purple neon, dark. 4D render."
             t_res = client.images.generate(model="dall-e-3", prompt=t_prompt, size="1024x1792", quality="hd")
             t_url = t_res.data[0].url
             
-            # 3. SZKRIPT
-            status.write("📝 Szkriptek írása...")
-            s_tk = generate_script(selected_data['title'], research, selected_data['source'], "TikTok")
-            s_yt = generate_script(selected_data['title'], research, selected_data['source'], "YouTube")
+            status.write("📝 Szkriptek...")
+            s_tk = generate_script(data['title'], research, data['source'], "TikTok")
+            s_yt = generate_script(data['title'], research, data['source'], "YouTube")
             
-            # 4. RENDER
             status.write("🎞️ Renderelés...")
             f_tk = render_video(t_url, s_tk, "TikTok")
             f_yt = render_video(t_url, s_yt, "YouTube")
             
-            save_to_memory(selected_data['title'])
+            save_to_memory(data['title'])
             status.update(label="✅ KÉSZ!", state="complete")
             
             c1, c2 = st.columns(2)
