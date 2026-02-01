@@ -20,8 +20,8 @@ if not hasattr(PIL.Image, 'ANTIALIAS'):
 
 from moviepy.editor import *
 
-# --- 1. DESIGN: ULTIMATE PURPLE V14.1 ---
-st.set_page_config(page_title="ONYX // V14.1 STABLE", page_icon="🟣", layout="wide")
+# --- 1. DESIGN: VIRAL PURPLE V15 ---
+st.set_page_config(page_title="ONYX // V15 VIRAL", page_icon="🟣", layout="wide")
 
 st.markdown("""
 <style>
@@ -29,8 +29,8 @@ st.markdown("""
     h1 { color: #b829ff; text-align: center; letter-spacing: 8px; text-shadow: 0 0 30px #b829ff; border-bottom: 2px solid #b829ff; padding-bottom: 20px; }
     .stButton>button { background: #000; color: #b829ff; border: 1px solid #b829ff; font-weight: bold; padding: 15px; width: 100%; transition: 0.3s; text-transform: uppercase; }
     .stButton>button:hover { background: #b829ff; color: #fff; box-shadow: 0 0 40px #b829ff; }
-    .stat-card { background: #1a0026; border: 1px solid #5a0080; padding: 15px; border-radius: 5px; text-align: center; color: #fff; }
-    .viral-score { font-size: 0.8em; color: #0f0; font-weight: bold; border: 1px solid #0f0; padding: 2px 5px; border-radius: 3px; margin-left: 10px; }
+    .viral-box { border: 2px solid #00ffff; background: #002222; padding: 15px; border-radius: 10px; margin-bottom: 20px; text-align: center; color: #00ffff; font-weight: bold; }
+    .history-item { padding: 8px; border-bottom: 1px solid #333; font-size: 0.8em; color: #888; }
     [data-testid="stSidebar"] { background-color: #0a0014; border-right: 1px solid #b829ff; }
 </style>
 """, unsafe_allow_html=True)
@@ -44,7 +44,24 @@ BG_MUSIC = "background.mp3"
 MASTER_IMG = "onyx_master_v13.png"
 OUTRO_IMG = "onyx_outro_v13.png"
 
-# --- 2. WEBOLDAL OLVASÓ ---
+# --- 2. INTELLIGENCIA (VIRAL SCOUT) ---
+def analyze_viral_pick(news_list):
+    # Ez a függvény kiválasztja a legjobbat
+    titles = "\n".join([f"- {n['title']}" for n in news_list])
+    prompt = f"""
+    Te vagy a TikTok algoritmus szakértője. Itt van 6 hír:
+    {titles}
+    
+    Melyiknek van a legnagyobb esélye, hogy VIRÁLIS legyen (félelem, pénz, jövő)?
+    Válassz ki EGYET.
+    Válasz formátum: Csak a hír címe, semmi más.
+    """
+    try:
+        res = client.chat.completions.create(model="gpt-4o", messages=[{"role": "user", "content": prompt}])
+        return res.choices[0].message.content.strip()
+    except:
+        return "Nem sikerült elemezni."
+
 def scrape_article(url):
     try:
         headers = {'User-Agent': 'Mozilla/5.0'}
@@ -121,7 +138,7 @@ def render_video(topic_img_url, script, platform):
     else:
         final = final.set_audio(audio)
 
-    out_file = f"onyx_{platform}_v14.mp4"
+    out_file = f"onyx_{platform}_v15.mp4"
     final.write_videofile(out_file, fps=24, codec="libx264", audio_codec="aac", threads=2, preset="ultrafast")
     return out_file
 
@@ -132,22 +149,20 @@ def main():
         if os.path.exists(HISTORY_FILE): os.remove(HISTORY_FILE)
         st.rerun()
     for i in load_memory(): 
-        # Biztonságos kiolvasás, hogy ne omoljon össze régi adatoktól
         st.sidebar.text(f"{i.get('timestamp','?')} - {i.get('topic','?')[:15]}...")
 
-    st.title("🟣 PROJECT: ONYX // V14.1 STABLE")
+    st.title("🟣 PROJECT: ONYX // V15 VIRAL")
     
-    # --- JAVÍTOTT ÁLLAPOT KEZELÉS ---
-    # Ha nincs kiválasztott adat, inicializáljuk üresre
-    if 'selected_data' not in st.session_state:
-        st.session_state['selected_data'] = None
+    # State init
+    if 'selected_data' not in st.session_state: st.session_state['selected_data'] = None
+    if 'viral_tip' not in st.session_state: st.session_state['viral_tip'] = None
 
     if not os.path.exists(MASTER_IMG):
-        st.warning("⚠️ SETUP SZÜKSÉGES! (Képek hiányoznak)")
+        st.warning("⚠️ SETUP SZÜKSÉGES!")
         st.stop()
 
     # --- FORRÁS VÁLASZTÓ ---
-    tab1, tab2 = st.tabs(["📡 AUTO SCANNER", "🔗 MANUÁLIS LINK"])
+    tab1, tab2 = st.tabs(["📡 AUTO SCANNER (AI TIPPEL)", "🔗 MANUÁLIS LINK"])
     
     with tab1:
         rss_sources = {
@@ -157,9 +172,24 @@ def main():
             "CoinDesk": "https://www.coindesk.com/arc/outboundfeeds/rss/"
         }
         src = st.selectbox("Forrás:", list(rss_sources.keys()))
-        if st.button("Szkennelés"):
-            feed = feedparser.parse(requests.get(rss_sources[src], headers={'User-Agent': 'ONYX'}).content)
-            st.session_state['rss_results'] = [{"title": e.title, "source": src, "content": e.summary if hasattr(e,'summary') else e.title} for e in feed.entries[:6]]
+        if st.button("Szkennelés és Elemzés"):
+            with st.spinner("Hírek letöltése és AI virális elemzés..."):
+                feed = feedparser.parse(requests.get(rss_sources[src], headers={'User-Agent': 'ONYX'}).content)
+                items = [{"title": e.title, "source": src, "content": e.summary if hasattr(e,'summary') else e.title} for e in feed.entries[:6]]
+                st.session_state['rss_results'] = items
+                
+                # ITT A HIÁNYZÓ LÁNCSZEM: AZ AI ELEMZÉS
+                pick = analyze_viral_pick(items)
+                st.session_state['viral_tip'] = pick
+            
+        # MEGJELENÍTÉS
+        if st.session_state['viral_tip']:
+            st.markdown(f"""
+            <div class="viral-box">
+                🤖 AZ AI EZT AJÁNLJA (VIRAL SCORE: MAGAS):<br>
+                {st.session_state['viral_tip']}
+            </div>
+            """, unsafe_allow_html=True)
             
         if 'rss_results' in st.session_state:
             opts = {i['title']: i for i in st.session_state['rss_results']}
@@ -178,16 +208,14 @@ def main():
             else:
                 st.error("Nem sikerült elolvasni.")
 
-    # --- GYÁRTÁS (MOST MÁR EMLÉKSZIK RÁ!) ---
+    # --- GYÁRTÁS ---
     data = st.session_state['selected_data']
     
     if data:
         st.write("---")
         st.header(f"🔥 CÉLPONT: {data['title']}")
-        st.write(f"Forrás: {data['source']}")
         
-        # Ez a gomb most már működni fog, mert a 'data' a session_state-ből jön!
-        if st.button("🚀 EXECUTE DUAL PROTOCOL (FINAL)"):
+        if st.button("🚀 EXECUTE DUAL PROTOCOL (V15)"):
             status = st.status("ONYX dolgozik...", expanded=True)
             
             status.write("🧠 Kutatás...")
