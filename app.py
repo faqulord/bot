@@ -1,9 +1,13 @@
 import streamlit as st
 import feedparser
 import os
+import json
+import random
 import requests
+from datetime import datetime
 from openai import OpenAI
-from moviepy.editor import ImageClip, AudioFileClip
+# A régi moviepy verzióhoz (1.0.3) igazítva
+from moviepy.editor import ImageClip, AudioFileClip, CompositeAudioClip
 
 # --- KULCSOK ---
 part1 = "sk-proj-NbK9TkHNe_kTkQBw6AfeN0uVGcEKtJl7NSyMF2Ya3XVQ_mNyWiAlVwkDEk_"
@@ -11,224 +15,227 @@ part2 = "F8fdV8TKaj-jc1RT3BlbkFJXwmIJuSf1Qm1_c4yKvHASf2QXBUIpBNm6y4ZID-_E5j5PESJ
 if "OPENAI_API_KEY" not in os.environ:
     os.environ["OPENAI_API_KEY"] = part1 + part2
 
-# --- KONFIGURÁCIÓ (ITT ÁLLÍTHATOD A BRAND NEVÉT) ---
+# --- KONFIGURÁCIÓ ---
 BRAND_NAME = "PROJECT: ONYX"
-CHARACTER_NAME = "Onyx"
+HISTORY_FILE = "onyx_memory.json"
 
-# --- VIDEÓ MOTOR ---
+# --- MEMÓRIA RENDSZER (AZ AGY) 🧠 ---
+def load_memory():
+    if not os.path.exists(HISTORY_FILE):
+        return []
+    try:
+        with open(HISTORY_FILE, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except:
+        return []
+
+def save_to_memory(topic, mood):
+    history = load_memory()
+    # Új emlék hozzáadása az elejére
+    entry = {
+        "date": datetime.now().strftime("%Y-%m-%d"),
+        "topic": topic,
+        "mood": mood
+    }
+    history.insert(0, entry)
+    # Csak az utolsó 50 emléket tartjuk meg
+    history = history[:50]
+    with open(HISTORY_FILE, "w", encoding="utf-8") as f:
+        json.dump(history, f, ensure_ascii=False, indent=4)
+
+def get_recent_memory_text(limit=3):
+    history = load_memory()
+    if not history:
+        return "Még nincs korábbi aktád. Ez az első ügyed."
+    
+    text = "Korábbi aktáid (emlékezz ezekre!):\n"
+    for item in history[:limit]:
+        text += f"- {item['date']}: {item['topic']} ({item['mood']})\n"
+    return text
+
+# --- VIDEÓ MOTOR (ZENÉVEL) 🎬 ---
 def create_video_file(image_url, audio_file, filename="final_video.mp4"):
-    # Kép mentése
+    # Kép letöltése
     img_data = requests.get(image_url).content
     with open("temp_image.png", "wb") as f:
         f.write(img_data)
+
+    # Hangok
+    voice_clip = AudioFileClip(audio_file)
     
-    # Hang és Kép összefűzése
-    audio = AudioFileClip(audio_file)
-    clip = ImageClip("temp_image.png").set_duration(audio.duration)
+    # Háttérzene keresése
+    bg_music_file = "background.mp3" # Tölts fel egy ilyen fájlt a Githubra!
+    final_audio = voice_clip
+
+    if os.path.exists(bg_music_file):
+        try:
+            music_clip = AudioFileClip(bg_music_file)
+            # Loopolás, ha a zene rövidebb, mint a beszéd
+            if music_clip.duration < voice_clip.duration:
+                music_clip = music_clip.loop(duration=voice_clip.duration)
+            else:
+                music_clip = music_clip.subclip(0, voice_clip.duration)
+            
+            # Zene halkítása (20%)
+            music_clip = music_clip.volumex(0.2)
+            final_audio = CompositeAudioClip([voice_clip, music_clip])
+        except Exception as e:
+            st.warning(f"Zene hiba, marad a beszéd: {e}")
+
+    # Videó összeállítása
+    clip = ImageClip("temp_image.png").set_duration(voice_clip.duration)
+    clip = clip.set_audio(final_audio)
     
-    # Renderelés (TikTok álló 9:16 vagy YouTube fekvő 16:9)
-    # Most az egyszerűség kedvéért egy univerzális MP4-et gyártunk
-    clip = clip.set_audio(audio)
+    # Renderelés
     clip.write_videofile(filename, fps=24, codec="libx264", audio_codec="aac")
     return filename
 
-# --- LOGIN ---
-def login_screen():
-    st.title(f"💎 {BRAND_NAME} - HQ")
-    password = st.text_input("ACCESS CODE", type="password")
-    if st.button("LOGIN"):
-        if password == "admin123":
-            st.session_state["logged_in"] = True
-            st.rerun()
-
 # --- DASHBOARD ---
-def main_dashboard():
-    with st.sidebar:
-        st.header(f"👤 {CHARACTER_NAME} SYSTEM")
-        if st.button("LOGOUT"):
-            st.session_state["logged_in"] = False
-            st.rerun()
+def main():
+    st.set_page_config(page_title="ONYX OS", page_icon="💎", layout="centered")
+    
+    # Stílus
+    st.markdown("""
+    <style>
+    .stApp { background-color: #0e1117; color: #00ffcc; }
+    h1 { text-shadow: 0 0 10px #00ffcc; }
+    </style>
+    """, unsafe_allow_html=True)
 
-    st.title(f"💎 {BRAND_NAME} PRODUCTION")
-    st.markdown(f"*\"The System is watching...\"*")
-    st.markdown("---")
+    st.title(f"💎 {BRAND_NAME} - SYSTEM CORE")
+    st.caption("The System is watching... | Memory: ACTIVE")
 
     client = OpenAI()
 
-    # --- 1. TÉMA VÁLASZTÁS ---
-    st.subheader("1. SCANNING NETWORK (Radar) 📡")
+    # --- 1. MEMÓRIA ÁLLAPOT ---
+    mem_text = get_recent_memory_text(3)
+    with st.expander("🧠 ONYX MEMÓRIA (Legutóbbi akták)"):
+        st.text(mem_text)
+
+    # --- 2. RADAR (A MIX) ---
+    st.subheader("1. GLOBAL SCANNER 📡")
     
-    # Források
-    source = st.selectbox("SOURCE / FORRÁS:", [
-        "Mystery (Reddit - Unresolved)",
-        "Creepy (Reddit - Creepy)",
-        "True Crime (Reddit)",
-        "Hungarian News (Index)"
-    ])
-    
-    if st.button("🔄 SCAN NETWORK"):
-        with st.spinner("Decoding data streams..."):
-            rss_urls = {
-                "Mystery (Reddit - Unresolved)": "https://www.reddit.com/r/UnresolvedMysteries/top/.rss",
-                "Creepy (Reddit - Creepy)": "https://www.reddit.com/r/creepy/top/.rss",
-                "True Crime (Reddit)": "https://www.reddit.com/r/TrueCrime/top/.rss",
-                "Hungarian News (Index)": "https://index.hu/24ora/rss/"
-            }
-            try:
-                feed = feedparser.parse(rss_urls[source])
-                st.session_state['news_list'] = []
-                for entry in feed.entries[:5]:
-                    clean = entry.title.replace("[other]", "").replace("Reddit", "")
-                    st.session_state['news_list'].append(clean)
-                st.success("DATA RETRIEVED.")
-            except:
-                st.error("CONNECTION ERROR.")
+    if st.button("🔄 SCAN THE DARK WEB"):
+        with st.spinner("Decrypting signals from Reddit..."):
+            # A MIX források
+            rss_urls = [
+                "https://www.reddit.com/r/CreepyWikipedia/top/.rss", # Durva tények
+                "https://www.reddit.com/r/HighStrangeness/top/.rss", # Furcsaságok
+                "https://www.reddit.com/r/TrueCrime/top/.rss"        # Bűnügy
+            ]
+            
+            collected_news = []
+            for url in rss_urls:
+                try:
+                    feed = feedparser.parse(url)
+                    # Minden feedből kiveszünk 2 frisset
+                    for entry in feed.entries[:2]:
+                        clean_title = entry.title.replace("Reddit", "").replace("[other]", "")
+                        collected_news.append(clean_title)
+                except:
+                    continue
+            
+            # Keverjük meg a listát
+            random.shuffle(collected_news)
+            st.session_state['news_list'] = collected_news[:6] # Top 6 mix
+            st.success("TARGETS ACQUIRED.")
 
     selected_topic = None
     if 'news_list' in st.session_state:
-        selected_topic = st.radio("SELECT TARGET TOPIC:", st.session_state['news_list'])
+        selected_topic = st.radio("SELECT TARGET FILE:", st.session_state['news_list'])
 
-    # --- 2. GENERÁLÁS ---
+    # --- 3. GENERÁLÁS ---
     if selected_topic:
         st.markdown("---")
-        st.header("2. PRODUCTION STUDIO 🎬")
+        st.header("2. PRODUCTION MODE 🎬")
         st.info(f"TARGET: **{selected_topic}**")
-        
-        # NYELV ÉS PLATFORM VÁLASZTÁS EGYBEN
-        mode = st.radio("CONFIGURATION:", 
-            [
-                "🇭🇺 HUNGARIAN - TikTok (Short, Viral)", 
-                "🇭🇺 HUNGARIAN - YouTube (Long, Podcast)",
-                "🇺🇸 ENGLISH - TikTok (Short, Viral)",
-                "🇺🇸 ENGLISH - YouTube (Long, Podcast)"
-            ])
 
-        if st.button("🚀 EXECUTE PROJECT", type="primary"):
-            status = st.status("INITIALIZING AI SYSTEMS...", expanded=True)
+        mode = st.radio("PLATFORM:", 
+            ["📱 TikTok (Viral/Short)", "📺 YouTube (Deep/Podcast)"], horizontal=True)
+
+        if st.button("🚀 EXECUTE ONYX PROTOCOL", type="primary"):
+            status = st.status("SYSTEM INITIALIZING...", expanded=True)
+
+            # A. SCRIPT GENERÁLÁS (MEMÓRIÁVAL)
+            status.write("📝 WRITING SCRIPT (Accessing Memory)...")
             
-            # 1. SZÖVEG (PROMPT LOGIKA)
-            status.write("📝 GENERATING SCRIPT...")
+            # Memória betöltése a promptba
+            memory_context = get_recent_memory_text(5)
             
-            # --- MAGYAR BEÁLLÍTÁSOK ---
-            if "HUNGARIAN" in mode:
-                lang_instruction = "Magyar nyelven írj."
-                intro_text = "Adatok betöltése. Ez itt a Projekt Onyx."
-                outro_text = "A rendszer leáll. Kövess be a folytatásért."
+            system_instruction = f"""
+            Te vagy {BRAND_NAME} (Onyx). Nem egy AI vagy, hanem egy digitális entitás a hálózatban.
+            
+            SZEMÉLYISÉGED:
+            - Provokatív, intelligens, pökhendi, de karizmatikus.
+            - Úgy beszélsz, mint egy bennfentes, aki tudja az igazságot.
+            - Használsz szlenget, de választékosan. (Pl: "Ez most durva lesz", "A rendszer hazudik", "Figyelj").
+            - Kérdezz vissza! Provokáld a nézőt, hogy kommenteljen.
+            
+            MEMÓRIA (Ezekről beszéltél mostanában, ha kapcsolódik, utalj rá!):
+            {memory_context}
+            """
+
+            if "TikTok" in mode:
+                user_prompt = f"""
+                TÉMA: '{selected_topic}'
+                FELADAT: Írj egy 40-50 másodperces, nagyon pörgős TikTok szöveget MAGYARUL.
                 
-                if "TikTok" in mode: # TikTok HU
-                    prompt = f"""
-                    Te vagy {BRAND_NAME} (Onyx), egy fejlett mesterséges intelligencia karakter. Stílusod: Hűvös, precíz, de van benne egy sötét, cinikus humor.
-                    Téma: '{selected_topic}'.
-                    Feladat: Írj egy 40 másodperces TikTok videó szöveget.
-                    Szerkezet:
-                    1. Beköszönés: "{intro_text}"
-                    2. A sztori: Mondd el a legmegdöbbentőbb tényt röviden. Sokkold a nézőt.
-                    3. Lezárás: "{outro_text} A teljes fájl a YouTube-on elérhető."
-                    {lang_instruction} Csak a felolvasandó szöveget írd le!
-                    """
-                else: # YouTube HU
-                    prompt = f"""
-                    Te vagy {BRAND_NAME} (Onyx). Stílusod: Mély, analitikus, rejtélyes. Olyan vagy, mint egy digitális nyomozó.
-                    Téma: '{selected_topic}'.
-                    Feladat: Írj egy 3 perces YouTube videó szöveget (Podcast stílus).
-                    Szerkezet:
-                    1. Intro: "{intro_text} Ma egy titkos aktát nyitok meg."
-                    2. Kifejtés: Meséld el a történetet részletesen. Építsd fel a feszültséget.
-                    3. Outro: "{outro_text}"
-                    {lang_instruction}
-                    """
-
-            # --- ANGOL BEÁLLÍTÁSOK ---
+                STRUKTÚRA:
+                1. HOOK: "Gondoltad volna..." vagy valami sokkoló kezdés.
+                2. STORY: Mondd el a lényeget röviden, tömören, de drámaian.
+                3. OPINION: Szúrd oda a véleményed. (Pl: "Szerintem ez kamu, de...")
+                4. CTA: "Szerinted lehetséges? Írd meg kommentben! Kövess be a folytatásért."
+                Csak a szöveget írd le!
+                """
             else:
-                lang_instruction = "Write in English."
-                intro_text = "Data loaded. Welcome to Project Onyx."
-                outro_text = "System shutting down. Follow for more."
-                
-                if "TikTok" in mode: # TikTok EN
-                    prompt = f"""
-                    You are {BRAND_NAME} (Onyx), an advanced AI character. Style: Cool, precise, dark, slightly cynical.
-                    Topic: '{selected_topic}'.
-                    Task: Write a 40-second viral TikTok script.
-                    Structure:
-                    1. Intro: "{intro_text}"
-                    2. Body: Drop the most shocking fact about the topic. Hook the user instantly.
-                    3. Outro: "{outro_text} Full file available on YouTube."
-                    {lang_instruction} Only the narration text.
-                    """
-                else: # YouTube EN
-                    prompt = f"""
-                    You are {BRAND_NAME} (Onyx). Style: Deep, analytical, mysterious. A digital detective.
-                    Topic: '{selected_topic}'.
-                    Task: Write a 3-minute YouTube video script (Podcast style).
-                    Structure:
-                    1. Intro: "{intro_text} Opening secure file."
-                    2. Body: Tell the story in detail. Build suspense.
-                    3. Outro: "{outro_text}"
-                    {lang_instruction}
-                    """
+                user_prompt = f"""
+                TÉMA: '{selected_topic}'
+                FELADAT: Írj egy 3 perces YouTube videó szöveget (Podcast stílus) MAGYARUL.
+                Stílus: Mély, oknyomozó, "True Crime" hangulat. Építsd fel a feszültséget.
+                A végén tegyél fel egy filozófiai kérdést a nézőnek.
+                """
 
-            # GPT HÍVÁS
             res = client.chat.completions.create(
                 model="gpt-4o",
-                messages=[{"role":"user", "content":prompt}]
+                messages=[
+                    {"role": "system", "content": system_instruction},
+                    {"role": "user", "content": user_prompt}
+                ]
             )
             script = res.choices[0].message.content
-            st.text_area("GENERATED SCRIPT:", script, height=150)
             
-            # 2. HANG (ONYX)
-            status.write("🔊 SYNTHESIZING VOICE (ONYX)...")
-            try:
-                response = client.audio.speech.create(
-                    model="tts-1",
-                    voice="onyx", # AZ ONYX HANG - TÖKÉLETES A BRANDHEZ
-                    input=script
-                )
-                response.stream_to_file("audio.mp3")
-                st.audio("audio.mp3")
-            except Exception as e:
-                st.error(f"Voice Error: {e}")
-                return
-            
-            # 3. KÉP (DALL-E 3)
-            status.write("🎨 RENDERING VISUALS...")
-            # TikTok = Álló, YouTube = Négyzet/Fekvő
-            if "TikTok" in mode:
-                size_param = "1024x1792"
-                prompt_add = "vertical 9:16 format, hyper-realistic, dark sci-fi aesthetic"
-            else:
-                size_param = "1024x1024"
-                prompt_add = "cinematic dark atmosphere, detailed, mystery thriller style"
+            # MEMÓRIA MENTÉSE
+            save_to_memory(selected_topic, "Feldolgozva")
+            st.text_area("GENERATED SCRIPT:", script, height=200)
 
-            img_res = client.images.generate(
-                model="dall-e-3", 
-                prompt=f"Abstract representation of {selected_topic}, {prompt_add}, in the style of Project Onyx branding (black, neon, glitch)", 
-                size=size_param
+            # B. HANG
+            status.write("🔊 SYNTHESIZING VOICE (ONYX)...")
+            response = client.audio.speech.create(
+                model="tts-1",
+                voice="onyx",
+                input=script
             )
-            img_url = img_res.data[0].url
-            st.image(img_url, caption="Visual Data")
+            response.stream_to_file("audio.mp3")
             
-            # 4. VIDEÓ RENDERELÉS
-            status.write("🎞️ COMPILING VIDEO FILE...")
+            # C. KÉP
+            status.write("🎨 RENDERING VISUALS...")
+            # Sötét, glitch-es stílus
+            img_prompt = f"Dark, glitch art style, mysterious sci-fi atmosphere representing: {selected_topic}. Neon green and black colors. Cinematic lighting."
+            img_res = client.images.generate(
+                model="dall-e-3", prompt=img_prompt, size="1024x1792")
+            img_url = img_res.data[0].url
+            st.image(img_url, width=300)
+
+            # D. VIDEÓ
+            status.write("🎞️ FINALIZING PRODUCTION...")
             try:
-                video_filename = create_video_file(img_url, "audio.mp3")
-                status.update(label="✅ PROJECT COMPLETE!", state="complete")
+                video_file = create_video_file(img_url, "audio.mp3")
+                status.update(label="✅ SYSTEM TASK COMPLETE!", state="complete")
                 
-                with open(video_filename, "rb") as file:
-                    st.download_button(
-                        label="📥 DOWNLOAD VIDEO FILE (MP4)",
-                        data=file,
-                        file_name="onyx_project_video.mp4",
-                        mime="video/mp4"
-                    )
+                with open(video_file, "rb") as file:
+                    st.download_button("📥 DOWNLOAD DATA FILE", file, "onyx_final.mp4", "video/mp4")
             except Exception as e:
                 st.error(f"Render Error: {e}")
-                status.warning("Video render failed (server timeout), but Audio and Image are ready above!")
 
-if "logged_in" not in st.session_state:
-    st.session_state["logged_in"] = False
-
-if st.session_state["logged_in"]:
-    main_dashboard()
-else:
-    login_screen()
-# Force update v1
+if __name__ == "__main__":
+    main()
