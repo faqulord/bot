@@ -3,6 +3,6 @@ openai
 feedparser
 requests
 edge-tts
-moviepy
+moviepy==1.0.3
 imageio-ffmpeg
-numpy
+numpy<2.0.0
