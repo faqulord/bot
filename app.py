@@ -5,21 +5,23 @@ import json
 import random
 import requests
 import asyncio
+import edge_tts
 import re
 import time
 from datetime import datetime, timedelta
 from openai import OpenAI
 
-# --- HACKER JAVÍTÁS (Kötelező a MoviePy-hez) ---
+# --- 🛠️ RENDSZER JAVÍTÁS (MONKEY PATCH) ---
+# Ez kötelező, hogy a V6/V7 óta működjön a videóvágó
 import PIL.Image
 if not hasattr(PIL.Image, 'ANTIALIAS'):
     PIL.Image.ANTIALIAS = PIL.Image.LANCZOS
-# -----------------------------------------------
+# ------------------------------------------
 
 from moviepy.editor import *
 
 # --- 1. DESIGN & KONFIGURÁCIÓ ---
-st.set_page_config(page_title="ONYX // OS V8.0", page_icon="👁️", layout="wide")
+st.set_page_config(page_title="ONYX // OS V9.0", page_icon="👁️", layout="wide")
 
 st.markdown("""
 <style>
@@ -27,7 +29,7 @@ st.markdown("""
     h1 { color: #00ffcc; text-align: center; font-family: 'Courier New'; letter-spacing: 4px; text-shadow: 0 0 15px #00ffcc; }
     h3 { color: #fff; border-bottom: 2px solid #00ffcc; padding-bottom: 10px; }
     .stButton>button { 
-        background: linear-gradient(90deg, #000, #111); 
+        background: linear-gradient(90deg, #000, #002211); 
         color: #00ffcc; 
         border: 1px solid #00ffcc; 
         font-weight: bold; 
@@ -56,6 +58,14 @@ HISTORY_FILE = "onyx_memory.json"
 BG_MUSIC = "background.mp3"
 
 # --- 2. SEGÉD FÜGGVÉNYEK ---
+def run_async(coroutine):
+    try:
+        loop = asyncio.get_event_loop()
+    except RuntimeError:
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+    return loop.run_until_complete(coroutine)
+
 def load_memory():
     if not os.path.exists(HISTORY_FILE): return []
     try:
@@ -90,9 +100,8 @@ def analyze_trends(rss_url):
 
 # --- 4. HUMANIZÁLT SZKRIPT ÍRÁS ---
 def generate_human_script(topic, platform):
-    # Itt utasítjuk a GPT-t, hogy emberibb legyen
     style_guide = """
-    STÍLUS: Sötét, cinikus, de élő beszélt nyelv.
+    STÍLUS: Sötét, cinikus, magyar anyanyelvi beszélő.
     SZABÁLYOK:
     1. Kerüld a bonyolult körmondatokat.
     2. Használj rövid tőmondatokat a hatáskeltéshez.
@@ -119,20 +128,15 @@ def generate_image(topic):
         return img_res.data[0].url
     except: return None
 
-# --- 6. PROFI HANG MOTOR (OPENAI TTS) ---
-def generate_pro_voice(text, filename):
-    # Itt történik a varázslat: Az 'onyx' nevű modellt használjuk
-    try:
-        response = client.audio.speech.create(
-            model="tts-1",
-            voice="onyx", # EZ A LÉNYEG! Ez a mély, sötét hang.
-            input=text
-        )
-        response.stream_to_file(filename)
-        return True
-    except Exception as e:
-        st.error(f"Hang hiba: {e}")
-        return False
+# --- 6. HANG MOTOR (MODDED TAMÁS) ---
+async def generate_deep_voice(text, filename, platform):
+    # ITT A TRÜKK: Pitch és Rate módosítás
+    # pitch="-25Hz": Mélyebbé teszi a hangot (mint Onyx)
+    # rate="-10%": Lassítja, hogy drámai legyen
+    
+    rate = "-5%" if platform == "TikTok" else "-10%" 
+    communicate = edge_tts.Communicate(text, "hu-HU-TamasNeural", rate=rate, pitch="-25Hz")
+    await communicate.save(filename)
 
 # --- 7. RENDER MOTOR ---
 def render_engine(img_url, script, platform):
@@ -140,10 +144,10 @@ def render_engine(img_url, script, platform):
         with open("temp_img.png", "wb") as f: 
             f.write(requests.get(img_url).content)
     
-    # Hang generálása az ÚJ motorral
     out_audio = f"audio_{platform}.mp3"
-    if not generate_pro_voice(script, out_audio):
-        return None
+    
+    # Aszinkron hívás a módosított hanghoz
+    run_async(generate_deep_voice(script, out_audio, platform))
     
     try:
         audio_clip = AudioFileClip(out_audio)
@@ -168,12 +172,12 @@ def render_engine(img_url, script, platform):
 
 # --- 8. VEZÉRLŐPULT ---
 def main():
-    st.title("👁️ PROJECT: ONYX // V8.0 (PRO AUDIO)")
+    st.title("👁️ PROJECT: ONYX // V9.0")
     
     c1, c2, c3 = st.columns(3)
     c1.markdown('<div class="stat-card">🧠 TUDAT<br><span style="color:#0f0">AKTÍV</span></div>', unsafe_allow_html=True)
     c2.markdown('<div class="stat-card">📡 HÁLÓZAT<br><span style="color:#0f0">KAPCSOLÓDVA</span></div>', unsafe_allow_html=True)
-    c3.markdown('<div class="stat-card">🔊 HANG<br><span style="color:#ff004c">OPENAI ONYX</span></div>', unsafe_allow_html=True)
+    c3.markdown('<div class="stat-card">🔊 HANG<br><span style="color:#00ffcc">MÉLY MAGYAR (MODDED)</span></div>', unsafe_allow_html=True)
     
     st.write("---")
     
@@ -205,7 +209,7 @@ def main():
 
     if selected_topic:
         st.write("---")
-        st.subheader("🔥 TARTALOM GYÁRTÁS (PRO VOICE)")
+        st.subheader("🔥 TARTALOM GYÁRTÁS (DUAL CORE)")
         
         if st.button("🚀 INDÍTÁS: TIKTOK + YOUTUBE"):
             progress = st.progress(0)
@@ -215,13 +219,12 @@ def main():
             img_url = generate_image(selected_topic)
             progress.progress(20)
             
-            status.text("📝 Szövegek írása...")
+            status.text("📝 Szövegek írása (Humanizált)...")
             script_tk = generate_human_script(selected_topic, "TikTok")
             script_yt = generate_human_script(selected_topic, "YouTube")
             progress.progress(40)
             
-            status.text("🔊 PROFI HANG GENERÁLÁSA (OpenAI Onyx)...")
-            # Ez most már a minőségi hangot hívja meg
+            status.text("🔊 HANG MODULÁLÁSA (Mélyítés + Lassítás)...")
             
             status.text("🎞️ TikTok render...")
             file_tk = render_engine(img_url, script_tk, "TikTok")
