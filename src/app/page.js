@@ -37,7 +37,7 @@ export default function Home() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [password, setPassword] = useState('');
   
-  // ITT A VÁLTOZÁS: Automatikusan betölti a kulcsot a Vercelről
+  // KÖRNYEZETI VÁLTOZÓ VAGY ÜRES
   const [apiKey, setApiKey] = useState(process.env.NEXT_PUBLIC_OPENAI_KEY || ''); 
   
   const [aiPrompt, setAiPrompt] = useState('Írj egy rövid, figyelemfelkeltő hírt a magyar OnlyFans piacról, legyen benne üzleti elemzés.');
@@ -63,7 +63,6 @@ export default function Home() {
 
   // --- VALÓDI OPENAI HÍR GENERÁLÁS ---
   const generateRealAiNews = async () => {
-    // Ellenőrzés: Vagy a környezeti változó, vagy a kézzel beírt mező kell
     const keyToUse = apiKey || process.env.NEXT_PUBLIC_OPENAI_KEY;
 
     if (!keyToUse) {
@@ -388,4 +387,6 @@ export default function Home() {
           <div className="bg-[#0f1115] border border-white/10 max-w-2xl w-full max-h-[90vh] overflow-y-auto relative shadow-2xl">
             <button 
               onClick={() => setSelectedNews(null)}
-              className="absolute top-4 right-4 bg-black/50
+              className="absolute top-4 right-4 bg-black/50 p-2 rounded-full text-white hover:bg-[#C5A059] transition z-10"
+            >
+              <X size={20} /
