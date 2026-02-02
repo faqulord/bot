@@ -37,7 +37,7 @@ export default function Home() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [password, setPassword] = useState('');
   
-  // KÖRNYEZETI VÁLTOZÓ VAGY ÜRES
+  // API KULCS KEZELÉSE (Vercel ENV vagy kézi)
   const [apiKey, setApiKey] = useState(process.env.NEXT_PUBLIC_OPENAI_KEY || ''); 
   
   const [aiPrompt, setAiPrompt] = useState('Írj egy rövid, figyelemfelkeltő hírt a magyar OnlyFans piacról, legyen benne üzleti elemzés.');
@@ -389,4 +389,4 @@ export default function Home() {
               onClick={() => setSelectedNews(null)}
               className="absolute top-4 right-4 bg-black/50 p-2 rounded-full text-white hover:bg-[#C5A059] transition z-10"
             >
-              <X size={20} /
+              <
