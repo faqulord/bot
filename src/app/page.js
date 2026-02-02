@@ -37,7 +37,7 @@ export default function Home() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [password, setPassword] = useState('');
   
-  // API KULCS KEZELÉSE (Vercel ENV vagy kézi)
+  // API KULCS KEZELÉSE
   const [apiKey, setApiKey] = useState(process.env.NEXT_PUBLIC_OPENAI_KEY || ''); 
   
   const [aiPrompt, setAiPrompt] = useState('Írj egy rövid, figyelemfelkeltő hírt a magyar OnlyFans piacról, legyen benne üzleti elemzés.');
@@ -128,9 +128,7 @@ export default function Home() {
       query = `https://www.google.com/search?q=site:instagram.com "hungary" "onlyfans"`;
     }
     window.open(query, '_blank');
-  };
-
-  return (
+  };return (
     <div className="min-h-screen pb-20 overflow-x-hidden font-sans text-gray-200 selection:bg-[#C5A059] selection:text-black">
       
       {/* 1. ÉLŐ ACTIVITY BAR */}
@@ -389,4 +387,27 @@ export default function Home() {
               onClick={() => setSelectedNews(null)}
               className="absolute top-4 right-4 bg-black/50 p-2 rounded-full text-white hover:bg-[#C5A059] transition z-10"
             >
-              <
+              <X size={20} />
+            </button>
+            <div className="h-64 overflow-hidden relative">
+               <div className="absolute inset-0 bg-gradient-to-t from-[#0f1115] to-transparent"></div>
+               <img src={selectedNews.img} className="w-full h-full object-cover" />
+            </div>
+            <div className="p-8 -mt-20 relative">
+              <span className="text-[#C5A059] text-xs font-bold tracking-widest mb-2 block">{selectedNews.tag}</span>
+              <h2 className="text-3xl font-display font-bold text-white mb-6 leading-tight">{selectedNews.title}</h2>
+              <p className="text-gray-300 leading-relaxed text-sm whitespace-pre-line border-l-2 border-[#C5A059] pl-6">
+                {selectedNews.content}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <footer className="mt-24 border-t border-white/5 py-12 text-center">
+        <h2 className="text-lg font-display text-white mb-2">PRIME GLOBAL</h2>
+        <p className="text-xs text-gray-600">© 2026 Official Agency Interface</p>
+      </footer>
+    </div>
+  );
+}
