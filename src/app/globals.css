@@ -1,0 +1,101 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@300;400;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --gold-primary: #D4AF37;
+  --gold-light: #FBF5B7;
+  --gold-dark: #AA771C;
+  --bg-black: #050505;
+  --glass-bg: rgba(20, 20, 20, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.1);
+}
+
+body {
+  background-color: var(--bg-black);
+  color: white;
+  font-family: 'Inter', sans-serif;
+  margin: 0;
+  overflow-x: hidden;
+}
+
+/* ARANY SZÖVEG */
+.text-gold {
+  background: linear-gradient(to right, var(--gold-primary), var(--gold-light), var(--gold-dark));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.font-cinzel { font-family: 'Cinzel', serif; }
+
+/* ÜVEGHATÁSÚ KÁRTYÁK */
+.glass-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--glass-border);
+  transition: all 0.3s ease;
+}
+
+.glass-card:hover {
+  border-color: var(--gold-primary);
+  transform: translateY(-5px);
+  box-shadow: 0 0 20px rgba(212, 175, 55, 0.2);
+}
+
+/* MARQUEE ANIMÁCIÓ */
+.marquee-container {
+  overflow: hidden;
+  white-space: nowrap;
+  position: relative;
+}
+
+.marquee-content {
+  display: inline-block;
+  animation: scroll 40s linear infinite;
+}
+
+@keyframes scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* TICKER ANIMÁCIÓ */
+.ticker-wrap {
+  width: 100%;
+  overflow: hidden;
+  background: #990000;
+  height: 30px;
+  display: flex;
+  align-items: center;
+}
+.ticker {
+  white-space: nowrap;
+  padding-left: 100%;
+  animation: ticker 30s linear infinite;
+  color: white;
+  font-weight: bold;
+  font-size: 12px;
+}
+@keyframes ticker {
+  0% { transform: translate3d(0, 0, 0); }
+  100% { transform: translate3d(-100%, 0, 0); }
+}
+
+/* GOMBOK */
+.btn-gold {
+  background: var(--gold-primary);
+  color: black;
+  padding: 10px 20px;
+  font-weight: bold;
+  text-transform: uppercase;
+  border: none;
+  cursor: pointer;
+  transition: 0.3s;
+}
+.btn-gold:hover {
+  background: white;
+  box-shadow: 0 0 15px white;
+}
