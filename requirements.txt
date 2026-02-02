@@ -1,9 +1,4 @@
-
-stream
-feedparser
-requests
-edge-tts
-moviepy==1.0.3
-imageio-ffmpeg
-numpy<2.0.0
-beautifulsoup4
+streamlit
+pandas
+openai
+watchdog
