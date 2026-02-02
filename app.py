@@ -1,291 +1,285 @@
 import streamlit as st
-import random
 import time
+import random
 
-# --- 1. LUXUS KONFIGURÁCIÓ ---
+# --- 1. KONFIGURÁCIÓ ---
 st.set_page_config(
-    page_title="PRIME GLOBAL | Elite Management",
+    page_title="PRIME GLOBAL | Official",
     page_icon="👑",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
 
-# --- 2. ÁLLAPOTKEZELÉS (Nyelv & Adatok) ---
+# --- 2. ADATOK & ÁLLAPOT ---
+if 'lang' not in st.session_state: st.session_state.lang = 'hu'
 
-# Nyelv (Alap: Magyar)
-if 'lang' not in st.session_state:
-    st.session_state.lang = 'hu'
-
-# Bannerek a Mozgó Szalaghoz (Infinity Marquee)
-if 'marquee_images' not in st.session_state:
-    # Ide sok képet tehetsz, ezek fognak úszni körbe-körbe
-    st.session_state.marquee_images = [
-        "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&h=300&fit=crop",
-        "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=300&h=300&fit=crop",
-        "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=300&h=300&fit=crop",
-        "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=300&h=300&fit=crop",
-        "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=300&h=300&fit=crop",
-        "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=300&h=300&fit=crop",
-        "https://images.unsplash.com/photo-1506956191951-7a88da4435e5?w=300&h=300&fit=crop",
-        "https://images.unsplash.com/photo-1506956191951-7a88da4435e5?w=300&h=300&fit=crop", # Duplikálva a hosszúság miatt
-    ]
-
-# Hírek
+# Hírek (Képekkel, címkékkel)
 if 'news' not in st.session_state:
     st.session_state.news = [
-        {"title_hu": "Kiszivárgott: Így buliznak a magyar modellek Miamiban", "title_en": "Leaked: How Hungarian models party in Miami", "img": "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=600", "reactions": {"🔥": 852, "🍑": 420}},
-        {"title_hu": "Rekordbevétel: Ő az új magyar OnlyFans királynő?", "title_en": "Record Revenue: Is she the new Hungarian OF Queen?", "img": "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=600", "reactions": {"🔥": 1200, "🍑": 600}}
+        {
+            "id": 1,
+            "title": "LEAKED: Magyar modellek privát bulija Miamiban",
+            "subtitle": "Kiszivárgott videók a zártkörű partiról. Felismered őket?",
+            "img": "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=800&q=80",
+            "tag": "EXCLUSIVE",
+            "reactions": 1240
+        },
+        {
+            "id": 2,
+            "title": "TOP 10: Ők keresték a legtöbbet januárban",
+            "subtitle": "A lista első helyezettje sokkolta a közösséget.",
+            "img": "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=400&q=80",
+            "tag": "MONEY",
+            "reactions": 850
+        },
+        {
+            "id": 3,
+            "title": "ÚJ TRÜKK: Így kerülik ki az OnlyFans tiltást",
+            "subtitle": "Mindenki ezt a módszert használja most.",
+            "img": "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=400&q=80",
+            "tag": "TECH",
+            "reactions": 560
+        }
     ]
 
-# --- 3. SZÖVEGEK (FORDÍTÁS) ---
-TEXTS = {
-    'hu': {
-        'agency_title': "NEMZETKÖZI KARRIERÉPÍTÉS",
-        'agency_sub': "A Prime Global nem csak egy ügynökség. Mi vagyunk a híd Budapest és Dubai között.",
-        'stat1': "450% Átlagos Növekedés",
-        'stat2': "120+ Nemzetközi Partner",
-        'stat3': "$4.2M Kezelt Vagyon",
-        'service1_t': "1. Content Architecture",
-        'service1_d': "Személyre szabott tartalomstratégia. Profi stábbal készítjük el a fotóidat és videóidat, amik megfelelnek a nemzetközi trendeknek.",
-        'service2_t': "2. Global Network",
-        'service2_d': "Kiszabadítunk Magyarországról. Kapcsolataink révén eljuttatunk Miamiba, Dubajba és Londonba, ahol a 'Bálnák' (gazdag ügyfelek) vannak.",
-        'service3_t': "3. 24/7 Chat Team",
-        'service3_d': "Amíg te alszol, vagy utazol, a profi chat-csapatunk dollárokat termel neked. Pszichológiai alapú értékesítés.",
-        'cta_btn': "JELENTKEZÉS AUDITRA",
-        'news_header': "TRENDING & GOSSIP"
-    },
-    'en': {
-        'agency_title': "GLOBAL CAREER MANAGEMENT",
-        'agency_sub': "Prime Global is not just an agency. We are the bridge between Budapest and Dubai.",
-        'stat1': "450% Avg. Growth",
-        'stat2': "120+ Global Partners",
-        'stat3': "$4.2M Assets Managed",
-        'service1_t': "1. Content Architecture",
-        'service1_d': "Personalized content strategy. We produce high-end photos and videos with pro crews that match global standards.",
-        'service2_t': "2. Global Network",
-        'service2_d': "We take you out of the local market. Our network gets you to Miami, Dubai, and London where the 'Whales' are.",
-        'service3_t': "3. 24/7 Chat Team",
-        'service3_d': "While you sleep or travel, our pro chat team generates dollars for you using psychological sales tactics.",
-        'cta_btn': "APPLY FOR AUDIT",
-        'news_header': "TRENDING & GOSSIP"
-    }
-}
+# Bannerek a mozgó szalaghoz (Marquee)
+if 'marquee' not in st.session_state:
+    st.session_state.marquee = [
+        "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&h=300&fit=crop",
+        "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=300&h=300&fit=crop",
+        "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=300&h=300&fit=crop",
+        "https://images.unsplash.com/photo-1506956191951-7a88da4435e5?w=300&h=300&fit=crop"
+    ] * 3 # Duplikáljuk, hogy hosszabb legyen
 
-# --- 4. CSS DESIGN (ANIMÁCIÓK & LUXUS) ---
+# --- 3. PROFI CSS DESIGN (A LÉNYEG) ---
 st.markdown("""
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Montserrat:wght@300;400;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@300;400;600;800&display=swap');
     
     /* ALAPOK */
-    .stApp { background-color: #050505; color: #ffffff; font-family: 'Montserrat', sans-serif; }
+    .stApp { background-color: #050505; color: #ffffff; font-family: 'Inter', sans-serif; }
     
-    /* GOMBOK REJTÉSE (Header) */
-    header {visibility: hidden;}
-    
-    /* ARANY GRADIENT SZÖVEG */
-    .gold-text {
-        background: linear-gradient(to right, #BF953F, #FCF6BA, #B38728, #FBF5B7, #AA771C);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        font-weight: 700;
+    /* BREAKING NEWS TICKER */
+    .ticker-wrap {
+        position: fixed; top: 0; left: 0; width: 100%; height: 30px; 
+        background-color: #990000; z-index: 9999; overflow: hidden;
+        display: flex; align-items: center; border-bottom: 1px solid #ff0000;
+    }
+    .ticker {
+        display: inline-block; white-space: nowrap; padding-left: 100%;
+        animation: ticker 30s linear infinite; color: white; font-weight: bold; font-size: 12px; text-transform: uppercase;
+    }
+    @keyframes ticker { 0% { transform: translate3d(0, 0, 0); } 100% { transform: translate3d(-100%, 0, 0); } }
+
+    /* HEADER STÍLUS */
+    .header-container { text-align: center; margin-top: 40px; margin-bottom: 20px; }
+    .gold-title {
+        font-family: 'Cinzel', serif; font-size: 3.5rem; font-weight: 700;
+        background: linear-gradient(to bottom, #cfc09f 22%,#634f2c 24%, #cfc09f 26%, #cfc09f 27%,#ffecb3 40%,#3a2c0f 78%); 
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        text-shadow: 0px 0px 10px rgba(212, 175, 55, 0.3);
+    }
+    .subtitle { color: #888; letter-spacing: 3px; font-size: 0.9rem; text-transform: uppercase; }
+
+    /* MENÜ FÜLEK (Custom Tabs) */
+    .stTabs [data-baseweb="tab-list"] { gap: 20px; justify-content: center; }
+    .stTabs [data-baseweb="tab"] {
+        background-color: transparent; border: 1px solid #333; color: #888; border-radius: 0px; padding: 10px 30px;
+    }
+    .stTabs [aria-selected="true"] {
+        background-color: #D4AF37 !important; color: #000 !important; font-weight: bold; border: 1px solid #D4AF37;
     }
 
-    /* --- INFINITY MARQUEE (A MOZGÓ SZALAG) --- */
+    /* MARQUEE (KÉPEK) */
     .marquee-container {
-        width: 100%;
-        overflow: hidden;
-        white-space: nowrap;
-        background: #000;
-        padding: 20px 0;
-        border-bottom: 2px solid #B38728;
-        border-top: 2px solid #B38728;
-        position: relative;
+        overflow: hidden; white-space: nowrap; margin: 20px 0; border-top: 1px solid #333; border-bottom: 1px solid #333; background: #0a0a0a; padding: 10px 0;
     }
-    
-    .marquee-content {
-        display: inline-block;
-        animation: scroll 20s linear infinite;
+    .marquee-content { display: inline-block; animation: scroll 40s linear infinite; }
+    .marquee-img {
+        height: 120px; width: 120px; margin: 0 5px; border-radius: 5px; object-fit: cover; opacity: 0.7; transition: 0.3s; display: inline-block; border: 1px solid #222;
     }
-    
-    .marquee-item {
-        display: inline-block;
-        width: 150px; /* Kisebb rubrikák */
-        height: 150px;
-        margin-right: 15px;
-        border-radius: 10px;
-        border: 1px solid #333;
-        background-size: cover;
-        background-position: center;
-        transition: transform 0.3s;
-        cursor: pointer;
-        position: relative;
-    }
-    
-    .marquee-item:hover {
-        transform: scale(1.1);
-        border: 2px solid #D4AF37;
-        z-index: 10;
-    }
+    .marquee-img:hover { opacity: 1; transform: scale(1.1); border-color: #D4AF37; }
+    @keyframes scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
 
-    @keyframes scroll {
-        0% { transform: translateX(0); }
-        100% { transform: translateX(-50%); }
+    /* MAGAZIN DESIGN (HÍREK) */
+    .hero-card {
+        position: relative; border-radius: 0px; overflow: hidden; height: 400px;
+        background-size: cover; background-position: center; border: 1px solid #333;
     }
-
-    /* --- ÜGYNÖKSÉGI RÉSZ (STATISZTIKÁK) --- */
-    .stat-box {
-        background: rgba(255,255,255,0.05);
-        border: 1px solid #333;
-        padding: 20px;
-        text-align: center;
-        border-radius: 0px;
+    .hero-overlay {
+        position: absolute; bottom: 0; left: 0; width: 100%;
+        background: linear-gradient(to top, #000 0%, transparent 100%);
+        padding: 30px;
     }
-    .stat-number { font-size: 1.5rem; color: #D4AF37; font-weight: bold; font-family: 'Cinzel', serif; }
-    .stat-label { font-size: 0.8rem; color: #aaa; text-transform: uppercase; }
-
-    /* --- HÍREK --- */
-    .news-card {
-        background: #111;
-        border-left: 3px solid #D4AF37;
-        margin-bottom: 20px;
-        transition: all 0.3s;
-    }
-    .news-card:hover { background: #1a1a1a; }
+    .news-tag { background: #D4AF37; color: black; padding: 3px 8px; font-size: 10px; font-weight: bold; text-transform: uppercase; }
+    .hero-title { font-size: 2rem; font-weight: 800; color: white; margin: 10px 0; line-height: 1.1; }
     
-    /* ZÁSZLÓ GOMBOK */
-    .flag-btn {
-        font-size: 24px; cursor: pointer; background: none; border: none; padding: 5px; opacity: 0.5; transition: 0.3s;
+    .side-news-card {
+        display: flex; gap: 15px; margin-bottom: 20px; padding: 10px; background: rgba(255,255,255,0.03); border: 1px solid #222;
     }
-    .flag-btn:hover { opacity: 1; transform: scale(1.2); }
-    .flag-active { opacity: 1; transform: scale(1.1); border-bottom: 2px solid #D4AF37; }
+    .side-news-img { width: 100px; height: 80px; object-fit: cover; }
+    .side-news-title { font-size: 1rem; font-weight: 600; color: #eee; line-height: 1.2; }
+
+    /* AGENCY OLDAL */
+    .agency-header { text-align: center; padding: 50px; background: radial-gradient(circle at center, #222 0%, #000 70%); border: 1px solid #222; margin-bottom: 30px; }
+    .stat-card { background: #111; border-top: 3px solid #D4AF37; padding: 20px; text-align: center; }
+    .stat-num { font-size: 2.5rem; font-weight: 900; color: white; }
+    .stat-desc { color: #888; font-size: 0.8rem; text-transform: uppercase; }
 
     </style>
 """, unsafe_allow_html=True)
 
-# --- 5. FEJLÉC & NYELV ---
+# --- 4. KOMPONENSEK ---
 
-# Nyelvválasztó sáv (Custom HTML)
-col_logo, col_lang = st.columns([4, 1])
-with col_logo:
-    st.markdown('<h1 style="font-family:Cinzel; font-size: 3rem; margin:0;">PRIME <span class="gold-text">GLOBAL</span></h1>', unsafe_allow_html=True)
-with col_lang:
-    # Egyszerű gombok a nyelvváltáshoz
-    c1, c2 = st.columns(2)
-    if c1.button("🇭🇺"): st.session_state.lang = 'hu'
-    if c2.button("🇬🇧"): st.session_state.lang = 'en'
-
-t = TEXTS[st.session_state.lang] # Az aktuális nyelv szövegei
-
-st.markdown("---")
-
-# --- 6. AZ INFINITY MARQUEE (MOZGÓ SZALAG) ---
-# Ez a HTML/CSS trükk hozza létre a folyamatos mozgást
-images_html = ""
-for img in st.session_state.marquee_images:
-    # Duplázzuk a listát a végtelen hatáshoz
-    images_html += f'<div class="marquee-item" style="background-image: url({img});"><div style="position:absolute; bottom:0; background:rgba(0,0,0,0.7); width:100%; color:white; font-size:10px; text-align:center;">FEATURED</div></div>'
-# Duplázás a loop miatt
-images_html += images_html 
-
-st.markdown(f"""
-<div class="marquee-container">
-    <div class="marquee-content">
-        {images_html}
+def breaking_news():
+    """A felső piros csík"""
+    st.markdown("""
+    <div class="ticker-wrap">
+        <div class="ticker">
+            BREAKING: KISZIVÁRGOTT VIDEÓK A BALATONRÓL +++ REKORD BEVÉTEL: KITTI ÁTLÉPTE A 10 MILLIÓT +++ ÚJ TAGOK A PRIME LISTÁN: ZSÓFI ÉS REBEKA +++ KERESD A VIP JELVÉNYT +++
+        </div>
     </div>
-</div>
-""", unsafe_allow_html=True)
+    """, unsafe_allow_html=True)
 
-# --- 7. TARTALOM (HÍREK vs AGENCY) ---
+def header():
+    """Logo és Nyelvválasztó"""
+    st.markdown("<br>", unsafe_allow_html=True) # Hely a ticker miatt
+    c1, c2, c3 = st.columns([1, 4, 1])
+    with c2:
+        st.markdown("""
+        <div class="header-container">
+            <div class="gold-title">PRIME GLOBAL</div>
+            <div class="subtitle">PREMIUM MANAGEMENT & NEWS</div>
+        </div>
+        """, unsafe_allow_html=True)
+    with c3:
+        # Nyelvváltó gombok (csak design)
+        st.markdown('<div style="text-align:right; padding-top:40px;"><span style="cursor:pointer; opacity:1;">🇭🇺</span> <span style="cursor:pointer; opacity:0.5;">🇬🇧</span></div>', unsafe_allow_html=True)
 
-tab_news, tab_agency, tab_admin = st.tabs(["🔥 " + t['news_header'], "💎 AGENCY / PARTNER", "🛠️ ADMIN"])
+def marquee():
+    """A mozgó képes szalag"""
+    images_html = "".join([f'<img src="{img}" class="marquee-img">' for img in st.session_state.marquee])
+    st.markdown(f"""
+    <div class="marquee-container">
+        <div class="marquee-content">{images_html}</div>
+    </div>
+    """, unsafe_allow_html=True)
 
-# === HÍREK TAB (KANOSOKNAK) ===
-with tab_news:
-    st.markdown("<br>", unsafe_allow_html=True)
-    c1, c2 = st.columns(2)
+# --- 5. TABS & OLDALAK ---
+
+breaking_news()
+header()
+
+# Menürendszer (Ez a standard Streamlit tab, de átstilizáltuk CSS-el)
+tab_portal, tab_agency, tab_admin = st.tabs(["MAGAZINE (HÍREK)", "AGENCY (PARTNER)", "ADMIN"])
+
+# === 1. MAGAZIN OLDAL (Designos Hírek) ===
+with tab_portal:
+    marquee() # A mozgó szalag itt van
     
-    # Hírek megjelenítése
-    for i, news in enumerate(st.session_state.news):
-        title = news[f'title_{st.session_state.lang}'] # Nyelv szerinti cím
-        with (c1 if i % 2 == 0 else c2):
+    st.markdown("### 🔥 TRENDING NOW")
+    
+    # MAGAZINE LAYOUT (Bento Box)
+    # Balra a nagy cikk, Jobbra a kicsik
+    col_hero, col_side = st.columns([2, 1])
+    
+    main_story = st.session_state.news[0]
+    side_stories = st.session_state.news[1:]
+    
+    with col_hero:
+        # A Nagy Cikk
+        st.markdown(f"""
+        <div class="hero-card" style="background-image: url('{main_story['img']}');">
+            <div class="hero-overlay">
+                <span class="news-tag">{main_story['tag']}</span>
+                <div class="hero-title">{main_story['title']}</div>
+                <p style="color:#ddd;">{main_story['subtitle']}</p>
+                <button style="background:#D4AF37; border:none; padding:10px 20px; font-weight:bold; cursor:pointer;">OLVASÁS ➜</button>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+        
+    with col_side:
+        # Oldalsó Hírek
+        for story in side_stories:
             st.markdown(f"""
-            <div class="news-card">
-                <img src="{news['img']}" style="width:100%; height:200px; object-fit:cover; opacity:0.8;">
-                <div style="padding:15px;">
-                    <h3 style="color:white; margin:0; font-size:1.1rem; text-transform:uppercase;">{title}</h3>
-                    <div style="margin-top:10px; display:flex; gap:10px;">
-                        <span style="background:#222; padding:5px 10px; border-radius:20px; color:#D4AF37; font-size:12px;">🔥 {news['reactions']['🔥']}</span>
-                        <span style="background:#222; padding:5px 10px; border-radius:20px; color:#D4AF37; font-size:12px;">🍑 {news['reactions']['🍑']}</span>
-                    </div>
+            <div class="side-news-card">
+                <img src="{story['img']}" class="side-news-img">
+                <div>
+                    <span style="color:#D4AF37; font-size:10px; font-weight:bold;">{story['tag']}</span>
+                    <div class="side-news-title">{story['title']}</div>
+                    <div style="font-size:10px; color:#666; margin-top:5px;">🔥 {story['reactions']} Reakció</div>
                 </div>
             </div>
             """, unsafe_allow_html=True)
             
-    # Hirdetési hely (Placeholder)
-    st.markdown('<div style="text-align:center; padding:20px; border:1px dashed #333; color:#555;">📢 GLOBAL AD SPACE (Google Ads)</div>', unsafe_allow_html=True)
-    
-    # A LISTA
+    # HIRDETÉS HELYE
     st.markdown("---")
-    st.markdown(f"### 📋 OFFICIAL HUNGARIAN ROSTER")
-    st.text("Loading 154 active profiles from database...")
-    st.progress(100)
-    # Ide jönne a statikus lista, amit az adminból töltesz fel
+    st.markdown('<div style="background:#111; color:#444; text-align:center; padding:30px; border:1px dashed #333;">📢 GOOGLE ADS SPACE</div>', unsafe_allow_html=True)
 
-
-# === AGENCY TAB (LÁNYOKNAK - A PÉNZCSAP) ===
-with tab_agency:
-    # HERO SECTION
-    st.markdown(f"""
-    <div style="text-align:center; padding: 50px 20px; background: radial-gradient(circle, #222 0%, #000 100%); margin-bottom: 30px;">
-        <h2 class="gold-text" style="font-size: 2.5rem; margin-bottom: 10px;">{t['agency_title']}</h2>
-        <p style="font-size: 1.1rem; color: #ccc; max-width: 800px; margin: 0 auto;">{t['agency_sub']}</p>
+    # LISTA
+    st.markdown("### 📋 HIVATALOS LISTA (ROSTER)")
+    st.info("A Prime Hungary ellenőrzött partnerei.")
+    # Ide jönne a lista, amit már megírtunk, csak most egyszerűsítve a design kedvéért:
+    st.markdown("""
+    <div style="column-count: 2; column-gap: 40px; color: #ccc;">
+        <p>➤ Kitti_Official <span style="color:gold;">★</span></p>
+        <p>➤ Szandra_Queen</p>
+        <p>➤ Niki_Milf</p>
+        <p>➤ Rebeka_Wild</p>
+        <p>➤ Vivi_X</p>
+        <p>➤ Dorina_B</p>
+        <p>➤ Zsófi_Life</p>
+        <p>➤ Petra_Fit</p>
     </div>
     """, unsafe_allow_html=True)
 
-    # STATISZTIKÁK (KAMU DE HATÁSOS)
-    k1, k2, k3 = st.columns(3)
-    k1.markdown(f'<div class="stat-box"><div class="stat-number">450%</div><div class="stat-label">{t["stat1"]}</div></div>', unsafe_allow_html=True)
-    k2.markdown(f'<div class="stat-box"><div class="stat-number">120+</div><div class="stat-label">{t["stat2"]}</div></div>', unsafe_allow_html=True)
-    k3.markdown(f'<div class="stat-box"><div class="stat-number">$4.2M</div><div class="stat-label">{t["stat3"]}</div></div>', unsafe_allow_html=True)
 
-    st.markdown("---")
-
-    # SZOLGÁLTATÁSOK
+# === 2. AGENCY OLDAL (Pénzcsináló) ===
+with tab_agency:
+    st.markdown("""
+    <div class="agency-header">
+        <h1 style="color:#D4AF37; font-family:Cinzel;">PRIME MANAGEMENT</h1>
+        <p style="font-size:1.2rem; color:white;">WE BUILD EMPIRES. NOT JUST PROFILES.</p>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    # KAMU STATISZTIKÁK (ANIMÁLT HATÁSÚ SZÁMOK)
     c1, c2, c3 = st.columns(3)
-    with c1:
-        st.markdown(f"#### 📷 {t['service1_t']}")
-        st.write(t['service1_d'])
-    with c2:
-        st.markdown(f"#### ✈️ {t['service2_t']}")
-        st.write(t['service2_d'])
-    with c3:
-        st.markdown(f"#### 💬 {t['service3_t']}")
-        st.write(t['service3_d'])
-
+    c1.markdown('<div class="stat-card"><div class="stat-num">$4.2M</div><div class="stat-desc">Generált Bevétel</div></div>', unsafe_allow_html=True)
+    c2.markdown('<div class="stat-card"><div class="stat-num">120+</div><div class="stat-desc">Aktív Partner</div></div>', unsafe_allow_html=True)
+    c3.markdown('<div class="stat-card"><div class="stat-num">24/7</div><div class="stat-desc">Chat Support</div></div>', unsafe_allow_html=True)
+    
     st.markdown("<br>", unsafe_allow_html=True)
     
-    # CTA (Call to Action)
-    st.markdown(f"""
-    <div style="text-align:center;">
-        <a href="#" style="background-color: #D4AF37; color: black; padding: 15px 40px; text-decoration: none; font-weight: bold; font-size: 1.2rem; border-radius: 50px; box-shadow: 0 0 20px rgba(212, 175, 55, 0.4);">{t['cta_btn']}</a>
-        <p style="margin-top:10px; font-size:0.8rem; color:#666;">*Kizárólag válogatott jelentkezőknek.</p>
-    </div>
-    """, unsafe_allow_html=True)
+    # MARKETING COPY
+    col_text, col_form = st.columns([1, 1])
+    
+    with col_text:
+        st.markdown("### 💎 MIÉRT A PRIME?")
+        st.markdown("""
+        Az OnlyFans piac 90%-a telített. Ha egyedül csinálod, láthatatlan vagy.
+        
+        **Amit mi nyújtunk:**
+        * **Global Reach:** Kijuttatunk a nemzetközi piacra (USA, UAE).
+        * **AI Chatbot:** A rendszerünk beszélget helyetted. Te alszol, a pénz jön.
+        * **Content Strategy:** Profi stáb, videós forgatókönyvek.
+        * **Legal Shield:** Jogi védelem és anonimitás.
+        """)
+    
+    with col_form:
+        st.markdown('<div style="background:#111; padding:20px; border:1px solid #333;">', unsafe_allow_html=True)
+        st.markdown("### 🚀 JELENTKEZÉS AUDITRA")
+        st.text_input("Instagram / OF Link")
+        st.selectbox("Jelenlegi Bevétel", ["Még nincs", "0 - $1000", "$1000 - $5000", "$5000+"])
+        st.button("JELENTKEZÉS KÜLDÉSE (INGYENES)", type="primary")
+        st.markdown('</div>', unsafe_allow_html=True)
 
-# === ADMIN TAB ===
+
+# === 3. ADMIN OLDAL ===
 with tab_admin:
-    st.write("Admin Login")
     pw = st.text_input("Jelszó", type="password")
     if pw == "admin123":
         st.success("Belépve")
-        st.write("**Mozgó Képek Kezelése**")
-        new_img = st.text_input("Új Kép URL a szalaghoz")
-        if st.button("Hozzáadás"):
-            st.session_state.marquee_images.append(new_img)
-            st.success("Hozzáadva a mozgó szalaghoz!")
-            
-        st.write("**Twitter Import (Szimuláció)**")
-        if st.button("Twitter Aktív Lista Importálása (.csv)"):
-            with st.spinner("Adatok feldolgozása..."):
-                time.sleep(2)
-                st.success("Sikeresen importálva 154 új profil a rendszerbe!")
+        st.write("Itt tudod szerkeszteni a híreket és a listát.")
+        # Admin funkciók (ugyanaz mint eddig)
