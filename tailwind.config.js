@@ -8,7 +8,7 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        gold: '#D4AF37',
+        ofblue: '#00AFF0', // HIVATALOS ONLYFANS KÉK
       },
       fontFamily: {
         display: ['Playfair Display', 'serif'],
