@@ -288,8 +288,7 @@ export default function Home() {
             </div>
           </div>
         )}
-
-        {/* --- TAB 4: ADMIN --- */}
+{/* --- TAB 4: ADMIN --- */}
         {activeTab === 'admin' && (
           <div className="max-w-md mx-auto bg-[#0f0f0f] border border-white/10 p-6 rounded-xl">
             {!isAdmin ? (
@@ -379,4 +378,13 @@ export default function Home() {
               <h2 className="text-2xl font-bold text-white mb-4">{selectedNews.title}</h2>
               <p className="text-gray-300 leading-relaxed whitespace-pre-line text-sm border-l-2 border-[#C5A059] pl-4">{selectedNews.content}</p>
               
-              <button className="w-full mt-8 
+              <button className="w-full mt-8 bg-[#C5A059] text-black font-bold py-3 rounded text-xs tracking-widest">
+                JELENTKEZÉS A CSAPATBA
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
