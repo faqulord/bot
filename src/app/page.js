@@ -8,14 +8,17 @@ import {
   Lock, 
   Check, 
   Instagram, 
-  Mail 
+  Mail,
+  Clock,
+  EyeOff,
+  DollarSign
 } from 'lucide-react';
 
-// --- KÉPEK LISTÁJA ---
+// --- A FELTÖLTÖTT KÉPEID ---
 const HERO_IMAGES = [
-  "https://i.postimg.cc/q7TLcwQP/Gemini-Generated-Image-b5aq1fb5aq1fb5aq.png", // 1. Main Hero
-  "https://i.postimg.cc/LhFYdCq8/Gemini-Generated-Image-z1mm12z1mm12z1mm.png", // 2. Professional Studio
-  "https://i.postimg.cc/2Sfvg6v9/Gemini-Generated-Image-urcusuurcusuurcu.png", // 3. Content Creation
+  "https://i.postimg.cc/q7TLcwQP/Gemini-Generated-Image-b5aq1fb5aq1fb5aq.png", // 1. Sexy/Elegant
+  "https://i.postimg.cc/LhFYdCq8/Gemini-Generated-Image-z1mm12z1mm12z1mm.png", // 2. Studio/Profi
+  "https://i.postimg.cc/2Sfvg6v9/Gemini-Generated-Image-urcusuurcusuurcu.png", // 3. Work/Ringlight
   "https://i.postimg.cc/hjGVM5m6/Gemini-Generated-Image-io149oio149oio14.png"  // 4. Community
 ];
 
@@ -23,7 +26,7 @@ export default function Home() {
   const [currentImage, setCurrentImage] = useState(0);
   const [formStatus, setFormStatus] = useState('idle');
 
-  // Képváltó időzítő (4 másodperc)
+  // Képváltó automatika
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentImage((prev) => (prev + 1) % HERO_IMAGES.length);
@@ -64,7 +67,7 @@ export default function Home() {
         </div>
       </nav>
 
-      {/* --- HERO SECTION (JAVÍTOTT OLVASHATÓSÁG) --- */}
+      {/* --- HERO SECTION (A KONKRÉT ÜZENET) --- */}
       <section className="relative h-screen w-full flex flex-col justify-center items-center overflow-hidden">
         
         {/* Háttér Slider */}
@@ -73,9 +76,8 @@ export default function Home() {
             key={index}
             className={`absolute inset-0 transition-all duration-[2000ms] ease-in-out transform ${index === currentImage ? 'opacity-100 scale-105' : 'opacity-0 scale-100'}`}
           >
-            {/* Sötétítés növelve 70%-ra az olvashatóságért */}
+            {/* Erős sötétítés az olvashatóságért */}
             <div className="absolute inset-0 bg-black/70 z-10"></div> 
-            {/* Alsó gradiens a gombok olvashatóságáért */}
             <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/40 z-10"></div>
             <img src={img} alt="Prime Talent" className="w-full h-full object-cover object-top" />
           </div>
@@ -83,138 +85,156 @@ export default function Home() {
 
         {/* Content */}
         <div className="relative z-20 text-center max-w-5xl px-4 animate-in fade-in duration-1000 slide-in-from-bottom-8 mt-10">
-          <p className="text-[#00AFF0] text-[9px] md:text-[11px] font-bold tracking-[0.4em] uppercase mb-6 md:mb-8 drop-shadow-md">
-            Exclusive Talent Management
+          <p className="text-[#00AFF0] text-[10px] md:text-[11px] font-bold tracking-[0.4em] uppercase mb-6 md:mb-8 drop-shadow-md border border-[#00AFF0]/30 inline-block px-4 py-2 rounded-full bg-black/50 backdrop-blur-sm">
+            Hivatalos OnlyFans Partner
           </p>
           
-          {/* Cím - Mobilon kisebb (text-4xl), Gépen nagy (text-7xl) + Serif Font */}
-          <h1 className="text-4xl md:text-7xl text-white mb-8 leading-tight tracking-wide font-serif drop-shadow-2xl">
-            <span className="font-light block mb-2">A TARTALOMGYÁRTÁS</span>
+          {/* CÍMSOR - EGYÉRTELMŰ ÉS NAGY */}
+          <h1 className="text-3xl md:text-6xl text-white mb-8 leading-tight tracking-wide font-serif drop-shadow-2xl">
+            <span className="font-light block mb-2">ONLYFANS MENEDZSMENT.</span>
             <span className="font-bold text-transparent bg-clip-text bg-gradient-to-r from-white via-gray-200 to-gray-400">
-              MŰVÉSZETE.
+              PROFITRA TERVEZVE.
             </span>
           </h1>
 
-          <p className="text-gray-200 text-xs md:text-base font-light tracking-wide leading-relaxed max-w-xl mx-auto mb-12 border-l-2 border-[#00AFF0] pl-4 md:border-none md:pl-0 text-left md:text-center drop-shadow-lg">
-            Nemzetközi karrier menedzsment válogatott tehetségeknek. Levesszük a válladról az üzleti terheket, hogy Te kizárólag a lényegre fókuszálhass: az alkotásra.
+          {/* ALCÍM - A FÁJDALOMPONTRA HAT */}
+          <p className="text-gray-200 text-xs md:text-base font-light tracking-wide leading-relaxed max-w-2xl mx-auto mb-12 border-l-2 border-[#00AFF0] pl-4 md:border-none md:pl-0 text-left md:text-center drop-shadow-lg bg-black/30 md:bg-transparent p-4 md:p-0 rounded-r-lg">
+            Kezdő vagy és nem tudod, hogyan indulj el? Vagy már csinálod, de kevés a bevételed? Mi levesszük a terhet a válladról: <strong>profi chat-csapat, marketing stratégia és teljes technikai háttér.</strong> Te csak a tartalmat gyártod, a többit mi intézzük.
           </p>
 
           <div className="flex flex-col md:flex-row gap-6 justify-center items-center">
             <button 
               onClick={scrollToForm}
-              className="w-full md:w-auto bg-[#00AFF0] text-white px-10 py-4 text-xs font-bold tracking-[0.2em] uppercase hover:bg-white hover:text-black transition duration-500 shadow-[0_0_30px_rgba(0,175,240,0.5)] rounded-sm"
+              className="w-full md:w-auto bg-[#00AFF0] text-white px-12 py-5 text-xs font-bold tracking-[0.2em] uppercase hover:bg-white hover:text-black transition duration-500 shadow-[0_0_30px_rgba(0,175,240,0.5)] rounded-sm"
             >
-              Karrier Konzultáció
+              Karrier Indítása
             </button>
             
-            <div className="flex items-center gap-3 text-[10px] text-gray-300 uppercase tracking-widest bg-black/40 px-4 py-2 rounded-full backdrop-blur-sm border border-white/10">
+            <div className="flex items-center gap-3 text-[10px] text-gray-300 uppercase tracking-widest bg-black/60 px-5 py-3 rounded-full backdrop-blur-md border border-white/10">
                <span className="relative flex h-2 w-2">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
                 </span>
-              Felvétel: Nyitva
+              Jelenleg felvétel: Nyitva
             </div>
           </div>
         </div>
 
         {/* Scroll Indicator */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-50 animate-bounce z-20">
-          <div className="w-[1px] h-10 bg-gradient-to-b from-transparent via-white to-transparent"></div>
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-50 animate-bounce z-20">
+          <div className="w-[1px] h-12 bg-gradient-to-b from-transparent via-white to-transparent"></div>
         </div>
       </section>
 
-      {/* --- PHILOSOPHY SECTION --- */}
-      <section className="py-24 px-6 bg-[#020202] border-t border-white/5">
+      {/* --- MIÉRT MI (A LÉNYEG) --- */}
+      <section className="py-24 px-6 bg-[#020202] border-t border-white/5 relative">
         <div className="max-w-7xl mx-auto">
-          <div className="grid md:grid-cols-2 gap-16 items-center">
-            <div>
-              <h2 className="text-3xl md:text-4xl font-light text-white mb-8 leading-snug font-serif">
-                Nem követőket gyűjtünk.<br/>
-                <span className="font-bold text-[#00AFF0]">Márkát építünk.</span>
-              </h2>
-              <div className="w-12 h-[1px] bg-[#00AFF0] mb-8"></div>
-              <p className="text-gray-400 text-sm leading-7 font-light mb-8 text-justify">
-                Az OnlyFans piac megváltozott. A "töltsünk fel képeket" stratégia ma már nem működik a legmagasabb szinten. Mi adatvezérelt marketinggel, pszichológiai profilozással és prémium márkaépítéssel dolgozunk.
-              </p>
-              <ul className="space-y-5">
-                {[
-                  "Dedikált Brand Manager minden partnerünknek",
-                  "Teljes körű jogi védelem és DMCA takedown",
-                  "Exkluzív hozzáférés a High-Ticket piacokhoz (USA/UK)"
-                ].map((item, i) => (
-                  <li key={i} className="flex items-start gap-4 text-xs font-bold uppercase tracking-wider text-white/90">
-                    <Check size={16} className="text-[#00AFF0] shrink-0" /> {item}
-                  </li>
-                ))}
-              </ul>
-            </div>
-            
-            {/* Service Cards */}
-            <div className="grid gap-6">
-              <div className="bg-[#080808] p-8 border border-white/5 hover:border-[#00AFF0]/30 transition duration-500 group rounded-sm">
-                <TrendingUp size={24} className="text-gray-600 group-hover:text-[#00AFF0] transition mb-4"/>
-                <h3 className="text-white font-medium uppercase tracking-widest text-xs mb-2">Bevétel Optimalizálás</h3>
-                <p className="text-gray-500 text-xs leading-relaxed">Dinamikus árazási stratégiák és "Bálna" ügyfélkezelés a maximális profit eléréséhez.</p>
-              </div>
-              <div className="bg-[#080808] p-8 border border-white/5 hover:border-[#00AFF0]/30 transition duration-500 group rounded-sm">
-                <Shield size={24} className="text-gray-600 group-hover:text-[#00AFF0] transition mb-4"/>
-                <h3 className="text-white font-medium uppercase tracking-widest text-xs mb-2">Digitális Biztonság</h3>
-                <p className="text-gray-500 text-xs leading-relaxed">Szigorú Geo-Blocking (Magyarország tiltása) és privát szféra védelem.</p>
-              </div>
-            </div>
+          
+          <div className="text-center mb-16">
+            <h2 className="text-2xl md:text-4xl font-light text-white mb-4 font-serif">
+              Miért bukik el a lányok <span className="font-bold text-[#00AFF0] border-b border-[#00AFF0]">90%-a</span> egyedül?
+            </h2>
+            <p className="text-gray-400 text-sm max-w-2xl mx-auto">
+              Mert az OnlyFans nem csak képek feltöltése. Ez egy 24 órás kőkemény üzlet. Ha egyedül csinálod, rabszolga leszel. Ha velünk, akkor szabad.
+            </p>
           </div>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            
+            {/* Kártya 1: BEVÉTEL */}
+            <div className="bg-[#080808] p-8 border border-white/5 hover:border-[#00AFF0]/40 transition duration-500 group rounded-sm relative overflow-hidden">
+              <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition"><DollarSign size={80}/></div>
+              <TrendingUp size={32} className="text-[#00AFF0] mb-6"/>
+              <h3 className="text-white font-bold uppercase tracking-widest text-sm mb-4">Magasabb Bevételek</h3>
+              <p className="text-gray-400 text-xs leading-relaxed text-justify">
+                Nem $10-os feliratkozókra hajtunk. A mi csapatunk tudja, hogyan kell eladni a tartalmaidat "VIP" bálna ügyfeleknek drágán. A tapasztalatunkkal megsokszorozhatjuk a jelenlegi bevételedet.
+              </p>
+            </div>
+
+            {/* Kártya 2: CHAT */}
+            <div className="bg-[#080808] p-8 border border-white/5 hover:border-[#00AFF0]/40 transition duration-500 group rounded-sm relative overflow-hidden">
+              <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition"><Clock size={80}/></div>
+              <Clock size={32} className="text-[#00AFF0] mb-6"/>
+              <h3 className="text-white font-bold uppercase tracking-widest text-sm mb-4">0-24 Chat Team</h3>
+              <p className="text-gray-400 text-xs leading-relaxed text-justify">
+                Utálsz egész nap a telefonon lógni és irogatni? Mi átvesszük. Profi chat-operátoraink válaszolnak helyetted éjjel-nappal, így neked van időd élni, edzeni és utazni.
+              </p>
+            </div>
+
+            {/* Kártya 3: BIZTONSÁG */}
+            <div className="bg-[#080808] p-8 border border-white/5 hover:border-[#00AFF0]/40 transition duration-500 group rounded-sm relative overflow-hidden">
+              <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition"><EyeOff size={80}/></div>
+              <EyeOff size={32} className="text-[#00AFF0] mb-6"/>
+              <h3 className="text-white font-bold uppercase tracking-widest text-sm mb-4">Láthatatlanság Itthon</h3>
+              <p className="text-gray-400 text-xs leading-relaxed text-justify">
+                Félsz, hogy meglátja a családod vagy a főnököd? "Geo-Blocking" technológiával letiltjuk egész Magyarországot. Csak külföldiek látják a profilodat. Teljes diszkréció.
+              </p>
+            </div>
+
+          </div>
+
+          {/* Trust Indicators */}
+          <div className="mt-16 flex flex-wrap justify-center gap-8 border-t border-white/5 pt-10 opacity-70">
+             <div className="flex items-center gap-3 text-xs uppercase tracking-widest text-white"><Check size={16} className="text-green-500"/> Hivatalos Szerződés</div>
+             <div className="flex items-center gap-3 text-xs uppercase tracking-widest text-white"><Check size={16} className="text-green-500"/> Dollár Kifizetés</div>
+             <div className="flex items-center gap-3 text-xs uppercase tracking-widest text-white"><Check size={16} className="text-green-500"/> Brand Építés</div>
+          </div>
+
         </div>
       </section>
 
-      {/* --- APPLICATION FORM --- */}
-      <section id="application-section" className="py-32 px-6 bg-[#050505] relative overflow-hidden">
-        {/* Subtle decorative background */}
-        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#00AFF0] opacity-[0.02] blur-[150px] rounded-full pointer-events-none"></div>
+      {/* --- FORM SECTION --- */}
+      <section id="application-section" className="py-24 px-6 bg-[#050505] relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#00AFF0] opacity-[0.03] blur-[150px] rounded-full pointer-events-none"></div>
         
         <div className="max-w-3xl mx-auto relative z-10 text-center">
           <span className="text-[#00AFF0] text-[10px] font-bold tracking-[0.3em] uppercase block mb-4">
-            Csatlakozás a Portfólióhoz
+            Csatlakozz a csapathoz
           </span>
-          <h2 className="text-3xl md:text-4xl font-light text-white mb-12 font-serif">
-            Készen állsz a <span className="font-bold">következő szintre?</span>
+          <h2 className="text-3xl md:text-4xl font-light text-white mb-6 font-serif">
+            Jelentkezés <span className="font-bold">Menedzsmentre</span>
           </h2>
+          <p className="text-gray-400 text-xs max-w-lg mx-auto mb-12">
+            Nem számít, hogy teljesen kezdő vagy, vagy már van tapasztalatod. Töltsd ki az űrlapot, és ha látjuk benned a potenciált, 24 órán belül felvesszük veled a kapcsolatot.
+          </p>
 
-          <div className="bg-[#0a0a0a] border border-white/5 p-8 md:p-12 text-left shadow-[0_0_50px_rgba(0,0,0,0.5)]">
+          <div className="bg-[#0a0a0a] border border-white/5 p-8 md:p-12 text-left shadow-[0_0_50px_rgba(0,0,0,0.5)] rounded-sm">
             {formStatus === 'success' ? (
               <div className="text-center py-12 animate-in fade-in">
                 <div className="inline-flex p-4 rounded-full bg-green-500/10 text-green-500 mb-6 border border-green-500/20">
                   <Check size={32} />
                 </div>
-                <h3 className="text-xl text-white font-serif mb-3">Jelentkezés Sikeres</h3>
-                <p className="text-gray-500 text-sm">Köszönjük a bizalmat. Munkatársunk hamarosan felveszi veled a kapcsolatot.</p>
+                <h3 className="text-xl text-white font-serif mb-3">Jelentkezés Elküldve!</h3>
+                <p className="text-gray-500 text-sm">Köszönjük. Munkatársunk hamarosan keresni fog a megadott elérhetőségen (általában Instagramon vagy Emailben).</p>
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-8">
                 <div className="grid md:grid-cols-2 gap-8">
                   <div className="group">
-                    <label className="block text-[9px] font-bold text-gray-500 uppercase tracking-widest mb-3 group-focus-within:text-[#00AFF0] transition">Teljes Név</label>
+                    <label className="block text-[9px] font-bold text-gray-500 uppercase tracking-widest mb-3 group-focus-within:text-[#00AFF0] transition">Teljes Név / Művésznév</label>
                     <input type="text" required
-                      className="w-full bg-transparent border-b border-white/10 py-3 text-white text-sm focus:border-[#00AFF0] outline-none transition placeholder-transparent" />
+                      className="w-full bg-transparent border-b border-white/10 py-3 text-white text-sm focus:border-[#00AFF0] outline-none transition placeholder-gray-800" placeholder="Írd be a neved..." />
                   </div>
                   <div className="group">
-                    <label className="block text-[9px] font-bold text-gray-500 uppercase tracking-widest mb-3 group-focus-within:text-[#00AFF0] transition">Instagram / Social Link</label>
+                    <label className="block text-[9px] font-bold text-gray-500 uppercase tracking-widest mb-3 group-focus-within:text-[#00AFF0] transition">Instagram Link (Fontos!)</label>
                     <input type="text" required
-                      className="w-full bg-transparent border-b border-white/10 py-3 text-white text-sm focus:border-[#00AFF0] outline-none transition placeholder-transparent" />
+                      className="w-full bg-transparent border-b border-white/10 py-3 text-white text-sm focus:border-[#00AFF0] outline-none transition placeholder-gray-800" placeholder="instagram.com/..." />
                   </div>
                 </div>
 
                 <div className="group">
                   <label className="block text-[9px] font-bold text-gray-500 uppercase tracking-widest mb-3 group-focus-within:text-[#00AFF0] transition">Email Cím</label>
                   <input type="email" required
-                    className="w-full bg-transparent border-b border-white/10 py-3 text-white text-sm focus:border-[#00AFF0] outline-none transition placeholder-transparent" />
+                    className="w-full bg-transparent border-b border-white/10 py-3 text-white text-sm focus:border-[#00AFF0] outline-none transition placeholder-gray-800" placeholder="email@cim.hu" />
                 </div>
 
                 <div className="group">
                   <label className="block text-[9px] font-bold text-gray-500 uppercase tracking-widest mb-3 group-focus-within:text-[#00AFF0] transition">Jelenlegi Tapasztalat</label>
                   <select className="w-full bg-[#0a0a0a] border-b border-white/10 py-3 text-gray-300 text-sm focus:border-[#00AFF0] outline-none transition cursor-pointer">
-                    <option>Kezdő / Nincs tapasztalat</option>
-                    <option>Középhaladó ($500 - $2000)</option>
-                    <option>Profi ($2000 - $10,000+)</option>
+                    <option>Teljesen Kezdő vagyok</option>
+                    <option>Kezdő ($0 - $500 / hó)</option>
+                    <option>Haladó ($500 - $2000 / hó)</option>
+                    <option>Profi ($2000+ / hó)</option>
                   </select>
                 </div>
 
@@ -226,7 +246,7 @@ export default function Home() {
                     {formStatus === 'submitting' ? 'Feldolgozás...' : 'Jelentkezés Elküldése'}
                   </button>
                   <p className="text-center text-[9px] text-gray-600 mt-6 uppercase tracking-widest flex justify-center items-center gap-2">
-                    <Lock size={10} /> 100% Diszkrét Adatkezelés
+                    <Lock size={10} /> Az adataidat 100% bizalmasan kezeljük.
                   </p>
                 </div>
               </form>
