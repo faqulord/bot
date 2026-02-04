@@ -7,10 +7,10 @@ import {
   Clock, AlertTriangle, ChevronRight,
   HelpCircle, ChevronDown, Globe, 
   Smartphone, X, Scale, BellRing, 
-  Banknote, TrendingUp, Cpu
+  Banknote, TrendingUp
 } from 'lucide-react';
 
-export default function OnyxV17_Flow() {
+export default function OnyxV18_Compact() {
   // --- ÁLLAPOTOK ---
   const [isLegalOpen, setIsLegalOpen] = useState(false);
   const [openFaq, setOpenFaq] = useState(null);
@@ -69,96 +69,95 @@ export default function OnyxV17_Flow() {
         </div>
       </nav>
 
-      <main className="relative z-10 pt-32 pb-20 px-6">
+      <main className="relative z-10 pt-28 pb-20 px-6">
         
-        {/* --- HERO & SZTORI (EGYBEN!) --- */}
-        <div className="max-w-4xl mx-auto text-center mb-20 animate-in fade-in zoom-in duration-700">
+        {/* --- HERO SECTION --- */}
+        <div className="max-w-4xl mx-auto text-center mb-16 animate-in fade-in zoom-in duration-700">
           
-          {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-orange-500/10 border border-orange-500/20 text-orange-400 text-xs font-bold mb-8 animate-pulse cursor-default">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-orange-500/10 border border-orange-500/20 text-orange-400 text-xs font-bold mb-6 animate-pulse cursor-default">
             <AlertTriangle size={14} />
-            FIGYELEM: A BÉTA TESZT ALATT MÉG INGYENES!
+            BÉTA TESZT: MÉG INGYENES!
           </div>
 
-          {/* Főcím */}
-          <h1 className="text-5xl md:text-7xl font-extrabold text-white mb-8 leading-tight tracking-tight">
+          <h1 className="text-5xl md:text-7xl font-extrabold text-white mb-6 leading-tight tracking-tight">
             A Sportfogadás <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-fuchsia-400 to-blue-400 drop-shadow-[0_0_15px_rgba(168,85,247,0.4)]">
               Forradalma.
             </span>
           </h1>
           
-          {/* A RÉSZLETES TECHNOLÓGIA (FELHOZVA IDE) */}
-          <div className="max-w-3xl mx-auto mb-10 text-left md:text-center space-y-6">
-             <p className="text-lg md:text-xl text-gray-300 leading-relaxed">
+          {/* SZTORI & TECHNOLÓGIA (Rövidebb, tömörebb) */}
+          <div className="max-w-3xl mx-auto mb-8 text-left md:text-center space-y-4">
+             <p className="text-lg text-gray-300 leading-relaxed">
                <span className="text-white font-bold">Ez nem tippmix. Ez adatbányászat.</span> <br/>
-               Amit látsz, az 2 év fejlesztés, és több mint 14.000 sor Python kód eredménye. Az Onyx rendszere nem "érez", mint az emberek. A szervereink másodpercenként 140 mérkőzést szkennelnek Japántól Brazíliáig.
-             </p>
-             <p className="text-lg md:text-xl text-gray-400 leading-relaxed">
-               A neurális háló folyamatosan figyeli a nyomást, a kapura lövéseket és a labdabirtoklást. Amikor a statisztika eléri a "kritikus szintet" (pl. a 75. percben), de az oddsok még nem reagáltak, az <span className="text-purple-400 font-bold">Onyx azonnal jelez.</span>
+               Az Onyx AI 14.000 sor Python kóddal, másodpercenként 140 mérkőzést szkennel. A célunk a "technológiai rés" megtalálása: amikor a pályán már "gól van a levegőben", de az oddsok még nem reagáltak.
              </p>
              <div className="flex flex-wrap justify-center gap-3 pt-2">
                  <span className="px-3 py-1 bg-purple-500/10 border border-purple-500/20 rounded-full text-xs font-mono text-purple-300">Python Core v4.0</span>
                  <span className="px-3 py-1 bg-blue-500/10 border border-blue-500/20 rounded-full text-xs font-mono text-blue-300">Live API Scan</span>
-                 <span className="px-3 py-1 bg-green-500/10 border border-green-500/20 rounded-full text-xs font-mono text-green-300">No Human Error</span>
              </div>
           </div>
 
-          {/* A "MIÉRT INGYENES" DOBOZ (KÖZVETLENÜL A GOMBOK ELŐTT) */}
-          <div className="bg-white/5 border border-white/10 p-5 rounded-2xl max-w-lg mx-auto mb-10 text-sm text-left flex items-start gap-4 hover:border-purple-500/30 transition-colors">
-             <div className="p-2.5 bg-purple-500/20 rounded-xl text-purple-300 shrink-0">
-               <Lock size={18} />
-             </div>
-             <div>
-               <p className="text-white font-bold mb-1 text-base">Miért ingyenes a csatlakozás?</p>
-               <p className="text-gray-400 leading-relaxed">
-                 A Béta teszt lezárása után a szolgáltatás <span className="text-white font-bold">havi előfizetéses lesz</span>. Most azért ingyenes, mert adatokat gyűjtünk. Aki most csatlakozik, annak <span className="text-green-400 font-bold">örökre ingyenes marad.</span>
-               </p>
+          {/* --- KOMPAKT "HOGYAN MŰKÖDIK" (NEM KELL GÖRGETNI!) --- */}
+          <div className="bg-white/5 border border-white/10 rounded-2xl p-4 md:p-6 mb-8 text-left max-w-2xl mx-auto backdrop-blur-md">
+             <h3 className="text-xs text-gray-500 uppercase tracking-widest mb-4 font-bold text-center">A Rendszer Működése</h3>
+             <div className="space-y-4">
+               {/* 1. Lépés */}
+               <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 bg-purple-500/20 rounded-lg flex items-center justify-center shrink-0">
+                    <BellRing className="text-purple-400" size={20} />
+                  </div>
+                  <div>
+                    <h4 className="text-white font-bold text-sm">1. Az AI Jelez</h4>
+                    <p className="text-gray-400 text-xs">Ha hibás oddsot talál, azonnal küldi az értesítést.</p>
+                  </div>
+               </div>
+               {/* 2. Lépés */}
+               <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 bg-blue-500/20 rounded-lg flex items-center justify-center shrink-0">
+                    <Smartphone className="text-blue-400" size={20} />
+                  </div>
+                  <div>
+                    <h4 className="text-white font-bold text-sm">2. Te Másolsz</h4>
+                    <p className="text-gray-400 text-xs">Megnyitod az irodát és 10 mp alatt megrakod a tippet.</p>
+                  </div>
+               </div>
+               {/* 3. Lépés */}
+               <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 bg-green-500/20 rounded-lg flex items-center justify-center shrink-0">
+                    <TrendingUp className="text-green-400" size={20} />
+                  </div>
+                  <div>
+                    <h4 className="text-white font-bold text-sm">3. Profitálsz</h4>
+                    <p className="text-gray-400 text-xs">A matematika hosszú távon mindig nyer.</p>
+                  </div>
+               </div>
              </div>
           </div>
 
-          {/* GOMBOK (A LEGVÉGÉN) */}
+          {/* SCARCITY DOBOZ (KÖZVETLENÜL A GOMBOK ELŐTT) */}
+          <div className="mb-8 max-w-lg mx-auto text-center">
+             <p className="text-white font-bold text-sm mb-1 flex items-center justify-center gap-2">
+               <Lock size={14} className="text-purple-400"/> Csak a Béta teszt alatt ingyenes!
+             </p>
+             <p className="text-gray-500 text-xs leading-relaxed">
+               Ha lejár a tesztidőszak, a rendszer <span className="text-white font-bold">fizetős lesz</span>. Használd ki a lehetőséget most.
+             </p>
+          </div>
+
+          {/* GOMBOK */}
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <a href="https://t.me/SHANNA444" target="_blank" className="bg-white text-black px-8 py-4 rounded-full font-bold text-lg hover:bg-purple-50 transition-all flex items-center justify-center gap-2 shadow-[0_0_30px_rgba(255,255,255,0.15)] hover:shadow-[0_0_40px_rgba(168,85,247,0.4)] hover:scale-105 active:scale-95">
               Ingyenes Csatlakozás <ArrowRight size={20} />
             </a>
-            <a href="#howitworks" className="bg-white/5 text-white border border-white/10 px-8 py-4 rounded-full font-bold text-lg hover:bg-white/10 transition-all flex items-center justify-center gap-2 backdrop-blur-sm">
-              <HelpCircle size={20} /> Hogyan működik?
-            </a>
           </div>
-        </div>{/* --- "HOGYAN MŰKÖDIK" (SÁV) --- */}
-        <div id="howitworks" className="max-w-5xl mx-auto mb-24 grid md:grid-cols-3 gap-6 scroll-mt-24">
-           <div className="bg-[#0A0A12] border border-white/10 p-6 rounded-2xl flex flex-col items-center text-center hover:border-purple-500/50 transition-colors group">
-              <div className="w-16 h-16 bg-purple-500/10 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                 <BellRing className="text-purple-400" size={32} />
-              </div>
-              <h3 className="text-white font-bold text-xl mb-2">1. Az AI Jelez</h3>
-              <p className="text-gray-400 text-sm">A rendszer 0-24-ben figyel. Ha talál egy hibás oddsot (Value Bet), azonnal küldi az értesítést a telefonodra.</p>
-           </div>
-           
-           <div className="bg-[#0A0A12] border border-white/10 p-6 rounded-2xl flex flex-col items-center text-center hover:border-blue-500/50 transition-colors group">
-              <div className="w-16 h-16 bg-blue-500/10 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                 <Smartphone className="text-blue-400" size={32} />
-              </div>
-              <h3 className="text-white font-bold text-xl mb-2">2. Te Másolsz</h3>
-              <p className="text-gray-400 text-sm">Megnyitod a fogadóirodát (pl. 22Bet, TippmixPro), és 10 másodperc alatt megrakod a tippet.</p>
-           </div>
-
-           <div className="bg-[#0A0A12] border border-white/10 p-6 rounded-2xl flex flex-col items-center text-center hover:border-green-500/50 transition-colors group">
-              <div className="w-16 h-16 bg-green-500/10 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                 <TrendingUp className="text-green-400" size={32} />
-              </div>
-              <h3 className="text-white font-bold text-xl mb-2">3. Profitálsz</h3>
-              <p className="text-gray-400 text-sm">A matematika hosszú távon mindig nyer. Dőlj hátra, és figyeld, ahogy a tőkéd stabilan növekszik.</p>
-           </div>
         </div>
-
-        {/* --- KOMPATIBILITÁS --- */}
-        <div className="w-full overflow-hidden border-y border-white/5 py-8 mb-24 bg-white/[0.02]">
-           <div className="max-w-4xl mx-auto text-center mb-6">
-              <p className="text-xs text-gray-500 uppercase tracking-widest">Kompatibilis platformok</p>
+{/* --- KOMPATIBILITÁS (EURÓPA & VILÁG) --- */}
+        <div className="w-full overflow-hidden border-y border-white/5 py-8 mb-16 bg-white/[0.02]">
+           <div className="max-w-4xl mx-auto text-center mb-4">
+              <p className="text-[10px] text-gray-500 uppercase tracking-widest">Kompatibilis platformok</p>
            </div>
-           <div className="flex justify-center gap-8 md:gap-16 opacity-40 grayscale font-bold text-lg md:text-xl flex-wrap px-4">
+           <div className="flex justify-center gap-6 md:gap-12 opacity-40 grayscale font-bold text-sm md:text-lg flex-wrap px-4">
               <span>22BET</span>
               <span>TIPPMIXPRO</span>
               <span>UNIBET</span>
@@ -168,12 +167,12 @@ export default function OnyxV17_Flow() {
            </div>
         </div>
 
-        {/* --- EREDMÉNYEK --- */}
-        <div className="max-w-3xl mx-auto mb-32 relative">
+        {/* --- EREDMÉNYEK TÁBLÁZAT --- */}
+        <div className="max-w-3xl mx-auto mb-24 relative">
           <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 to-blue-600 rounded-2xl opacity-20 blur-lg"></div>
           <div className="relative bg-[#05050A] border border-white/10 rounded-2xl overflow-hidden shadow-2xl">
              <div className="flex items-center justify-between p-4 border-b border-white/10 bg-white/[0.02]">
-                <h2 className="font-bold flex items-center gap-2 text-white">
+                <h2 className="font-bold flex items-center gap-2 text-white text-sm md:text-base">
                   <Clock className="text-purple-500" size={18} />
                   Előző Napi Zárás
                 </h2>
@@ -181,29 +180,34 @@ export default function OnyxV17_Flow() {
                   {LAST_UPDATE}
                 </span>
              </div>
-             <div className="grid grid-cols-12 bg-white/5 p-3 text-[10px] md:text-xs font-bold text-gray-500 uppercase tracking-wider">
-                <div className="col-span-6">Esemény</div>
-                <div className="col-span-3 text-center">Időpont</div>
-                <div className="col-span-3 text-right">Eredmény</div>
+             
+             {/* Fejléc */}
+             <div className="grid grid-cols-12 bg-white/5 p-2 text-[10px] font-bold text-gray-500 uppercase tracking-wider">
+                <div className="col-span-6 pl-2">Esemény</div>
+                <div className="col-span-3 text-center">Idő</div>
+                <div className="col-span-3 text-right pr-2">Eredmény</div>
              </div>
+
+             {/* Adatok */}
              {MATCHES.map((match, index) => (
-               <div key={index} className="grid grid-cols-12 p-4 border-b border-white/5 items-center hover:bg-white/5 transition-colors group cursor-default">
-                  <div className="col-span-6">
-                     <div className="font-bold text-white group-hover:text-purple-300 transition-colors text-sm">{match.name}</div>
-                     <div className="text-[10px] text-gray-500 mt-0.5">{match.type} v4.0</div>
+               <div key={index} className="grid grid-cols-12 p-3 border-b border-white/5 items-center hover:bg-white/5 transition-colors group cursor-default">
+                  <div className="col-span-6 pl-2">
+                     <div className="font-bold text-white group-hover:text-purple-300 transition-colors text-xs md:text-sm truncate">{match.name}</div>
+                     <div className="text-[10px] text-gray-500">{match.type} v4.0</div>
                   </div>
-                  <div className="col-span-3 text-center text-xs text-gray-400 font-mono">
+                  <div className="col-span-3 text-center text-[10px] md:text-xs text-gray-400 font-mono">
                      {match.time}
                   </div>
-                  <div className="col-span-3 text-right">
-                     <span className={`px-2 py-1 rounded text-xs font-bold ${match.result.includes('WIN') ? 'bg-green-500/20 text-green-400 border border-green-500/30' : 'bg-red-500/20 text-red-400 border border-red-500/30'}`}>
+                  <div className="col-span-3 text-right pr-2">
+                     <span className={`px-1.5 py-0.5 rounded text-[10px] md:text-xs font-bold ${match.result.includes('WIN') ? 'bg-green-500/20 text-green-400 border border-green-500/30' : 'bg-red-500/20 text-red-400 border border-red-500/30'}`}>
                         {match.result}
                      </span>
                   </div>
                </div>
              ))}
-             <div className="p-4 bg-white/[0.02] text-center">
-                <a href="https://t.me/SHANNA444" target="_blank" className="text-xs text-gray-400 hover:text-white flex items-center justify-center gap-1 transition-colors">
+             
+             <div className="p-3 bg-white/[0.02] text-center">
+                <a href="https://t.me/SHANNA444" target="_blank" className="text-[10px] md:text-xs text-gray-400 hover:text-white flex items-center justify-center gap-1 transition-colors">
                   Összes korábbi eredmény a Telegramon <ChevronRight size={12} />
                 </a>
              </div>
@@ -211,20 +215,20 @@ export default function OnyxV17_Flow() {
         </div>
 
         {/* --- GYIK / FAQ --- */}
-        <div id="faq" className="max-w-3xl mx-auto mb-32 scroll-mt-24">
-          <h2 className="text-3xl font-bold text-center mb-12">Gyakori Kérdések</h2>
-          <div className="space-y-4">
+        <div id="faq" className="max-w-3xl mx-auto mb-24 scroll-mt-24">
+          <h2 className="text-2xl font-bold text-center mb-8">Gyakori Kérdések</h2>
+          <div className="space-y-3">
             {FAQS.map((faq, index) => (
               <div key={index} className="border border-white/10 rounded-xl bg-white/5 overflow-hidden">
                 <button 
                   onClick={() => setOpenFaq(openFaq === index ? null : index)}
-                  className="w-full flex items-center justify-between p-5 text-left hover:bg-white/5 transition-colors"
+                  className="w-full flex items-center justify-between p-4 text-left hover:bg-white/5 transition-colors"
                 >
-                  <span className="font-bold text-white">{faq.question}</span>
-                  <ChevronDown className={`text-gray-400 transition-transform ${openFaq === index ? 'rotate-180' : ''}`} />
+                  <span className="font-bold text-white text-sm">{faq.question}</span>
+                  <ChevronDown className={`text-gray-400 transition-transform ${openFaq === index ? 'rotate-180' : ''}`} size={16} />
                 </button>
                 {openFaq === index && (
-                  <div className="p-5 pt-0 text-gray-400 text-sm leading-relaxed border-t border-white/5">
+                  <div className="p-4 pt-0 text-gray-400 text-xs md:text-sm leading-relaxed border-t border-white/5">
                     {faq.answer}
                   </div>
                 )}
@@ -233,20 +237,20 @@ export default function OnyxV17_Flow() {
           </div>
         </div>
 
-        {/* --- NEWSLETTER --- */}
-        <div className="max-w-2xl mx-auto text-center bg-[#080810] border border-white/10 rounded-3xl p-8 md:p-12 relative overflow-hidden group">
+        {/* --- HÍRLEVÉL --- */}
+        <div className="max-w-2xl mx-auto text-center bg-[#080810] border border-white/10 rounded-3xl p-6 md:p-10 relative overflow-hidden group mb-16">
            <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 to-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
            <div className="relative z-10">
-              <div className="w-14 h-14 bg-white/5 rounded-2xl flex items-center justify-center mx-auto mb-6 text-white border border-white/10 shadow-lg">
-                <Mail size={28} />
+              <div className="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center mx-auto mb-4 text-white border border-white/10 shadow-lg">
+                <Mail size={24} />
               </div>
-              <h2 className="text-2xl md:text-3xl font-bold text-white mb-3">Technológiai Hírlevél</h2>
-              <p className="text-gray-400 mb-8 text-sm md:text-base">
+              <h2 className="text-xl md:text-2xl font-bold text-white mb-2">Technológiai Hírlevél</h2>
+              <p className="text-gray-400 mb-6 text-xs md:text-sm">
                 Iratkozz fel, és értesítünk az új fejlesztésekről.
               </p>
               <div className="flex flex-col sm:flex-row gap-3">
-                 <input type="email" placeholder="Email cím..." className="flex-1 bg-black border border-white/20 text-white px-5 py-3.5 rounded-xl focus:outline-none focus:border-purple-500 transition-colors placeholder:text-gray-600" />
-                 <button className="bg-purple-600 hover:bg-purple-500 text-white font-bold px-8 py-3.5 rounded-xl transition-all shadow-lg hover:shadow-purple-500/25">FELIRATKOZÁS</button>
+                 <input type="email" placeholder="Email cím..." className="flex-1 bg-black border border-white/20 text-white px-4 py-3 rounded-xl focus:outline-none focus:border-purple-500 transition-colors placeholder:text-gray-600 text-sm" />
+                 <button className="bg-purple-600 hover:bg-purple-500 text-white font-bold px-6 py-3 rounded-xl transition-all shadow-lg hover:shadow-purple-500/25 text-sm">FELIRATKOZÁS</button>
               </div>
            </div>
         </div>
@@ -254,66 +258,66 @@ export default function OnyxV17_Flow() {
       </main>
 
       {/* --- FOOTER --- */}
-      <footer className="border-t border-white/5 bg-[#000212] pt-16 pb-32 md:pb-16 text-center relative z-10">
-        <div className="flex items-center justify-center gap-2 mb-6 opacity-50">
-           <Zap size={20} />
-           <span className="font-bold text-xl">ONYX.AI</span>
+      <footer className="border-t border-white/5 bg-[#000212] pt-12 pb-32 md:pb-12 text-center relative z-10">
+        <div className="flex items-center justify-center gap-2 mb-4 opacity-50">
+           <Zap size={18} />
+           <span className="font-bold text-lg">ONYX.AI</span>
         </div>
-        <p className="text-gray-600 text-xs mb-6 max-w-md mx-auto leading-relaxed px-6">
+        <p className="text-gray-600 text-[10px] mb-6 max-w-md mx-auto leading-relaxed px-6">
           © 2026 Onyx AI Systems. Minden jog fenntartva. <br/>
           A rendszer fejlesztői nem vállalnak felelősséget a fogadási veszteségekért.
         </p>
-        <div className="flex justify-center gap-6 text-xs font-bold text-gray-500">
+        <div className="flex justify-center gap-6 text-[10px] font-bold text-gray-500">
            <button onClick={() => setIsLegalOpen(true)} className="hover:text-white transition-colors flex items-center gap-1">
              <Scale size={12} /> Felhasználási Feltételek & Jogi Nyilatkozat
            </button>
         </div>
       </footer>
 
-      {/* --- STICKY MOBILE BUTTON --- */}
-      <div className="fixed bottom-0 left-0 w-full p-4 bg-[#000212]/90 backdrop-blur-lg border-t border-white/10 md:hidden z-40 flex justify-between items-center">
+      {/* --- STICKY MOBILE BUTTON (FIXED ALUL) --- */}
+      <div className="fixed bottom-0 left-0 w-full p-3 bg-[#000212]/95 backdrop-blur-lg border-t border-white/10 md:hidden z-40 flex justify-between items-center safe-area-pb">
          <div>
-            <p className="text-[10px] text-gray-400 uppercase">Státusz</p>
+            <p className="text-[10px] text-gray-500 uppercase font-bold">Rendszer Státusz</p>
             <p className="text-xs text-green-400 font-bold flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span> ONLINE</p>
          </div>
-         <a href="https://t.me/SHANNA444" target="_blank" className="bg-white text-black px-6 py-3 rounded-full font-bold text-sm shadow-lg">
+         <a href="https://t.me/SHANNA444" target="_blank" className="bg-white text-black px-5 py-2.5 rounded-full font-bold text-sm shadow-[0_0_15px_rgba(255,255,255,0.2)] animate-pulse">
             CSATLAKOZÁS
          </a>
       </div>
 
-      {/* --- LEGAL MODAL --- */}
+      {/* --- LEGAL MODAL (FELUGRÓ ABLAK) --- */}
       {isLegalOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in duration-300">
-           <div className="bg-[#05050A] border border-white/10 rounded-3xl w-full max-w-2xl max-h-[85vh] flex flex-col shadow-2xl relative">
-              <div className="p-6 border-b border-white/10 flex justify-between items-center bg-white/[0.02]">
-                 <h2 className="text-xl font-bold text-white flex items-center gap-2">
+           <div className="bg-[#05050A] border border-white/10 rounded-3xl w-full max-w-xl max-h-[85vh] flex flex-col shadow-2xl relative">
+              <div className="p-5 border-b border-white/10 flex justify-between items-center bg-white/[0.02]">
+                 <h2 className="text-lg font-bold text-white flex items-center gap-2">
                     <ShieldCheck className="text-purple-500" /> Jogi Nyilatkozat
                  </h2>
                  <button onClick={() => setIsLegalOpen(false)} className="p-2 bg-white/5 rounded-full hover:bg-white/10 text-gray-400 hover:text-white transition-colors">
-                    <X size={20} />
+                    <X size={18} />
                  </button>
               </div>
-              <div className="p-6 overflow-y-auto text-sm text-gray-400 space-y-6 leading-relaxed">
-                 <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-xl flex gap-3 items-start">
-                    <AlertTriangle className="text-red-500 shrink-0 mt-0.5" size={18} />
+              <div className="p-5 overflow-y-auto text-xs md:text-sm text-gray-400 space-y-5 leading-relaxed">
+                 <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-xl flex gap-3 items-start">
+                    <AlertTriangle className="text-red-500 shrink-0 mt-0.5" size={16} />
                     <div>
                        <h3 className="text-white font-bold mb-1">Kockázati Figyelmeztetés</h3>
-                       <p className="text-xs text-red-200">A sportfogadás kockázattal jár. Az oldalon közölt információk nem minősülnek pénzügyi tanácsadásnak. Csak saját felelősségre játssz.</p>
+                       <p className="text-[10px] md:text-xs text-red-200">A sportfogadás kockázattal jár. Az oldalon közölt információk nem minősülnek pénzügyi tanácsadásnak. Csak saját felelősségre játssz.</p>
                     </div>
                  </div>
                  <section>
-                    <h3 className="text-white font-bold text-base mb-2">1. Szolgáltatás</h3>
+                    <h3 className="text-white font-bold text-sm mb-1">1. Szolgáltatás</h3>
                     <p>Az Onyx AI egy statisztikai elemző szoftver. A generált jelzések kizárólag információs célt szolgálnak.</p>
                  </section>
                  <section>
-                    <h3 className="text-white font-bold text-base mb-2">2. Felelősségkizárás</h3>
+                    <h3 className="text-white font-bold text-sm mb-1">2. Felelősségkizárás</h3>
                     <p>A fejlesztő nem vállal felelősséget a felhasználó anyagi veszteségeiért.</p>
                  </section>
                  <section>
-                    <h3 className="text-white font-bold text-base mb-2">3. Korhatár</h3>
+                    <h3 className="text-white font-bold text-sm mb-1">3. Korhatár</h3>
                     <p>18 éven aluliaknak tilos az oldal használata.</p>
                  </section>
-                 <div className="pt-6 border-t border-white/5 text-xs text-center text-gray-600">
+                 <div className="pt-4 border-t border-white/5 text-[10px] text-center text-gray-600">
                     Onyx AI Systems v4.0 - All Rights Reserved 2026.
                  </div>
               </div>
