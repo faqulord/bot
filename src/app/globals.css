@@ -8,19 +8,32 @@
 
 body {
   color: #fff;
-  background: #0f172a; /* Slate 900 - Mély kékesszürke */
-  /* Finom háttérrács, hogy ne legyen üres */
-  background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-  linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-  background-size: 50px 50px;
+  background: #000212; /* "Void Black" - Nagyon mély kékfekete */
+  overflow-x: hidden;
 }
 
-/* Tőzsdei futócsík animáció */
-@keyframes ticker {
-  0% { transform: translateX(100%); }
-  100% { transform: translateX(-100%); }
+/* A modern "Glow" effekt a háttérben */
+.glow-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
+  background: 
+    radial-gradient(circle at 15% 50%, rgba(76, 29, 149, 0.15), transparent 25%),
+    radial-gradient(circle at 85% 30%, rgba(56, 189, 248, 0.1), transparent 25%);
+  pointer-events: none;
 }
-.animate-ticker {
-  animation: ticker 20s linear infinite;
-  white-space: nowrap;
+
+/* Finom rács a fejlesztői hatáshoz */
+.grid-overlay {
+  position: fixed;
+  inset: 0;
+  background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+  linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
+  z-index: 0;
+  pointer-events: none;
 }
