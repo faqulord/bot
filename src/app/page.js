@@ -1,212 +1,203 @@
 import React from 'react';
-import { ArrowRight, Terminal, BarChart3, ShieldCheck, Cpu, AlertTriangle, CheckCircle2 } from 'lucide-react';
+import { 
+  LayoutDashboard, 
+  Terminal, 
+  ShieldCheck, 
+  BarChart3, 
+  ArrowRight, 
+  Menu,
+  Cpu,
+  Globe,
+  Zap
+} from 'lucide-react';
 
-export default function LandingPage() {
+export default function DashboardPage() {
   return (
-    <div className="min-h-screen bg-[#050505] text-gray-200 font-sans selection:bg-green-500/30 scroll-smooth">
+    <div className="min-h-screen bg-[#050505] text-white font-sans selection:bg-green-500/30 overflow-x-hidden">
       
-      {/* --- NAVIGÁCIÓ --- */}
-      <nav className="border-b border-white/10 backdrop-blur-md sticky top-0 z-50 bg-black/50">
-        <div className="max-w-7xl mx-auto px-4 h-20 flex items-center justify-between">
+      {/* --- HÁTTÉR EFFEKT (AURORA) --- */}
+      <div className="fixed inset-0 pointer-events-none z-0">
+        <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-green-600/20 rounded-full blur-[120px] animate-pulse"></div>
+        <div className="absolute bottom-[10%] right-[-5%] w-[400px] h-[400px] bg-emerald-900/20 rounded-full blur-[100px]"></div>
+      </div>
+
+      {/* --- SIDEBAR (BAL OLDALI MENÜ) --- */}
+      <aside className="fixed left-0 top-0 h-full w-20 md:w-64 bg-black/40 backdrop-blur-xl border-r border-white/5 z-50 flex flex-col hidden md:flex">
+        {/* Logo */}
+        <div className="h-20 flex items-center justify-center md:justify-start md:px-8 border-b border-white/5">
+          <div className="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center shadow-[0_0_15px_rgba(34,197,94,0.6)]">
+            <span className="font-bold text-black">O</span>
+          </div>
+          <span className="ml-3 font-bold text-xl tracking-wider hidden md:block">ONYX<span className="text-green-500">.AI</span></span>
+        </div>
+
+        {/* Menüpontok */}
+        <nav className="flex-1 py-8 space-y-2 px-4">
+          <MenuLink icon={<LayoutDashboard size={20} />} text="Vezérlőpult" active />
+          <MenuLink icon={<Terminal size={20} />} text="Élő Terminál" />
+          <MenuLink icon={<BarChart3 size={20} />} text="Statisztika" />
+          <MenuLink icon={<ShieldCheck size={20} />} text="Technológia" />
+        </nav>
+
+        {/* Statusz */}
+        <div className="p-4 border-t border-white/5">
+          <div className="bg-white/5 rounded-xl p-4 flex items-center gap-3">
+            <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+            <div className="hidden md:block">
+              <p className="text-xs text-gray-400">Rendszer állapota</p>
+              <p className="text-sm font-bold text-green-400">ONLINE v4.0</p>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      {/* --- MOBIL NAVIGÁCIÓ (CSAK TELEFONON) --- */}
+      <div className="md:hidden fixed top-0 w-full h-16 bg-black/80 backdrop-blur-md border-b border-white/10 z-50 flex items-center justify-between px-4">
+         <div className="flex items-center gap-2">
+            <div className="w-6 h-6 bg-green-500 rounded flex items-center justify-center text-black font-bold text-xs">O</div>
+            <span className="font-bold text-lg">ONYX</span>
+         </div>
+         <div className="text-xs bg-green-500/10 text-green-400 px-2 py-1 rounded border border-green-500/20">BÉTA</div>
+      </div>
+
+      {/* --- FŐ TARTALOM (JOBB OLDAL) --- */}
+      <main className="md:ml-64 p-4 md:p-8 pt-24 md:pt-8 z-10 relative max-w-7xl mx-auto">
+        
+        {/* FEJLÉC ÜDVÖZLÉS */}
+        <header className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
+          <div>
+            <div className="inline-block px-3 py-1 rounded-full bg-green-500/10 border border-green-500/20 text-green-400 text-xs font-mono mb-2">
+              BÉTA TESZT IDŐSZAK: <span className="text-white">NAPOKON BELÜL VÉGE</span>
+            </div>
+            <h1 className="text-4xl md:text-5xl font-bold text-white mb-2">
+              Üdvözöl a <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-600">Jövőben.</span>
+            </h1>
+            <p className="text-gray-400 max-w-xl">
+              Az Onyx AI nem tippel. Az Onyx AI számol. Csatlakozz a rendszerhez, ami valós időben elemzi a világ sportfogadási piacát.
+            </p>
+          </div>
           
-          {/* 4D LOGO EFFECT */}
-          <div className="flex items-center gap-3 group cursor-pointer">
-            <div className="relative w-10 h-10 perspective-1000">
-              <div className="absolute inset-0 bg-green-500 rounded-lg opacity-20 group-hover:rotate-12 transition-transform duration-500 blur-md"></div>
-              <div className="relative w-full h-full border-2 border-green-500 rounded-lg flex items-center justify-center bg-black group-hover:scale-110 transition-transform duration-300 shadow-[0_0_15px_rgba(34,197,94,0.5)]">
-                <span className="font-bold text-green-400 text-xl">O</span>
-              </div>
-            </div>
-            <div className="flex flex-col">
-              <span className="font-bold text-2xl tracking-tighter text-white leading-none">
-                ONYX<span className="text-green-500">.AI</span>
-              </span>
-              <span className="text-[10px] text-gray-400 tracking-widest uppercase">Sniper Systems</span>
-            </div>
-          </div>
-
-          {/* ASZTALI MENÜ */}
-          <div className="hidden md:flex items-center gap-8 text-sm font-medium text-gray-400">
-            <a href="#miert-mi" className="hover:text-green-400 transition-colors">Miért az Onyx?</a>
-            <a href="#technologia" className="hover:text-green-400 transition-colors">Technológia</a>
-            <a href="#felelosseg" className="hover:text-red-400 transition-colors flex items-center gap-1">
-              <AlertTriangle className="w-3 h-3" /> Felelősség
-            </a>
-          </div>
-
-          <a 
-            href="https://t.me/SHANNA444" 
-            target="_blank"
-            className="hidden md:flex text-xs font-bold text-black bg-green-500 px-4 py-2 rounded-full hover:bg-green-400 transition-all hover:shadow-[0_0_20px_rgba(34,197,94,0.4)]"
-          >
-            CSATLAKOZÁS
+          <a href="https://t.me/SHANNA444" target="_blank" className="group flex items-center justify-center gap-2 bg-white text-black px-6 py-3 rounded-xl font-bold hover:bg-green-400 transition-all shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:shadow-[0_0_30px_rgba(34,197,94,0.5)]">
+            <Zap size={18} className="fill-black" />
+            Ingyenes Csatlakozás
+            <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
           </a>
-        </div>
-      </nav>
+        </header>
 
-      {/* --- HERO SZEKCIÓ --- */}
-      <main className="max-w-6xl mx-auto px-4 pt-20 pb-32">
-        <div className="text-center max-w-4xl mx-auto space-y-8">
+        {/* --- BENTO GRID (WIDGETEK) --- */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-green-900/20 border border-green-500/20 text-xs font-mono text-green-400 mb-4 animate-pulse">
-            <span className="w-2 h-2 rounded-full bg-green-500"></span>
-            SYSTEM STATUS: ONLINE | TESZT FÁZIS AKTÍV
+          {/* KÁRTYA 1: ÉLŐ TERMINÁL (Nagy kártya) */}
+          <div className="md:col-span-2 bg-[#0A0A0A]/80 backdrop-blur-md border border-white/10 rounded-3xl p-6 relative overflow-hidden group hover:border-green-500/30 transition-all">
+            <div className="flex items-center justify-between mb-4 border-b border-white/5 pb-2">
+              <div className="flex items-center gap-2 text-gray-400">
+                <Terminal size={16} />
+                <span className="text-sm font-mono">LIVE_LOG_V4.py</span>
+              </div>
+              <div className="flex gap-1.5">
+                <div className="w-2 h-2 rounded-full bg-red-500/50"></div>
+                <div className="w-2 h-2 rounded-full bg-yellow-500/50"></div>
+                <div className="w-2 h-2 rounded-full bg-green-500"></div>
+              </div>
+            </div>
+            <div className="font-mono text-sm space-y-3 h-48 overflow-hidden relative">
+               <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#0A0A0A] z-10"></div>
+               <p className="text-gray-500">$ init onyx_core_system...</p>
+               <p className="text-green-500/80">{'>'} Global Connection Established (Ping: 14ms)</p>
+               <p className="text-gray-400">Scanning: Premier League, La Liga, J1 League...</p>
+               <div className="pl-4 border-l border-white/10 my-2">
+                  <p className="text-blue-400 text-xs">Scanning Match: Yokohama vs Kawasaki</p>
+                  <p className="text-gray-600 text-xs">... No value found.</p>
+               </div>
+               <p className="text-yellow-500 font-bold animate-pulse">{'>'} OPPORTUNITY DETECTED: Rukh Lviv</p>
+               <p className="text-white pl-4">Stats: 78. min | High Pressure | Odds: 1.95</p>
+               <p className="text-green-400 font-bold">{'>'}{'>'} SIGNAL SENT TO TELEGRAM.</p>
+            </div>
           </div>
 
-          <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-white leading-tight">
-            A Sportfogadás többé nem <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 via-emerald-500 to-teal-500 drop-shadow-[0_0_10px_rgba(34,197,94,0.3)]">
-              Szerencse kérdése.
-            </span>
-          </h1>
-          
-          <p className="text-lg md:text-xl text-gray-400 leading-relaxed max-w-2xl mx-auto">
-            Kifejlesztettünk egy technológiát, ami ott kezdődik, ahol az emberi agy elfárad. 
-            Valós idejű adatfeldolgozás, 0% érzelem, 100% matematika.
-          </p>
-
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-8">
-            <a 
-              href="https://t.me/SHANNA444" 
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group w-full sm:w-auto px-8 py-5 bg-white text-black font-bold text-lg rounded-2xl hover:bg-green-400 transition-all duration-300 flex items-center justify-center gap-3 shadow-[0_0_30px_rgba(255,255,255,0.1)] hover:shadow-[0_0_40px_rgba(34,197,94,0.6)]"
-            >
-              <Terminal className="w-6 h-6" />
-              INGYENES TESZT START
-              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-            </a>
+          {/* KÁRTYA 2: STATISZTIKA */}
+          <div className="bg-[#0A0A0A]/80 backdrop-blur-md border border-white/10 rounded-3xl p-6 flex flex-col justify-between group hover:border-green-500/30 transition-all">
+            <div>
+              <div className="w-10 h-10 rounded-full bg-green-500/10 flex items-center justify-center mb-4">
+                <BarChart3 className="text-green-500" size={20} />
+              </div>
+              <h3 className="text-xl font-bold text-white">Transzparencia</h3>
+              <p className="text-sm text-gray-400 mt-2">
+                Minden este 23:00-kor nyilvános zárás. Nincs titkolózás, csak a nyers számok.
+              </p>
+            </div>
+            <div className="mt-4 p-3 bg-white/5 rounded-xl border border-white/5">
+              <div className="flex justify-between text-sm mb-1">
+                <span className="text-gray-400">Pontosság (V4)</span>
+                <span className="text-green-400">Magas</span>
+              </div>
+              <div className="w-full h-1 bg-gray-700 rounded-full overflow-hidden">
+                <div className="w-[85%] h-full bg-green-500"></div>
+              </div>
+            </div>
           </div>
-          <p className="text-xs text-gray-500">*Korlátozott férőhely a tesztidőszak alatt.</p>
+
+          {/* KÁRTYA 3: VILÁGLEFEDETTSÉG */}
+          <div className="bg-[#0A0A0A]/80 backdrop-blur-md border border-white/10 rounded-3xl p-6 group hover:border-green-500/30 transition-all">
+             <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center mb-4">
+                <Globe className="text-blue-500" size={20} />
+              </div>
+              <h3 className="text-lg font-bold text-white">Global Scanner</h3>
+              <p className="text-sm text-gray-400 mt-2 mb-4">
+                Amíg te alszol, a gép dolgozik. Japán reggel, Brazília este. 0-24 lefedettség.
+              </p>
+              <div className="flex gap-2 text-xs">
+                <span className="px-2 py-1 rounded bg-white/5 text-gray-300">🇪🇺 EU</span>
+                <span className="px-2 py-1 rounded bg-white/5 text-gray-300">🇯🇵 JP</span>
+                <span className="px-2 py-1 rounded bg-white/5 text-gray-300">🇧🇷 BR</span>
+              </div>
+          </div>
+
+          {/* KÁRTYA 4: MIÉRT MI? (Széles) */}
+          <div className="md:col-span-2 bg-gradient-to-br from-[#0F0F0F] to-[#050505] border border-white/10 rounded-3xl p-6 md:p-8 relative">
+             <div className="absolute top-0 right-0 p-6 opacity-10">
+               <Cpu size={100} />
+             </div>
+             <h3 className="text-2xl font-bold text-white mb-4">Ember vs. Mesterséges Intelligencia</h3>
+             <div className="grid md:grid-cols-2 gap-8">
+               <div className="space-y-2">
+                 <h4 className="text-red-400 font-bold text-sm uppercase">Emberi Fogadó</h4>
+                 <ul className="text-sm text-gray-400 space-y-1">
+                   <li>❌ Érzelmi döntések (bosszúfogadás)</li>
+                   <li>❌ Elfárad, nem tud mindent figyelni</li>
+                   <li>❌ Csak a kedvenc csapatait ismeri</li>
+                 </ul>
+               </div>
+               <div className="space-y-2">
+                 <h4 className="text-green-400 font-bold text-sm uppercase">Onyx AI Bot</h4>
+                 <ul className="text-sm text-gray-400 space-y-1">
+                   <li>✅ 100% Matematika, 0% Érzelem</li>
+                   <li>✅ Másodpercenként 100+ meccs elemzése</li>
+                   <li>✅ Csak a "Value" (érték) érdekli</li>
+                 </ul>
+               </div>
+             </div>
+          </div>
+
         </div>
 
-        {/* --- KIK VAGYUNK / MIÉRT MI (Storytelling) --- */}
-        <section id="miert-mi" className="mt-32 border-t border-white/10 pt-20">
-          <div className="grid md:grid-cols-2 gap-16 items-center">
-            <div className="space-y-6">
-              <h2 className="text-3xl md:text-4xl font-bold text-white">
-                Az Emberi Agy korlátai <br />
-                <span className="text-red-500">vs.</span> Onyx AI
-              </h2>
-              <div className="space-y-4 text-gray-400">
-                <p>
-                  Valljuk be: az emberi agy képtelen egyszerre figyelni a Japán 2. ligát, a Brazil bajnokságot és egy német edzőmeccset. Elfáradsz. Érzelmeket viszel bele. Vissza akarod nyerni, amit elvesztettél.
-                </p>
-                <p className="font-semibold text-white">
-                  Ez a legnagyobb hiba.
-                </p>
-                <p>
-                  A fejlesztésünk hónapokat vett igénybe. A cél egyetlen dolog volt: 
-                  <span className="text-green-400"> Kizárni az emberi tényezőt.</span> Az ONYX nem szurkol. Nem reménykedik. Az ONYX csak a nyers adatokat látja, és akkor lő, amikor a statisztikai valószínűség a mi oldalunkon áll.
-                </p>
-              </div>
-              
-              <ul className="space-y-3 mt-4">
-                {['0-24 Monitorozás', 'Érzelemmentes Döntések', 'Azonnali Reakcióidő'].map((item) => (
-                  <li key={item} className="flex items-center gap-2 text-white">
-                    <CheckCircle2 className="w-5 h-5 text-green-500" /> {item}
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Vizualizáció (Terminal) */}
-            <div className="bg-[#0c0c0c] rounded-2xl border border-gray-800 p-6 font-mono text-sm shadow-2xl relative overflow-hidden group hover:border-green-500/30 transition-colors">
-              <div className="absolute top-0 right-0 p-4 opacity-20">
-                <Cpu className="w-24 h-24 text-green-500 animate-spin-slow" />
-              </div>
-              <div className="flex gap-2 mb-6 border-b border-gray-800 pb-4">
-                <div className="w-3 h-3 rounded-full bg-red-500"></div>
-                <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
-                <div className="w-3 h-3 rounded-full bg-green-500"></div>
-              </div>
-              <div className="space-y-3 relative z-10">
-                <div className="text-gray-500"># Elemzési folyamat indítása...</div>
-                <div className="text-blue-400">Scanning Global Markets... [OK]</div>
-                <div className="text-gray-400">Analysing: Possession, Attacks, Shots on Target</div>
-                <div className="text-yellow-500 font-bold mt-4">{'>'} POTENTIAL MATCH FOUND</div>
-                <div className="pl-4 border-l-2 border-green-500/50 my-2">
-                   <div className="text-white">Match: Rukh Lviv vs A. Klagenfurt</div>
-                   <div className="text-green-400">Probability: 87.4% (Over 0.5 Goal)</div>
-                   <div className="text-gray-400">Time: 78:12 | Pressure Index: HIGH</div>
-                </div>
-                {/* ITT VOLT A HIBA: A >> jeleket kicseréltem {'>'}{'>'}-re */}
-                <div className="text-green-400 font-bold blink">{'>'}{'>'} SIGNAL SENT.</div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* --- STATISZTIKA SZEKCIÓ --- */}
-        <section id="technologia" className="mt-32">
-          <div className="grid md:grid-cols-3 gap-6">
-            <div className="p-8 rounded-2xl bg-gradient-to-br from-white/5 to-transparent border border-white/10 hover:border-green-500/30 transition-all hover:-translate-y-1">
-              <BarChart3 className="w-12 h-12 text-green-500 mb-6" />
-              <h3 className="text-xl font-bold text-white mb-3">Transzparens Könyvelés</h3>
-              <p className="text-gray-400">
-                Nem árulunk zsákbamacskát. A csoportban minden este 23:00-kor automata zárás van. Látod a nyerőt és a vesztőt is. Így épül a bizalom.
-              </p>
-            </div>
-
-            <div className="p-8 rounded-2xl bg-gradient-to-br from-white/5 to-transparent border border-white/10 hover:border-green-500/30 transition-all hover:-translate-y-1">
-              <Cpu className="w-12 h-12 text-green-500 mb-6" />
-              <h3 className="text-xl font-bold text-white mb-3">AI + Matematika</h3>
-              <p className="text-gray-400">
-                Ez már nem csak játék. Ez befektetés. A rendszerünk az arbitrázs és a value betting elveit használja, felturbózva gépi tanulással.
-              </p>
-            </div>
-
-            <div className="p-8 rounded-2xl bg-gradient-to-br from-white/5 to-transparent border border-white/10 hover:border-green-500/30 transition-all hover:-translate-y-1">
-              <ShieldCheck className="w-12 h-12 text-green-500 mb-6" />
-              <h3 className="text-xl font-bold text-white mb-3">Sniper Mód</h3>
-              <p className="text-gray-400">
-                A legtöbb fogadó a kezdő sípszó előtt tippel. Mi nem. Mi kivárjuk a 75. percet, amikor a piac a legsebezhetőbb.
-              </p>
-            </div>
-          </div>
-        </section>
+        {/* LÁBLÉC */}
+        <footer className="mt-16 border-t border-white/5 pt-8 text-center text-gray-500 text-xs pb-24 md:pb-8">
+          <p className="mb-2">18+ | A sportfogadás kockázattal jár. Játssz felelősséggel.</p>
+          <p>&copy; 2026 ONYX AI Systems. Minden jog fenntartva.</p>
+        </footer>
 
       </main>
+    </div>
+  );
+}
 
-      {/* --- JOGI LÁBLÉC & FIGYELMEZTETÉS (FONTOS!) --- */}
-      <footer id="felelosseg" className="bg-[#020202] border-t border-white/5 pt-16 pb-8">
-        <div className="max-w-6xl mx-auto px-4">
-          
-          <div className="grid md:grid-cols-2 gap-12 mb-12">
-            <div>
-              <div className="flex items-center gap-2 mb-4">
-                 <span className="font-bold text-xl text-white">ONYX<span className="text-green-500">.AI</span></span>
-              </div>
-              <p className="text-gray-500 text-sm leading-relaxed">
-                Az Onyx rendszer egy statisztikai elemző szoftver, amely a sportfogadás világában nyújt matematikai valószínűségszámítást. A célunk, hogy a szerencsejátékot tudatos befektetéssé alakítsuk át a technológia segítségével.
-              </p>
-            </div>
-            
-            <div className="text-sm text-gray-500 space-y-4 border-l border-white/10 pl-6">
-              <div className="flex items-center gap-3 text-red-500 font-bold">
-                <div className="border border-red-500 rounded-full w-8 h-8 flex items-center justify-center">18+</div>
-                <span>FELELŐSSÉGTELJES JÁTÉK</span>
-              </div>
-              <p>
-                A sportfogadás kockázattal jár és függőséget okozhat. Csak akkora összeggel játssz, aminek az elvesztését megengedheted magadnak!
-              </p>
-              <p>
-                Ha szerencsejáték problémákkal küzdesz, kérj segítséget: <br />
-                <a href="http://www.szerencsejatek.hu" className="underline hover:text-white">Részvételi szabályzat és segítség</a>
-              </p>
-            </div>
-          </div>
-
-          <div className="border-t border-white/5 pt-8 text-center text-xs text-gray-600">
-            <p className="mb-2">
-              Jogi nyilatkozat: Az oldalon található információk nem minősülnek pénzügyi tanácsadásnak. 
-              A tesztidőszak alatt a szolgáltatás ingyenes, a tippek felhasználása saját felelősségre történik.
-            </p>
-            <p>&copy; 2026 ONYX AI Systems. Minden jog fenntartva.</p>
-          </div>
-
-        </div>
-      </footer>
+// Kisebb komponens a menühöz (hogy tiszta legyen a kód)
+function MenuLink({ icon, text, active }) {
+  return (
+    <div className={`flex items-center gap-3 px-4 py-3 rounded-xl cursor-pointer transition-all ${active ? 'bg-green-500/10 text-green-400 border border-green-500/20' : 'text-gray-400 hover:bg-white/5 hover:text-white'}`}>
+      {icon}
+      <span className="font-medium text-sm">{text}</span>
     </div>
   );
 }
