@@ -10,7 +10,7 @@ import {
   Banknote, TrendingUp
 } from 'lucide-react';
 
-export default function OnyxV18_Compact() {
+export default function OnyxFinal_V19() {
   // --- ÁLLAPOTOK ---
   const [isLegalOpen, setIsLegalOpen] = useState(false);
   const [openFaq, setOpenFaq] = useState(null);
@@ -86,7 +86,7 @@ export default function OnyxV18_Compact() {
             </span>
           </h1>
           
-          {/* SZTORI & TECHNOLÓGIA (Rövidebb, tömörebb) */}
+          {/* SZTORI & TECHNOLÓGIA */}
           <div className="max-w-3xl mx-auto mb-8 text-left md:text-center space-y-4">
              <p className="text-lg text-gray-300 leading-relaxed">
                <span className="text-white font-bold">Ez nem tippmix. Ez adatbányászat.</span> <br/>
@@ -98,7 +98,7 @@ export default function OnyxV18_Compact() {
              </div>
           </div>
 
-          {/* --- KOMPAKT "HOGYAN MŰKÖDIK" (NEM KELL GÖRGETNI!) --- */}
+          {/* --- KOMPAKT "HOGYAN MŰKÖDIK" --- */}
           <div className="bg-white/5 border border-white/10 rounded-2xl p-4 md:p-6 mb-8 text-left max-w-2xl mx-auto backdrop-blur-md">
              <h3 className="text-xs text-gray-500 uppercase tracking-widest mb-4 font-bold text-center">A Rendszer Működése</h3>
              <div className="space-y-4">
@@ -135,7 +135,7 @@ export default function OnyxV18_Compact() {
              </div>
           </div>
 
-          {/* SCARCITY DOBOZ (KÖZVETLENÜL A GOMBOK ELŐTT) */}
+          {/* SCARCITY DOBOZ */}
           <div className="mb-8 max-w-lg mx-auto text-center">
              <p className="text-white font-bold text-sm mb-1 flex items-center justify-center gap-2">
                <Lock size={14} className="text-purple-400"/> Csak a Béta teszt alatt ingyenes!
@@ -152,7 +152,7 @@ export default function OnyxV18_Compact() {
             </a>
           </div>
         </div>
-{/* --- KOMPATIBILITÁS (EURÓPA & VILÁG) --- */}
+{/* --- KOMPATIBILITÁS --- */}
         <div className="w-full overflow-hidden border-y border-white/5 py-8 mb-16 bg-white/[0.02]">
            <div className="max-w-4xl mx-auto text-center mb-4">
               <p className="text-[10px] text-gray-500 uppercase tracking-widest">Kompatibilis platformok</p>
@@ -268,8 +268,9 @@ export default function OnyxV18_Compact() {
           A rendszer fejlesztői nem vállalnak felelősséget a fogadási veszteségekért.
         </p>
         <div className="flex justify-center gap-6 text-[10px] font-bold text-gray-500">
-           <button onClick={() => setIsLegalOpen(true)} className="hover:text-white transition-colors flex items-center gap-1">
-             <Scale size={12} /> Felhasználási Feltételek & Jogi Nyilatkozat
+           {/* JOGI GOMB */}
+           <button onClick={() => setIsLegalOpen(true)} className="hover:text-white transition-colors flex items-center gap-1 border border-white/10 px-3 py-1.5 rounded-full">
+             <Scale size={12} /> Jogi Nyilatkozat & Feltételek (Kattints ide)
            </button>
         </div>
       </footer>
@@ -285,10 +286,12 @@ export default function OnyxV18_Compact() {
          </a>
       </div>
 
-      {/* --- LEGAL MODAL (FELUGRÓ ABLAK) --- */}
+      {/* --- ATOMBZTOS JOGI MODAL (FELUGRÓ ABLAK) --- */}
       {isLegalOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in duration-300">
-           <div className="bg-[#05050A] border border-white/10 rounded-3xl w-full max-w-xl max-h-[85vh] flex flex-col shadow-2xl relative">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 backdrop-blur-md p-4 animate-in fade-in duration-300">
+           <div className="bg-[#05050A] border border-white/10 rounded-3xl w-full max-w-xl max-h-[90vh] flex flex-col shadow-2xl relative">
+              
+              {/* Fejléc */}
               <div className="p-5 border-b border-white/10 flex justify-between items-center bg-white/[0.02]">
                  <h2 className="text-lg font-bold text-white flex items-center gap-2">
                     <ShieldCheck className="text-purple-500" /> Jogi Nyilatkozat
@@ -297,26 +300,37 @@ export default function OnyxV18_Compact() {
                     <X size={18} />
                  </button>
               </div>
-              <div className="p-5 overflow-y-auto text-xs md:text-sm text-gray-400 space-y-5 leading-relaxed">
-                 <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-xl flex gap-3 items-start">
-                    <AlertTriangle className="text-red-500 shrink-0 mt-0.5" size={16} />
+
+              {/* TARTALOM (ATOM BIZTOS SZÖVEGEZÉS) */}
+              <div className="p-6 overflow-y-auto text-xs md:text-sm text-gray-400 space-y-6 leading-relaxed text-justify">
+                 
+                 {/* FIGYELMEZTETÉS */}
+                 <div className="p-4 bg-red-900/10 border border-red-500/30 rounded-xl flex gap-3 items-start">
+                    <AlertTriangle className="text-red-500 shrink-0 mt-0.5" size={20} />
                     <div>
-                       <h3 className="text-white font-bold mb-1">Kockázati Figyelmeztetés</h3>
-                       <p className="text-[10px] md:text-xs text-red-200">A sportfogadás kockázattal jár. Az oldalon közölt információk nem minősülnek pénzügyi tanácsadásnak. Csak saját felelősségre játssz.</p>
+                       <h3 className="text-white font-bold mb-2">SZERENCSEJÁTÉK FÜGGŐSÉGET OKOZHAT!</h3>
+                       <p className="text-xs text-red-200">
+                         A túlzásba vitt szerencsejáték szenvedélybetegséghez, pszichológiai problémákhoz és súlyos anyagi veszteségekhez vezethet. Ha úgy érzi, problémája van, kérjen segítséget szakembertől, vagy tájékozódjon a <a href="http://www.szerencsejatek.hu/felelos-jatekszervezes" className="underline font-bold">Szerencsejáték Zrt. Felelős Játékszervezés</a> oldalán.
+                       </p>
                     </div>
                  </div>
+
                  <section>
-                    <h3 className="text-white font-bold text-sm mb-1">1. Szolgáltatás</h3>
-                    <p>Az Onyx AI egy statisztikai elemző szoftver. A generált jelzések kizárólag információs célt szolgálnak.</p>
+                    <h3 className="text-white font-bold text-sm mb-2 uppercase">1. Felelősségkizárás (Disclaimer)</h3>
+                    <p>Az Onyx AI szoftver és a kapcsolódó weboldal (Szolgáltatás) kizárólag informatikai és statisztikai célokat szolgál. A generált adatok, előrejelzések és elemzések <strong>NEM minősülnek pénzügyi tanácsadásnak</strong>, befektetési ajánlásnak vagy szerencsejátékra való felbujtásnak.</p>
+                    <p className="mt-2">A Szolgáltató/Fejlesztő kifejezetten kizár minden felelősséget a Felhasználó által elszenvedett bárminemű közvetlen vagy közvetett vagyoni kárért, elmaradt haszonért, amely a szoftver használatából vagy az információk felhasználásából ered. A Felhasználó tudomásul veszi, hogy a sportfogadásban a tőkevesztés kockázata 100%.</p>
                  </section>
+
                  <section>
-                    <h3 className="text-white font-bold text-sm mb-1">2. Felelősségkizárás</h3>
-                    <p>A fejlesztő nem vállal felelősséget a felhasználó anyagi veszteségeiért.</p>
+                    <h3 className="text-white font-bold text-sm mb-2 uppercase">2. 18+ Korhatár</h3>
+                    <p>A weboldal látogatása és a Telegram csoporthoz való csatlakozás kizárólag 18. életévüket betöltött személyek számára engedélyezett. A Szolgáltatás használatával Ön kijelenti, hogy nagykorú.</p>
                  </section>
+
                  <section>
-                    <h3 className="text-white font-bold text-sm mb-1">3. Korhatár</h3>
-                    <p>18 éven aluliaknak tilos az oldal használata.</p>
+                    <h3 className="text-white font-bold text-sm mb-2 uppercase">3. Szolgáltatás Jellege</h3>
+                    <p>A Béta teszt időszak alatt a szolgáltatás ingyenes. A Szolgáltató fenntartja a jogot a szolgáltatás bármikori megszüntetésére vagy fizetőssé tételére. A múltbeli eredmények (backtest adatok) nem garantálják a jövőbeni sikert.</p>
                  </section>
+
                  <div className="pt-4 border-t border-white/5 text-[10px] text-center text-gray-600">
                     Onyx AI Systems v4.0 - All Rights Reserved 2026.
                  </div>
