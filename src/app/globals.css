@@ -11,4 +11,21 @@
 body {
   color: rgb(var(--foreground-rgb));
   background: #050505;
+  /* Simább görgetés */
+  scroll-behavior: smooth; 
+}
+
+/* Egyedi Scrollbar, hogy profi legyen */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #050505; 
+}
+::-webkit-scrollbar-thumb {
+  background: #333; 
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #22c55e; 
 }
