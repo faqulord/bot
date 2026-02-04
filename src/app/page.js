@@ -6,10 +6,11 @@ import {
   Terminal, ShieldCheck, CheckCircle2, 
   Clock, AlertTriangle, ChevronRight,
   HelpCircle, ChevronDown, Globe, 
-  Smartphone, X, Scale
+  Smartphone, X, Scale, BellRing, 
+  Banknote, TrendingUp, Cpu
 } from 'lucide-react';
 
-export default function OnyxV16_Pure() {
+export default function OnyxV17_Flow() {
   // --- ÁLLAPOTOK ---
   const [isLegalOpen, setIsLegalOpen] = useState(false);
   const [openFaq, setOpenFaq] = useState(null);
@@ -23,7 +24,7 @@ export default function OnyxV16_Pure() {
     { name: "Bayern M. (Am) vs 1860", time: "Tegnap 19:15", result: "LOSS", type: "Sniper" },
   ];
 
-  // --- FAQ (Vagyonépítős verzió) ---
+  // --- FAQ ---
   const FAQS = [
     { 
       question: "Mennyi tőke szükséges az induláshoz?", 
@@ -70,72 +71,92 @@ export default function OnyxV16_Pure() {
 
       <main className="relative z-10 pt-32 pb-20 px-6">
         
-        {/* --- HERO SECTION --- */}
-        <div className="max-w-4xl mx-auto text-center mb-16 animate-in fade-in zoom-in duration-700">
+        {/* --- HERO & SZTORI (EGYBEN!) --- */}
+        <div className="max-w-4xl mx-auto text-center mb-20 animate-in fade-in zoom-in duration-700">
+          
+          {/* Badge */}
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-orange-500/10 border border-orange-500/20 text-orange-400 text-xs font-bold mb-8 animate-pulse cursor-default">
             <AlertTriangle size={14} />
             FIGYELEM: A BÉTA TESZT ALATT MÉG INGYENES!
           </div>
 
-          <h1 className="text-5xl md:text-7xl font-extrabold text-white mb-6 leading-tight tracking-tight">
+          {/* Főcím */}
+          <h1 className="text-5xl md:text-7xl font-extrabold text-white mb-8 leading-tight tracking-tight">
             A Sportfogadás <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-fuchsia-400 to-blue-400 drop-shadow-[0_0_15px_rgba(168,85,247,0.4)]">
               Forradalma.
             </span>
           </h1>
           
-          <p className="text-lg md:text-xl text-gray-400 mb-10 max-w-2xl mx-auto leading-relaxed">
-            Az Onyx AI valós időben vadássza le a hibás oddsokat, mielőtt a fogadóiroda észbe kapna. <br/>
-            <span className="text-white font-medium">Nincs érzelem. Csak matematika.</span>
-          </p>
+          {/* A RÉSZLETES TECHNOLÓGIA (FELHOZVA IDE) */}
+          <div className="max-w-3xl mx-auto mb-10 text-left md:text-center space-y-6">
+             <p className="text-lg md:text-xl text-gray-300 leading-relaxed">
+               <span className="text-white font-bold">Ez nem tippmix. Ez adatbányászat.</span> <br/>
+               Amit látsz, az 2 év fejlesztés, és több mint 14.000 sor Python kód eredménye. Az Onyx rendszere nem "érez", mint az emberek. A szervereink másodpercenként 140 mérkőzést szkennelnek Japántól Brazíliáig.
+             </p>
+             <p className="text-lg md:text-xl text-gray-400 leading-relaxed">
+               A neurális háló folyamatosan figyeli a nyomást, a kapura lövéseket és a labdabirtoklást. Amikor a statisztika eléri a "kritikus szintet" (pl. a 75. percben), de az oddsok még nem reagáltak, az <span className="text-purple-400 font-bold">Onyx azonnal jelez.</span>
+             </p>
+             <div className="flex flex-wrap justify-center gap-3 pt-2">
+                 <span className="px-3 py-1 bg-purple-500/10 border border-purple-500/20 rounded-full text-xs font-mono text-purple-300">Python Core v4.0</span>
+                 <span className="px-3 py-1 bg-blue-500/10 border border-blue-500/20 rounded-full text-xs font-mono text-blue-300">Live API Scan</span>
+                 <span className="px-3 py-1 bg-green-500/10 border border-green-500/20 rounded-full text-xs font-mono text-green-300">No Human Error</span>
+             </div>
+          </div>
 
-          <div className="flex flex-col sm:flex-row justify-center gap-4 mb-16">
+          {/* A "MIÉRT INGYENES" DOBOZ (KÖZVETLENÜL A GOMBOK ELŐTT) */}
+          <div className="bg-white/5 border border-white/10 p-5 rounded-2xl max-w-lg mx-auto mb-10 text-sm text-left flex items-start gap-4 hover:border-purple-500/30 transition-colors">
+             <div className="p-2.5 bg-purple-500/20 rounded-xl text-purple-300 shrink-0">
+               <Lock size={18} />
+             </div>
+             <div>
+               <p className="text-white font-bold mb-1 text-base">Miért ingyenes a csatlakozás?</p>
+               <p className="text-gray-400 leading-relaxed">
+                 A Béta teszt lezárása után a szolgáltatás <span className="text-white font-bold">havi előfizetéses lesz</span>. Most azért ingyenes, mert adatokat gyűjtünk. Aki most csatlakozik, annak <span className="text-green-400 font-bold">örökre ingyenes marad.</span>
+               </p>
+             </div>
+          </div>
+
+          {/* GOMBOK (A LEGVÉGÉN) */}
+          <div className="flex flex-col sm:flex-row justify-center gap-4">
             <a href="https://t.me/SHANNA444" target="_blank" className="bg-white text-black px-8 py-4 rounded-full font-bold text-lg hover:bg-purple-50 transition-all flex items-center justify-center gap-2 shadow-[0_0_30px_rgba(255,255,255,0.15)] hover:shadow-[0_0_40px_rgba(168,85,247,0.4)] hover:scale-105 active:scale-95">
               Ingyenes Csatlakozás <ArrowRight size={20} />
             </a>
-            <a href="#tech" className="bg-white/5 text-white border border-white/10 px-8 py-4 rounded-full font-bold text-lg hover:bg-white/10 transition-all flex items-center justify-center gap-2 backdrop-blur-sm">
-              <HelpCircle size={20} /> Technológia
+            <a href="#howitworks" className="bg-white/5 text-white border border-white/10 px-8 py-4 rounded-full font-bold text-lg hover:bg-white/10 transition-all flex items-center justify-center gap-2 backdrop-blur-sm">
+              <HelpCircle size={20} /> Hogyan működik?
             </a>
-          </div>
-
-          {/* --- MIÉRT INGYENES? (FELHOZVA!) --- */}
-          <div className="bg-gradient-to-r from-purple-900/10 to-blue-900/10 border border-white/10 p-6 rounded-2xl max-w-2xl mx-auto text-center backdrop-blur-md">
-             <div className="flex items-center justify-center gap-2 mb-2 text-purple-300">
-               <Lock size={18} />
-               <h3 className="text-lg font-bold text-white">Miért ingyenes a csatlakozás?</h3>
-             </div>
-             <p className="text-gray-400 text-sm leading-relaxed">
-               A Béta teszt lezárása után a szolgáltatás <span className="text-white font-bold">havi előfizetéses lesz</span>. Most azért ingyenes, mert adatokat gyűjtünk a rendszer skálázásához. Aki most csatlakozik, annak <span className="text-green-400 font-bold">örökre ingyenes marad a hozzáférés.</span> Használd ki a lehetőséget, amíg a kapuk nyitva vannak.
-             </p>
           </div>
         </div>
 
-        {/* --- A TECHNOLÓGIA (SZÖVEGES ÖSSZEFOGLALÓ - KÁRTYÁK NÉLKÜL) --- */}
-        <div id="tech" className="max-w-4xl mx-auto mb-24 text-center border-y border-white/5 py-16">
-            <h2 className="text-3xl font-bold text-white mb-8">A "Gép" a háttérben</h2>
-            
-            <div className="text-gray-400 text-lg leading-relaxed space-y-6 text-left md:text-center">
-              <p>
-                Amit látsz, az 2 év fejlesztés, és több mint 14.000 sor Python kód eredménye. Az Onyx rendszere nem tippelget, mint az emberek. A szervereink <strong>másodpercenként 140 mérkőzést szkennelnek</strong> Japántól Brazíliáig.
-              </p>
-              <p>
-                A neurális háló folyamatosan figyeli a nyomást, a kapura lövéseket és a labdabirtoklást. Amikor a statisztika eléri a "kritikus szintet" (pl. a 75. percben), de az oddsok még nem reagáltak, az <strong>Onyx azonnal jelez.</strong>
-              </p>
-              <p className="text-white font-medium">
-                Ez az a 30-60 másodperces "technológiai ablak", amit mi kihasználunk. <br/>
-                Amíg a fogadóiroda algoritmusa késlekedik, mi profitálunk.
-              </p>
-            </div>
+        {/* --- "HOGYAN MŰKÖDIK" (SÁV) --- */}
+        <div id="howitworks" className="max-w-5xl mx-auto mb-24 grid md:grid-cols-3 gap-6 scroll-mt-24">
+           <div className="bg-[#0A0A12] border border-white/10 p-6 rounded-2xl flex flex-col items-center text-center hover:border-purple-500/50 transition-colors group">
+              <div className="w-16 h-16 bg-purple-500/10 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                 <BellRing className="text-purple-400" size={32} />
+              </div>
+              <h3 className="text-white font-bold text-xl mb-2">1. Az AI Jelez</h3>
+              <p className="text-gray-400 text-sm">A rendszer 0-24-ben figyel. Ha talál egy hibás oddsot (Value Bet), azonnal küldi az értesítést a telefonodra.</p>
+           </div>
+           
+           <div className="bg-[#0A0A12] border border-white/10 p-6 rounded-2xl flex flex-col items-center text-center hover:border-blue-500/50 transition-colors group">
+              <div className="w-16 h-16 bg-blue-500/10 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                 <Smartphone className="text-blue-400" size={32} />
+              </div>
+              <h3 className="text-white font-bold text-xl mb-2">2. Te Másolsz</h3>
+              <p className="text-gray-400 text-sm">Megnyitod a fogadóirodát (pl. 22Bet, TippmixPro), és 10 másodperc alatt megrakod a tippet.</p>
+           </div>
 
-            <div className="flex flex-wrap justify-center gap-4 mt-8">
-               <span className="px-3 py-1 bg-white/5 rounded border border-white/10 text-xs text-gray-400">Python Core</span>
-               <span className="px-3 py-1 bg-white/5 rounded border border-white/10 text-xs text-gray-400">Live API Scan</span>
-               <span className="px-3 py-1 bg-white/5 rounded border border-white/10 text-xs text-gray-400">Machine Learning</span>
-            </div>
+           <div className="bg-[#0A0A12] border border-white/10 p-6 rounded-2xl flex flex-col items-center text-center hover:border-green-500/50 transition-colors group">
+              <div className="w-16 h-16 bg-green-500/10 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                 <TrendingUp className="text-green-400" size={32} />
+              </div>
+              <h3 className="text-white font-bold text-xl mb-2">3. Profitálsz</h3>
+              <p className="text-gray-400 text-sm">A matematika hosszú távon mindig nyer. Dőlj hátra, és figyeld, ahogy a tőkéd stabilan növekszik.</p>
+           </div>
         </div>
 
         {/* --- KOMPATIBILITÁS --- */}
-        <div className="w-full overflow-hidden mb-24">
+        <div className="w-full overflow-hidden border-y border-white/5 py-8 mb-24 bg-white/[0.02]">
            <div className="max-w-4xl mx-auto text-center mb-6">
               <p className="text-xs text-gray-500 uppercase tracking-widest">Kompatibilis platformok</p>
            </div>
@@ -287,21 +308,4 @@ export default function OnyxV16_Pure() {
                     <p>Az Onyx AI egy statisztikai elemző szoftver. A generált jelzések kizárólag információs célt szolgálnak.</p>
                  </section>
                  <section>
-                    <h3 className="text-white font-bold text-base mb-2">2. Felelősségkizárás</h3>
-                    <p>A fejlesztő nem vállal felelősséget a felhasználó anyagi veszteségeiért.</p>
-                 </section>
-                 <section>
-                    <h3 className="text-white font-bold text-base mb-2">3. Korhatár</h3>
-                    <p>18 éven aluliaknak tilos az oldal használata.</p>
-                 </section>
-                 <div className="pt-6 border-t border-white/5 text-xs text-center text-gray-600">
-                    Onyx AI Systems v4.0 - All Rights Reserved 2026.
-                 </div>
-              </div>
-           </div>
-        </div>
-      )}
-
-    </div>
-  );
-}
+                    <h3 className="text-white font-bold text-base mb-2">
