@@ -4,32 +4,23 @@
 
 :root {
   --foreground-rgb: 255, 255, 255;
-  --background-start-rgb: 8, 8, 10; /* Majdnem fekete, de lágyabb */
-  --background-end-rgb: 0, 0, 0;
 }
 
 body {
-  color: rgb(var(--foreground-rgb));
-  background: #050505;
-  overflow-x: hidden;
+  color: #fff;
+  background: #0f172a; /* Slate 900 - Mély kékesszürke */
+  /* Finom háttérrács, hogy ne legyen üres */
+  background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+  linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 50px 50px;
 }
 
-/* --- FLUID ORB ANIMATION (Folyékony Háttér) --- */
-.orb {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(80px);
-  opacity: 0.4;
-  z-index: 0;
-  animation: floatOrb 10s infinite alternate ease-in-out;
+/* Tőzsdei futócsík animáció */
+@keyframes ticker {
+  0% { transform: translateX(100%); }
+  100% { transform: translateX(-100%); }
 }
-
-@keyframes floatOrb {
-  0% { transform: translate(0, 0) scale(1); }
-  100% { transform: translate(20px, -20px) scale(1.1); }
-}
-
-/* Görgősáv elrejtése a tiszta dizájnért */
-::-webkit-scrollbar {
-  width: 0px;
+.animate-ticker {
+  animation: ticker 20s linear infinite;
+  white-space: nowrap;
 }
