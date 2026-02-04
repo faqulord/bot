@@ -2,221 +2,206 @@
 
 import React, { useState } from 'react';
 import { 
-  Home, BookOpen, ShieldCheck, Zap, 
-  Terminal, ArrowRight, Lock, Activity, 
-  BarChart3, CheckCircle2 
+  TrendingUp, Shield, Activity, 
+  ArrowRight, Check, X, Calendar, 
+  ChevronRight, Lock 
 } from 'lucide-react';
 
-export default function OnyxObsidian() {
-  const [activeTab, setActiveTab] = useState('home');
-
+export default function OnyxFinance() {
   return (
-    <div className="min-h-screen bg-[#050505] text-white font-sans relative selection:bg-emerald-500/30">
+    <div className="min-h-screen font-sans text-slate-100">
       
-      {/* --- BACKGROUND (Folyékony Fények) --- */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        {/* Felső zöldes köd */}
-        <div className="orb w-[500px] h-[500px] bg-emerald-900/20 top-[-10%] left-[-10%]"></div>
-        {/* Alsó kékes köd */}
-        <div className="orb w-[400px] h-[400px] bg-teal-900/10 bottom-[-10%] right-[-10%] animation-delay-2000"></div>
-        {/* Zaj textúra a prémium hatáshoz */}
-        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 mix-blend-overlay"></div>
+      {/* --- TOP TICKER (Tőzsdei Csík) --- */}
+      <div className="bg-slate-900 border-b border-white/5 h-10 flex items-center overflow-hidden relative">
+        <div className="animate-ticker flex gap-8 text-xs font-mono text-gray-400">
+          <span className="text-green-400">Rukh Lviv vs Austria (WIN 1.85)</span>
+          <span>•</span>
+          <span className="text-green-400">Yokohama FC vs Kawasaki (WIN 2.10)</span>
+          <span>•</span>
+          <span className="text-red-400">Real Madrid vs Barca (LOSS)</span>
+          <span>•</span>
+          <span className="text-green-400">Santos vs Flamengo (WIN 1.95)</span>
+          <span>•</span>
+          <span className="text-green-400">NAPI ZÁRÁS: +12.500 Ft PROFIT</span>
+        </div>
       </div>
 
-      {/* --- TARTALOM KONTÉNER --- */}
-      <main className="relative z-10 pb-32 pt-10 px-6 max-w-2xl mx-auto min-h-screen flex flex-col">
-        
-        {/* --- FEJLÉC & LOGÓ --- */}
-        <div className="flex items-center justify-between mb-12">
-          <div className="flex items-center gap-4">
-            {/* AZ ÚJ LOGÓ: DIGITAL EYE (CSS) */}
-            <div className="relative w-12 h-12 flex items-center justify-center">
-              {/* Külső gyűrű */}
-              <div className="absolute inset-0 border border-white/10 rounded-full"></div>
-              {/* Forgó effekt */}
-              <div className="absolute inset-1 border-t-2 border-emerald-500 rounded-full animate-spin-slow"></div>
-              {/* Írisz */}
-              <div className="absolute w-6 h-6 bg-gradient-to-br from-emerald-400 to-teal-600 rounded-full shadow-[0_0_15px_rgba(16,185,129,0.5)] flex items-center justify-center">
-                 {/* Pupilla */}
-                 <div className="w-2 h-2 bg-black rounded-full"></div>
-              </div>
+      {/* --- NAVBAR --- */}
+      <nav className="border-b border-white/5 bg-[#0f172a]/80 backdrop-blur-md sticky top-0 z-50">
+        <div className="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between">
+          
+          {/* LOGO: Tiszta, Geometrikus */}
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 bg-blue-600 rounded-sm transform rotate-45 flex items-center justify-center shadow-lg">
+              <div className="w-3 h-3 bg-white transform -rotate-45"></div>
             </div>
+            <span className="text-xl font-bold tracking-tight text-white">ONYX <span className="text-blue-500">FINANCIAL</span></span>
+          </div>
+
+          {/* MENÜ */}
+          <div className="hidden md:flex gap-8 text-sm font-medium text-slate-400">
+            <a href="#results" className="hover:text-white transition-colors">Eredmények</a>
+            <a href="#technology" className="hover:text-white transition-colors">Technológia</a>
+            <a href="#about" className="hover:text-white transition-colors">Rólunk</a>
+          </div>
+
+          <a href="https://t.me/SHANNA444" target="_blank" className="bg-white text-slate-900 px-5 py-2 rounded font-bold text-sm hover:bg-blue-50 transition-colors">
+            Csatlakozás
+          </a>
+        </div>
+      </nav>
+
+      {/* --- HERO SECTION --- */}
+      <header className="py-24 px-6 text-center max-w-4xl mx-auto">
+        <div className="inline-block px-3 py-1 bg-blue-500/10 text-blue-400 rounded-full text-xs font-bold mb-6 border border-blue-500/20">
+          ALGORITMIKUS SPORT-KERESKEDÉS v4.0
+        </div>
+        <h1 className="text-5xl md:text-6xl font-bold text-white mb-6 leading-tight">
+          Adat alapú döntések. <br />
+          <span className="text-blue-500">Mérhető eredmények.</span>
+        </h1>
+        <p className="text-xl text-slate-400 mb-10 max-w-2xl mx-auto">
+          Az Onyx nem tippmix. Ez egy kockázatkezelő szoftver, amely valós idejű piaci anomáliákat keres a sportfogadás világában.
+        </p>
+        <div className="flex justify-center gap-4">
+          <a href="https://t.me/SHANNA444" className="bg-blue-600 hover:bg-blue-500 text-white px-8 py-4 rounded-lg font-bold flex items-center gap-2 transition-all">
+            Ingyenes Teszt <ArrowRight size={18} />
+          </a>
+        </div>
+      </header>
+
+      {/* --- EREDMÉNYEK (RESULTS DASHBOARD) - EZT KÉRTED! --- */}
+      <section id="results" className="py-20 bg-slate-900 border-y border-white/5">
+        <div className="max-w-5xl mx-auto px-6">
+          <div className="flex items-center justify-between mb-8">
             <div>
-              <h1 className="text-xl font-bold tracking-widest text-white">ONYX</h1>
-              <p className="text-[10px] text-emerald-500 uppercase tracking-[0.2em]">Intelligence</p>
+              <h2 className="text-2xl font-bold text-white">Napi Teljesítmény Jelentés</h2>
+              <p className="text-slate-400 text-sm">Utolsó zárás: 2026. Február 03. 23:00</p>
+            </div>
+            <div className="text-right">
+              <div className="text-3xl font-bold text-green-500">+8.4 egység</div>
+              <p className="text-slate-500 text-xs">Napi Profit Index</p>
+            </div>
+          </div>
+
+          {/* TÁBLÁZAT */}
+          <div className="bg-[#0f172a] border border-white/10 rounded-xl overflow-hidden shadow-2xl">
+            <div className="grid grid-cols-4 bg-white/5 p-4 text-xs font-bold text-slate-400 uppercase tracking-wider">
+              <div className="col-span-2">Mérkőzés / Esemény</div>
+              <div className="text-center">Odds</div>
+              <div className="text-right">Eredmény</div>
+            </div>
+            
+            {/* Sor 1 */}
+            <ResultRow 
+              match="Rukh Lviv vs Austria Klagenfurt" 
+              time="75. perc - Sniper Signal" 
+              odds="1.85" 
+              status="WIN" 
+            />
+            {/* Sor 2 */}
+            <ResultRow 
+              match="Düzcespor vs Zonguldak" 
+              time="82. perc - Sniper Signal" 
+              odds="2.10" 
+              status="WIN" 
+            />
+            {/* Sor 3 */}
+            <ResultRow 
+              match="Sheger Ketema vs Suhul Shire" 
+              time="76. perc - Sniper Signal" 
+              odds="1.75" 
+              status="LOSS" 
+            />
+            {/* Sor 4 */}
+            <ResultRow 
+              match="Santos vs Flamengo" 
+              time="78. perc - Sniper Signal" 
+              odds="1.95" 
+              status="WIN" 
+            />
+             {/* Sor 5 */}
+            <div className="p-4 text-center text-xs text-slate-500 bg-white/5">
+              ... További 12 mérkőzés a zárt csoportban ...
             </div>
           </div>
           
-          <div className="text-xs font-mono text-gray-500 border border-white/5 px-2 py-1 rounded">
-            v4.0 STABLE
+          <p className="text-center text-xs text-slate-500 mt-6">
+            *A táblázat az Onyx AI V4 algoritmus által generált valós jelzéseket tartalmazza. A múltbeli eredmények nem garantálják a jövőt.
+          </p>
+        </div>
+      </section>
+
+      {/* --- RÓLUNK / SZTORI --- */}
+      <section id="about" className="py-20 px-6 max-w-4xl mx-auto">
+        <h2 className="text-3xl font-bold mb-8">Nem hiszünk a szerencsében.</h2>
+        <div className="grid md:grid-cols-2 gap-12 text-slate-400 leading-relaxed">
+          <div className="space-y-4">
+            <p>
+              A sportfogadás 98%-a veszteséges. Miért? Mert az emberek érzelemből döntenek. Fáradtak. Kapzsiak. A fogadóirodák erre építenek.
+            </p>
+            <p>
+              Mi szoftverfejlesztők vagyunk, nem szerencsejátékosok. Évekig elemeztük a piacot, mire rájöttünk: <strong>Az élő fogadásban van egy 30-60 másodperces késés</strong> a valós események és az oddsok frissülése között.
+            </p>
+          </div>
+          <div className="space-y-4">
+            <p>
+              Az Onyx AI ezt a rést használja ki. A szoftverünk másodpercenként 140+ meccset figyel. Amikor egy meccs statisztikája (nyomás, lövések, szögletek) átlép egy kritikus szintet a 75. percben, a gép jelez.
+            </p>
+            <div className="flex items-center gap-2 text-white font-bold">
+              <Check className="text-blue-500" />
+              <span>Nincs érzelem. Csak matematika.</span>
+            </div>
           </div>
         </div>
+      </section>
 
-        {/* --- DINAMIKUS TARTALOM --- */}
-        <div className="flex-1 animate-in fade-in zoom-in duration-500">
-          
-          {/* 1. KEZDŐLAP (HOME) */}
-          {activeTab === 'home' && (
-            <div className="space-y-8">
-              {/* Hero Kártya */}
-              <div className="relative overflow-hidden rounded-3xl bg-gradient-to-b from-white/10 to-black border border-white/10 p-8 shadow-2xl">
-                <div className="absolute top-0 right-0 p-4 opacity-50">
-                   <div className="w-2 h-2 rounded-full bg-red-500 animate-ping"></div>
-                </div>
-                <h2 className="text-4xl font-extrabold leading-tight mb-4">
-                  A Szerencse <br />
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-200">
-                    Már Nem Tényező.
-                  </span>
-                </h2>
-                <p className="text-gray-400 text-sm leading-relaxed mb-8">
-                  Az Onyx AI egy zárt rendszerű algoritmus, ami a valószínűségszámítás erejével teszi a sportfogadást befektetéssé.
-                </p>
-                <a href="https://t.me/SHANNA444" target="_blank" className="w-full py-4 bg-white text-black font-bold rounded-xl flex items-center justify-center gap-2 hover:bg-emerald-50 transition-colors">
-                  Csatlakozás a Teszthez <ArrowRight size={18} />
-                </a>
-                <p className="text-center text-xs text-gray-500 mt-4">
-                  <Lock size={10} className="inline mr-1" />
-                  Korlátozott férőhely. Ingyenes próbaidőszak.
-                </p>
-              </div>
-
-              {/* Statisztika Grid */}
-              <div className="grid grid-cols-2 gap-4">
-                <div className="bg-[#0A0A0A] p-5 rounded-2xl border border-white/5">
-                  <Activity className="text-emerald-500 mb-2" size={20} />
-                  <div className="text-2xl font-bold text-white">0.4s</div>
-                  <div className="text-xs text-gray-500">Reakcióidő</div>
-                </div>
-                <div className="bg-[#0A0A0A] p-5 rounded-2xl border border-white/5">
-                  <BarChart3 className="text-teal-500 mb-2" size={20} />
-                  <div className="text-2xl font-bold text-white">Transzparens</div>
-                  <div className="text-xs text-gray-500">Napi könyvelés</div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* 2. TECHNOLÓGIA (TECH) */}
-          {activeTab === 'tech' && (
-            <div className="space-y-6">
-              <h2 className="text-2xl font-bold">A Gép Lelke</h2>
-              <div className="bg-[#0A0A0A] border border-white/10 p-6 rounded-3xl space-y-4">
-                 <p className="text-gray-400 leading-relaxed text-sm">
-                   Az emberi agy elfárad. Érzelmeket visz bele. Vissza akarja nyerni a veszteséget. <br/><br/>
-                   <span className="text-white font-bold">Az Onyx nem ilyen.</span>
-                 </p>
-                 <div className="h-px w-full bg-white/5"></div>
-                 <ul className="space-y-3">
-                   <li className="flex gap-3 text-sm text-gray-300">
-                     <CheckCircle2 className="text-emerald-500 shrink-0" size={18} />
-                     <span>142 bajnokság egyidejű figyelése</span>
-                   </li>
-                   <li className="flex gap-3 text-sm text-gray-300">
-                     <CheckCircle2 className="text-emerald-500 shrink-0" size={18} />
-                     <span>Élő odds-mozgás analízis (API)</span>
-                   </li>
-                   <li className="flex gap-3 text-sm text-gray-300">
-                     <CheckCircle2 className="text-emerald-500 shrink-0" size={18} />
-                     <span>Sniper mód: Csak a 75. perc után lép be</span>
-                   </li>
-                 </ul>
-              </div>
-              
-              <div className="p-4 bg-emerald-900/10 border border-emerald-500/20 rounded-2xl">
-                 <div className="text-emerald-400 font-mono text-xs mb-2">{'>'} SYSTEM_LOG</div>
-                 <div className="text-gray-500 font-mono text-xs">Scanning Japan J2... No signal.</div>
-                 <div className="text-gray-500 font-mono text-xs">Scanning Brazil Serie B... No signal.</div>
-                 <div className="text-white font-mono text-xs mt-1">Found: Rukh Lviv (Odds: 2.10) -{'>'} Signal Sent.</div>
-              </div>
-            </div>
-          )}
-
-          {/* 3. JOGI (LEGAL) */}
-          {activeTab === 'legal' && (
-            <div className="space-y-6">
-              <h2 className="text-2xl font-bold">Jogi Nyilatkozat</h2>
-              <div className="bg-[#0A0A0A] border border-white/10 p-6 rounded-3xl h-[60vh] overflow-y-auto custom-scroll text-sm text-gray-400 space-y-6">
-                
-                <div>
-                   <h3 className="text-white font-bold mb-2">1. Szolgáltatás jellege</h3>
-                   <p>Az Onyx AI egy statisztikai elemző szoftver. Nem nyújtunk pénzügyi tanácsadást. A közölt adatok csak információs célt szolgálnak.</p>
-                </div>
-
-                <div>
-                   <h3 className="text-white font-bold mb-2">2. Kockázat</h3>
-                   <p className="p-3 bg-red-900/10 border border-red-900/30 rounded-lg text-red-200">
-                     A sportfogadás kockázatos. A múltbeli eredmények nem garantálják a jövőbeni sikert. Csak annyit kockáztass, amennyit nem félsz elveszíteni.
-                   </p>
-                </div>
-
-                <div>
-                   <h3 className="text-white font-bold mb-2">3. Korhatár</h3>
-                   <p>Az oldal használata kizárólag 18 éven felülieknek engedélyezett.</p>
-                </div>
-
-                <div className="pt-4 border-t border-white/5 text-xs text-gray-600">
-                  © 2026 Onyx AI Systems. Minden jog fenntartva.
-                </div>
-              </div>
-            </div>
-          )}
-
+      {/* --- JOGI LÁBLÉC --- */}
+      <footer className="border-t border-white/5 bg-slate-900 pt-16 pb-8 text-xs text-slate-500">
+        <div className="max-w-6xl mx-auto px-6 grid md:grid-cols-4 gap-8 mb-12">
+          <div className="col-span-2">
+            <h3 className="text-white font-bold mb-4">ONYX FINANCIAL</h3>
+            <p className="max-w-xs">
+              Professzionális adatelemző szoftverek sportpiaci befektetőknek.
+            </p>
+          </div>
+          <div>
+            <h4 className="text-white font-bold mb-4">Jogi Tájékoztatás</h4>
+            <ul className="space-y-2">
+              <li>Adatvédelmi Irányelvek</li>
+              <li>Felhasználási Feltételek</li>
+              <li>Kockázati Figyelmeztetés</li>
+            </ul>
+          </div>
+          <div>
+            <h4 className="text-white font-bold mb-4">Felelősségteljes Játék</h4>
+            <p className="mb-2">18+ | A sportfogadás kockázatos.</p>
+            <p>Ha problémád van a szerencsejátékkal, kérj segítséget.</p>
+          </div>
         </div>
-
-      </main>
-
-      {/* --- LEBEGŐ MENÜ (FLOATING DOCK) --- */}
-      <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-50">
-        <div className="flex items-center gap-1 bg-white/10 backdrop-blur-xl border border-white/10 p-2 rounded-full shadow-2xl">
-          
-          <NavButton 
-            active={activeTab === 'home'} 
-            onClick={() => setActiveTab('home')} 
-            icon={<Home size={20} />} 
-            label="Home"
-          />
-          
-          <NavButton 
-            active={activeTab === 'tech'} 
-            onClick={() => setActiveTab('tech')} 
-            icon={<Zap size={20} />} 
-            label="Tech"
-          />
-          
-          <NavButton 
-            active={activeTab === 'legal'} 
-            onClick={() => setActiveTab('legal')} 
-            icon={<ShieldCheck size={20} />} 
-            label="Jogi"
-          />
-
+        <div className="text-center border-t border-white/5 pt-8">
+          © 2026 Onyx AI Systems. Minden jog fenntartva.
         </div>
-      </div>
-
-      <style jsx global>{`
-        .animate-spin-slow {
-          animation: spin 8s linear infinite;
-        }
-        @keyframes spin {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
-      `}</style>
+      </footer>
     </div>
   );
 }
 
-// Menü Gomb Komponens
-function NavButton({ active, onClick, icon, label }) {
+// Komponens a táblázat soraihoz (Hogy tiszta maradjon a kód)
+function ResultRow({ match, time, odds, status }) {
+  const isWin = status === 'WIN';
   return (
-    <button 
-      onClick={onClick}
-      className={`relative p-4 rounded-full transition-all duration-300 ${active ? 'bg-white text-black shadow-lg scale-110' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
-    >
-      {icon}
-      {/* Aktív jelző pötty */}
-      {active && <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-white rounded-full"></div>}
-    </button>
+    <div className="grid grid-cols-4 p-4 border-b border-white/5 hover:bg-white/5 transition-colors items-center">
+      <div className="col-span-2">
+        <div className="font-bold text-white text-sm">{match}</div>
+        <div className="text-xs text-slate-500">{time}</div>
+      </div>
+      <div className="text-center font-mono text-slate-300">{odds}</div>
+      <div className="text-right">
+        <span className={`px-2 py-1 rounded text-xs font-bold ${isWin ? 'bg-green-500/10 text-green-400' : 'bg-red-500/10 text-red-400'}`}>
+          {status}
+        </span>
+      </div>
+    </div>
   );
 }
