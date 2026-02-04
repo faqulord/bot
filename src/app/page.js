@@ -126,9 +126,7 @@ export default function OnyxV17_Flow() {
               <HelpCircle size={20} /> Hogyan működik?
             </a>
           </div>
-        </div>
-
-        {/* --- "HOGYAN MŰKÖDIK" (SÁV) --- */}
+        </div>{/* --- "HOGYAN MŰKÖDIK" (SÁV) --- */}
         <div id="howitworks" className="max-w-5xl mx-auto mb-24 grid md:grid-cols-3 gap-6 scroll-mt-24">
            <div className="bg-[#0A0A12] border border-white/10 p-6 rounded-2xl flex flex-col items-center text-center hover:border-purple-500/50 transition-colors group">
               <div className="w-16 h-16 bg-purple-500/10 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
@@ -308,4 +306,21 @@ export default function OnyxV17_Flow() {
                     <p>Az Onyx AI egy statisztikai elemző szoftver. A generált jelzések kizárólag információs célt szolgálnak.</p>
                  </section>
                  <section>
-                    <h3 className="text-white font-bold text-base mb-2">
+                    <h3 className="text-white font-bold text-base mb-2">2. Felelősségkizárás</h3>
+                    <p>A fejlesztő nem vállal felelősséget a felhasználó anyagi veszteségeiért.</p>
+                 </section>
+                 <section>
+                    <h3 className="text-white font-bold text-base mb-2">3. Korhatár</h3>
+                    <p>18 éven aluliaknak tilos az oldal használata.</p>
+                 </section>
+                 <div className="pt-6 border-t border-white/5 text-xs text-center text-gray-600">
+                    Onyx AI Systems v4.0 - All Rights Reserved 2026.
+                 </div>
+              </div>
+           </div>
+        </div>
+      )}
+
+    </div>
+  );
+}
