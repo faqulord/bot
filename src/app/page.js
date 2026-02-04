@@ -6,15 +6,16 @@ import {
   Terminal, ShieldCheck, CheckCircle2, 
   Clock, AlertTriangle, ChevronRight,
   HelpCircle, ChevronDown, Globe, 
-  Smartphone, X, Scale
+  Smartphone, X, Scale, BellRing, 
+  Banknote, TrendingUp
 } from 'lucide-react';
 
-export default function OnyxFinalLegal() {
-  // --- ÁLLAPOTOK (MODALHOZ) ---
+export default function OnyxV15() {
+  // --- ÁLLAPOTOK ---
   const [isLegalOpen, setIsLegalOpen] = useState(false);
   const [openFaq, setOpenFaq] = useState(null);
 
-  // --- EREDMÉNYEK ADATBÁZIS ---
+  // --- EREDMÉNYEK (ESTE FRISSÍTENI!) ---
   const LAST_UPDATE = "2026. Február 04. 23:00"; 
   const MATCHES = [
     { name: "Rukh Lviv vs Austria", time: "Ma 14:06", result: "WIN 1.85", type: "Sniper" },
@@ -23,19 +24,31 @@ export default function OnyxFinalLegal() {
     { name: "Bayern M. (Am) vs 1860", time: "Tegnap 19:15", result: "LOSS", type: "Sniper" },
   ];
 
-  // --- GYIK ADATBÁZIS (Árazás javítva!) ---
+  // --- GYIK (JAVÍTOTT, PROFI SZÖVEGGEL!) ---
   const FAQS = [
-    { question: "Melyik fogadóirodával működik?", answer: "Az Onyx univerzális. Bármilyen irodát használhatsz, ahol van Élő Fogadás (pl. 22Bet, TippmixPro, Unibet, Bet365, Rocky)." },
-    { question: "Mennyi tőke szükséges az induláshoz?", answer: "Nincs minimum limit. A tesztelők többsége 10-20.000 Ft induló bankrollal kezdi, és fix tétekkel (pl. 1000 Ft/tipp) halad." },
-    { question: "Miért ingyenes most?", answer: "Jelenleg Béta teszt fázisban vagyunk. Szükségünk van a visszajelzésekre a rendszer finomhangolásához. A tesztidőszak lezárulta után a szolgáltatás havidíjas lesz." },
-    { question: "Kell egész nap a gépet figyelnem?", answer: "Nem. A Telegram értesítést küld a telefonodra. Csak akkor kell ránézned, ha jelez a rendszer (kb. napi 5-10 alkalom)." },
+    { 
+      question: "Mennyi tőke szükséges az induláshoz?", 
+      answer: "A rendszer a hosszú távú, stabil vagyonépítésre lett tervezve. Nem a gyors meggazdagodás a cél, hanem a tőke fegyelmezett, hónapról hónapra történő növelése a kamatos kamat erejével. A kezdőtőke mérete másodlagos; a lényeg a stratégia és a Money Management pontos betartása." 
+    },
+    { 
+      question: "Melyik fogadóirodával működik?", 
+      answer: "Az Onyx univerzális. Bármilyen irodát használhatsz, ahol van Élő Fogadás (pl. 22Bet, TippmixPro, Unibet, Bet365, Rocky). Mi a technológiai elemzést adjuk, a tranzakciót te hajtod végre a saját felületeden." 
+    },
+    { 
+      question: "Miért ingyenes a Béta alatt?", 
+      answer: "Mert bizonyítani akarunk. A piacon sok a hamis ígéret. Mi fordítva működünk: először eredményt teszünk le az asztalra, és ha elégedett vagy a profitoddal, később a fizetős rendszerben is velünk tartasz." 
+    },
+    { 
+      question: "Kell értenem a focihoz?", 
+      answer: "Egyáltalán nem. Sőt, befektetői szempontból előny, ha nincsenek érzelmeid a csapatok iránt. Az Onyx AI elvégzi a matematikai elemzést. A te feladatod a jelzések precíz végrehajtása." 
+    },
   ];
 
   return (
-    <div className="min-h-screen font-sans selection:bg-purple-500/30 relative text-slate-200 bg-[#000212]">
+    <div className="min-h-screen font-sans selection:bg-purple-500/30 relative text-slate-200 bg-[#000212] overflow-x-hidden">
       
       {/* Háttér elemek */}
-      <div className="fixed inset-0 z-0">
+      <div className="fixed inset-0 z-0 pointer-events-none">
          <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-purple-900/20 via-[#000212] to-[#000212]"></div>
          <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-blue-600/10 rounded-full blur-[100px]"></div>
       </div>
@@ -51,7 +64,7 @@ export default function OnyxFinalLegal() {
             <span className="text-xl font-bold tracking-tight text-white">ONYX<span className="text-purple-500">.AI</span></span>
           </div>
           <a href="https://t.me/SHANNA444" target="_blank" className="hidden md:flex items-center gap-2 text-xs font-bold text-gray-400 hover:text-white transition-colors border border-white/10 px-3 py-1.5 rounded-full hover:bg-white/5">
-            <Terminal size={12} /> Support Kapcsolat
+            <Terminal size={12} /> Support
           </a>
         </div>
       </nav>
@@ -59,7 +72,7 @@ export default function OnyxFinalLegal() {
       <main className="relative z-10 pt-32 pb-20 px-6">
         
         {/* --- HERO SECTION --- */}
-        <div className="max-w-4xl mx-auto text-center mb-24 animate-in fade-in zoom-in duration-700">
+        <div className="max-w-4xl mx-auto text-center mb-16 animate-in fade-in zoom-in duration-700">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-orange-500/10 border border-orange-500/20 text-orange-400 text-xs font-bold mb-8 animate-pulse cursor-default">
             <AlertTriangle size={14} />
             FIGYELEM: A BÉTA TESZT ALATT MÉG INGYENES!
@@ -73,43 +86,60 @@ export default function OnyxFinalLegal() {
           </h1>
           
           <p className="text-lg md:text-xl text-gray-400 mb-10 max-w-2xl mx-auto leading-relaxed">
-            2 év fejlesztés. Python alapú neurális háló. <br className="hidden md:block"/>
-            Az Onyx AI valós időben vadássza le a hibás oddsokat, mielőtt a fogadóiroda észbe kapna.
+            Az Onyx AI valós időben vadássza le a hibás oddsokat, mielőtt a fogadóiroda észbe kapna. <br/>
+            <span className="text-white font-medium">Nincs érzelem. Csak matematika.</span>
           </p>
-
-          {/* --- FOMO BOX (Átírva!) --- */}
-          <div className="bg-white/5 border border-white/10 p-5 rounded-2xl max-w-lg mx-auto mb-10 text-sm text-left flex items-start gap-4 hover:border-purple-500/30 transition-colors">
-             <div className="p-2.5 bg-purple-500/20 rounded-xl text-purple-300 shrink-0">
-               <Lock size={18} />
-             </div>
-             <div>
-               <p className="text-white font-bold mb-1 text-base">Használd ki, amíg ingyenes!</p>
-               <p className="text-gray-400 leading-relaxed">
-                 A Béta teszt lezárása után a szolgáltatás <span className="text-white font-bold">havi előfizetéses lesz</span>. Jelenleg minden funkció díjmentes, de a helyek száma korlátozott.
-               </p>
-             </div>
-          </div>
 
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <a href="https://t.me/SHANNA444" target="_blank" className="bg-white text-black px-8 py-4 rounded-full font-bold text-lg hover:bg-purple-50 transition-all flex items-center justify-center gap-2 shadow-[0_0_30px_rgba(255,255,255,0.15)] hover:shadow-[0_0_40px_rgba(168,85,247,0.4)] hover:scale-105 active:scale-95">
               Ingyenes Csatlakozás <ArrowRight size={20} />
             </a>
-            <a href="#faq" className="bg-white/5 text-white border border-white/10 px-8 py-4 rounded-full font-bold text-lg hover:bg-white/10 transition-all flex items-center justify-center gap-2 backdrop-blur-sm">
-              <HelpCircle size={20} /> Kérdésem van
+            <a href="#howitworks" className="bg-white/5 text-white border border-white/10 px-8 py-4 rounded-full font-bold text-lg hover:bg-white/10 transition-all flex items-center justify-center gap-2 backdrop-blur-sm">
+              <HelpCircle size={20} /> Hogyan működik?
             </a>
           </div>
         </div>
 
-        {/* --- KOMPATIBILITÁS SÁV --- */}
-        <div className="max-w-4xl mx-auto mb-24 border-y border-white/5 py-8">
-          <p className="text-center text-xs text-gray-500 mb-6 uppercase tracking-widest">Kompatibilis platformok</p>
-          <div className="flex flex-wrap justify-center gap-8 md:gap-16 opacity-50 grayscale hover:grayscale-0 transition-all duration-500">
-            <span className="text-xl font-bold text-white flex items-center gap-2"><Globe size={18}/> 22BET</span>
-            <span className="text-xl font-bold text-white flex items-center gap-2"><Smartphone size={18}/> TIPPMIXPRO</span>
-            <span className="text-xl font-bold text-white flex items-center gap-2"><Globe size={18}/> UNIBET</span>
-            <span className="text-xl font-bold text-white flex items-center gap-2"><Smartphone size={18}/> BET365</span>
-            <span className="text-xl font-bold text-white flex items-center gap-2"><Globe size={18}/> ROCKY</span>
-          </div>
+        {/* --- "HOGYAN MŰKÖDIK" --- */}
+        <div id="howitworks" className="max-w-5xl mx-auto mb-24 grid md:grid-cols-3 gap-6">
+           <div className="bg-[#0A0A12] border border-white/10 p-6 rounded-2xl flex flex-col items-center text-center hover:border-purple-500/50 transition-colors group">
+              <div className="w-16 h-16 bg-purple-500/10 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                 <BellRing className="text-purple-400" size={32} />
+              </div>
+              <h3 className="text-white font-bold text-xl mb-2">1. Az AI Jelez</h3>
+              <p className="text-gray-400 text-sm">A rendszer 0-24-ben figyel. Ha talál egy hibás oddsot (Value Bet), azonnal küldi az értesítést a telefonodra.</p>
+           </div>
+           
+           <div className="bg-[#0A0A12] border border-white/10 p-6 rounded-2xl flex flex-col items-center text-center hover:border-blue-500/50 transition-colors group">
+              <div className="w-16 h-16 bg-blue-500/10 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                 <Smartphone className="text-blue-400" size={32} />
+              </div>
+              <h3 className="text-white font-bold text-xl mb-2">2. Te Másolsz</h3>
+              <p className="text-gray-400 text-sm">Megnyitod a fogadóirodát (pl. 22Bet, TippmixPro), és 10 másodperc alatt megrakod a tippet.</p>
+           </div>
+
+           <div className="bg-[#0A0A12] border border-white/10 p-6 rounded-2xl flex flex-col items-center text-center hover:border-green-500/50 transition-colors group">
+              <div className="w-16 h-16 bg-green-500/10 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                 <TrendingUp className="text-green-400" size={32} />
+              </div>
+              <h3 className="text-white font-bold text-xl mb-2">3. Profitálsz</h3>
+              <p className="text-gray-400 text-sm">A matematika hosszú távon mindig nyer. Dőlj hátra, és figyeld, ahogy a tőkéd stabilan növekszik.</p>
+           </div>
+        </div>
+
+        {/* --- KOMPATIBILITÁS --- */}
+        <div className="w-full overflow-hidden border-y border-white/5 py-8 mb-24 bg-white/[0.02]">
+           <div className="max-w-4xl mx-auto text-center mb-6">
+              <p className="text-xs text-gray-500 uppercase tracking-widest">Kompatibilis platformok</p>
+           </div>
+           <div className="flex justify-center gap-8 md:gap-16 opacity-40 grayscale font-bold text-lg md:text-xl">
+              <span>22BET</span>
+              <span>TIPPMIXPRO</span>
+              <span>UNIBET</span>
+              <span>BET365</span>
+              <span>ROCKY</span>
+              <span>VEGAS</span>
+           </div>
         </div>
 
         {/* --- EREDMÉNYEK --- */}
@@ -154,6 +184,18 @@ export default function OnyxFinalLegal() {
           </div>
         </div>
 
+        {/* --- SCARCITY BOX (KÉSŐBB FIZETŐS) --- */}
+        <div className="bg-gradient-to-r from-purple-900/20 to-blue-900/20 border border-white/10 p-6 rounded-2xl max-w-2xl mx-auto mb-32 text-center">
+           <div className="w-12 h-12 bg-purple-500/20 rounded-full flex items-center justify-center mx-auto mb-4 text-purple-300">
+             <Lock size={24} />
+           </div>
+           <h3 className="text-xl font-bold text-white mb-2">Miért ingyenes most?</h3>
+           <p className="text-gray-400 text-sm leading-relaxed mb-4">
+             A Béta teszt lezárása után a szolgáltatás <span className="text-white font-bold">havi előfizetéses lesz</span>. Most azért ingyenes, mert tesztelőket gyűjtünk. Aki most csatlakozik, annak <span className="text-green-400 font-bold">örökre ingyenes marad a hozzáférés.</span>
+           </p>
+           <p className="text-xs text-gray-500 uppercase tracking-widest">Ne maradj le róla.</p>
+        </div>
+
         {/* --- GYIK / FAQ --- */}
         <div id="faq" className="max-w-3xl mx-auto mb-32 scroll-mt-24">
           <h2 className="text-3xl font-bold text-center mb-12">Gyakori Kérdések</h2>
@@ -177,7 +219,7 @@ export default function OnyxFinalLegal() {
           </div>
         </div>
 
-        {/* --- HÍRLEVÉL --- */}
+        {/* --- NEWSLETTER --- */}
         <div className="max-w-2xl mx-auto text-center bg-[#080810] border border-white/10 rounded-3xl p-8 md:p-12 relative overflow-hidden group">
            <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 to-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
            <div className="relative z-10">
@@ -186,7 +228,7 @@ export default function OnyxFinalLegal() {
               </div>
               <h2 className="text-2xl md:text-3xl font-bold text-white mb-3">Technológiai Hírlevél</h2>
               <p className="text-gray-400 mb-8 text-sm md:text-base">
-                Ne maradj le a frissítésekről. Értesítünk, ha az AI új mintázatot talál a piacon.
+                Iratkozz fel, és értesítünk az új fejlesztésekről.
               </p>
               <div className="flex flex-col sm:flex-row gap-3">
                  <input type="email" placeholder="Email cím..." className="flex-1 bg-black border border-white/20 text-white px-5 py-3.5 rounded-xl focus:outline-none focus:border-purple-500 transition-colors placeholder:text-gray-600" />
@@ -197,7 +239,7 @@ export default function OnyxFinalLegal() {
 
       </main>
 
-      {/* --- FOOTER (Jogi linkekkel) --- */}
+      {/* --- FOOTER --- */}
       <footer className="border-t border-white/5 bg-[#000212] pt-16 pb-32 md:pb-16 text-center relative z-10">
         <div className="flex items-center justify-center gap-2 mb-6 opacity-50">
            <Zap size={20} />
@@ -208,7 +250,6 @@ export default function OnyxFinalLegal() {
           A rendszer fejlesztői nem vállalnak felelősséget a fogadási veszteségekért.
         </p>
         <div className="flex justify-center gap-6 text-xs font-bold text-gray-500">
-           {/* EZ A GOMB NYITJA MEG A JOGI ABLAKOT */}
            <button onClick={() => setIsLegalOpen(true)} className="hover:text-white transition-colors flex items-center gap-1">
              <Scale size={12} /> Felhasználási Feltételek & Jogi Nyilatkozat
            </button>
@@ -226,12 +267,10 @@ export default function OnyxFinalLegal() {
          </a>
       </div>
 
-      {/* --- LEGAL MODAL (FELUGRÓ ABLAK) --- */}
+      {/* --- LEGAL MODAL --- */}
       {isLegalOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in duration-300">
            <div className="bg-[#05050A] border border-white/10 rounded-3xl w-full max-w-2xl max-h-[85vh] flex flex-col shadow-2xl relative">
-              
-              {/* Fejléc */}
               <div className="p-6 border-b border-white/10 flex justify-between items-center bg-white/[0.02]">
                  <h2 className="text-xl font-bold text-white flex items-center gap-2">
                     <ShieldCheck className="text-purple-500" /> Jogi Nyilatkozat
@@ -240,39 +279,30 @@ export default function OnyxFinalLegal() {
                     <X size={20} />
                  </button>
               </div>
-
-              {/* Tartalom */}
               <div className="p-6 overflow-y-auto text-sm text-gray-400 space-y-6 leading-relaxed">
-                 
                  <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-xl flex gap-3 items-start">
                     <AlertTriangle className="text-red-500 shrink-0 mt-0.5" size={18} />
                     <div>
                        <h3 className="text-white font-bold mb-1">Kockázati Figyelmeztetés</h3>
-                       <p className="text-xs text-red-200">A sportfogadás kockázattal jár. Az oldalon közölt információk (beleértve az AI elemzéseket) nem minősülnek pénzügyi tanácsadásnak, sem befektetési ajánlásnak. A múltbeli eredmények nem jelentenek garanciát a jövőre nézve.</p>
+                       <p className="text-xs text-red-200">A sportfogadás kockázattal jár. Az oldalon közölt információk nem minősülnek pénzügyi tanácsadásnak. Csak saját felelősségre játssz.</p>
                     </div>
                  </div>
-
                  <section>
-                    <h3 className="text-white font-bold text-base mb-2">1. Szolgáltatás Leírása</h3>
-                    <p>Az Onyx AI egy statisztikai elemző szoftver, amely nyilvánosan elérhető sportadatokat dolgoz fel. A szoftver által generált jelzések kizárólag információs célt szolgálnak. A felhasználó saját felelősségére dönti el, hogy felhasználja-e ezeket az információkat.</p>
+                    <h3 className="text-white font-bold text-base mb-2">1. Szolgáltatás</h3>
+                    <p>Az Onyx AI egy statisztikai elemző szoftver. A generált jelzések kizárólag információs célt szolgálnak.</p>
                  </section>
-
                  <section>
                     <h3 className="text-white font-bold text-base mb-2">2. Felelősségkizárás</h3>
-                    <p>A fejlesztő és az üzemeltető kizár minden felelősséget a felhasználó esetleges anyagi veszteségeiért. A szoftver technikai hibáiért, vagy a harmadik fél (fogadóirodák) általi korlátozásokért felelősséget nem vállalunk.</p>
+                    <p>A fejlesztő nem vállal felelősséget a felhasználó anyagi veszteségeiért.</p>
                  </section>
-
                  <section>
-                    <h3 className="text-white font-bold text-base mb-2">3. Korhatár és Függőség</h3>
-                    <p>Az oldal használata és a Telegram csoporthoz való csatlakozás kizárólag 18. életévüket betöltött személyek számára engedélyezett.</p>
-                    <p className="mt-2">Ha úgy érzi, szerencsejáték-függőségi problémái vannak, kérjük, kérjen szakmai segítséget vagy tájékozódjon a <a href="http://www.szerencsejatek.hu/felelos-jatekszervezes" target="_blank" className="text-purple-400 underline">Szerencsejáték Zrt. Felelős Játékszervezés</a> oldalán.</p>
+                    <h3 className="text-white font-bold text-base mb-2">3. Korhatár</h3>
+                    <p>18 éven aluliaknak tilos az oldal használata.</p>
                  </section>
-
                  <div className="pt-6 border-t border-white/5 text-xs text-center text-gray-600">
                     Onyx AI Systems v4.0 - All Rights Reserved 2026.
                  </div>
               </div>
-
            </div>
         </div>
       )}
