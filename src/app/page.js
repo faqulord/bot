@@ -130,7 +130,8 @@ export default function LandingPage() {
                    <div className="text-green-400">Probability: 87.4% (Over 0.5 Goal)</div>
                    <div className="text-gray-400">Time: 78:12 | Pressure Index: HIGH</div>
                 </div>
-                <div className="text-green-400 font-bold blink">>> SIGNAL SENT.</div>
+                {/* ITT VOLT A HIBA: A >> jeleket kicseréltem {'>'}{'>'}-re */}
+                <div className="text-green-400 font-bold blink">{'>'}{'>'} SIGNAL SENT.</div>
               </div>
             </div>
           </div>
