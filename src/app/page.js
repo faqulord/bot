@@ -2,206 +2,207 @@
 
 import React, { useState } from 'react';
 import { 
-  TrendingUp, Shield, Activity, 
-  ArrowRight, Check, X, Calendar, 
-  ChevronRight, Lock 
+  Zap, ArrowRight, Lock, Mail, 
+  Terminal, ShieldCheck, CheckCircle2, 
+  Clock, AlertTriangle, ChevronRight 
 } from 'lucide-react';
 
-export default function OnyxFinance() {
+export default function OnyxGenZ() {
+  // --- EREDMÉNYEK SZERKESZTÉSE ITT! ---
+  // Minden este 23:00-kor írd át ezeket az adatokat:
+  const LAST_UPDATE = "2026. Február 04. 23:00"; // Mai dátum
+  const MATCHES = [
+    { name: "Rukh Lviv vs Austria", time: "Ma 14:06", result: "WIN 1.85", type: "Sniper" },
+    { name: "Yokohama FC vs Kawasaki", time: "Ma 11:30", result: "WIN 2.10", type: "Sniper" },
+    { name: "Santos U20 vs Flamengo", time: "Tegnap 21:45", result: "WIN 1.95", type: "Sniper" },
+    { name: "Bayern M. (Am) vs 1860", time: "Tegnap 19:15", result: "LOSS", type: "Sniper" },
+  ];
+  // ------------------------------------
+
   return (
-    <div className="min-h-screen font-sans text-slate-100">
+    <div className="min-h-screen font-sans selection:bg-purple-500/30 relative">
       
-      {/* --- TOP TICKER (Tőzsdei Csík) --- */}
-      <div className="bg-slate-900 border-b border-white/5 h-10 flex items-center overflow-hidden relative">
-        <div className="animate-ticker flex gap-8 text-xs font-mono text-gray-400">
-          <span className="text-green-400">Rukh Lviv vs Austria (WIN 1.85)</span>
-          <span>•</span>
-          <span className="text-green-400">Yokohama FC vs Kawasaki (WIN 2.10)</span>
-          <span>•</span>
-          <span className="text-red-400">Real Madrid vs Barca (LOSS)</span>
-          <span>•</span>
-          <span className="text-green-400">Santos vs Flamengo (WIN 1.95)</span>
-          <span>•</span>
-          <span className="text-green-400">NAPI ZÁRÁS: +12.500 Ft PROFIT</span>
-        </div>
-      </div>
+      {/* Háttér elemek */}
+      <div className="glow-bg"></div>
+      <div className="grid-overlay"></div>
 
       {/* --- NAVBAR --- */}
-      <nav className="border-b border-white/5 bg-[#0f172a]/80 backdrop-blur-md sticky top-0 z-50">
-        <div className="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between">
+      <nav className="fixed top-0 w-full z-50 border-b border-white/5 bg-[#000212]/70 backdrop-blur-xl">
+        <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
           
-          {/* LOGO: Tiszta, Geometrikus */}
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-blue-600 rounded-sm transform rotate-45 flex items-center justify-center shadow-lg">
-              <div className="w-3 h-3 bg-white transform -rotate-45"></div>
+          {/* ÚJ LOGO: Minimalista, Futurisztikus */}
+          <div className="flex items-center gap-3">
+            <div className="relative w-8 h-8 flex items-center justify-center bg-gradient-to-tr from-purple-600 to-blue-500 rounded-lg shadow-[0_0_15px_rgba(124,58,237,0.5)]">
+               <Zap className="text-white fill-white" size={16} />
             </div>
-            <span className="text-xl font-bold tracking-tight text-white">ONYX <span className="text-blue-500">FINANCIAL</span></span>
+            <span className="text-xl font-bold tracking-tight text-white">ONYX<span className="text-purple-500">.AI</span></span>
           </div>
 
-          {/* MENÜ */}
-          <div className="hidden md:flex gap-8 text-sm font-medium text-slate-400">
-            <a href="#results" className="hover:text-white transition-colors">Eredmények</a>
-            <a href="#technology" className="hover:text-white transition-colors">Technológia</a>
-            <a href="#about" className="hover:text-white transition-colors">Rólunk</a>
-          </div>
-
-          <a href="https://t.me/SHANNA444" target="_blank" className="bg-white text-slate-900 px-5 py-2 rounded font-bold text-sm hover:bg-blue-50 transition-colors">
-            Csatlakozás
+          <a href="https://t.me/SHANNA444" target="_blank" className="hidden md:flex items-center gap-2 text-sm font-bold text-gray-300 hover:text-white transition-colors">
+            <Terminal size={14} /> Fejlesztői Kapcsolat
           </a>
         </div>
       </nav>
 
-      {/* --- HERO SECTION --- */}
-      <header className="py-24 px-6 text-center max-w-4xl mx-auto">
-        <div className="inline-block px-3 py-1 bg-blue-500/10 text-blue-400 rounded-full text-xs font-bold mb-6 border border-blue-500/20">
-          ALGORITMIKUS SPORT-KERESKEDÉS v4.0
-        </div>
-        <h1 className="text-5xl md:text-6xl font-bold text-white mb-6 leading-tight">
-          Adat alapú döntések. <br />
-          <span className="text-blue-500">Mérhető eredmények.</span>
-        </h1>
-        <p className="text-xl text-slate-400 mb-10 max-w-2xl mx-auto">
-          Az Onyx nem tippmix. Ez egy kockázatkezelő szoftver, amely valós idejű piaci anomáliákat keres a sportfogadás világában.
-        </p>
-        <div className="flex justify-center gap-4">
-          <a href="https://t.me/SHANNA444" className="bg-blue-600 hover:bg-blue-500 text-white px-8 py-4 rounded-lg font-bold flex items-center gap-2 transition-all">
-            Ingyenes Teszt <ArrowRight size={18} />
-          </a>
-        </div>
-      </header>
-
-      {/* --- EREDMÉNYEK (RESULTS DASHBOARD) - EZT KÉRTED! --- */}
-      <section id="results" className="py-20 bg-slate-900 border-y border-white/5">
-        <div className="max-w-5xl mx-auto px-6">
-          <div className="flex items-center justify-between mb-8">
-            <div>
-              <h2 className="text-2xl font-bold text-white">Napi Teljesítmény Jelentés</h2>
-              <p className="text-slate-400 text-sm">Utolsó zárás: 2026. Február 03. 23:00</p>
-            </div>
-            <div className="text-right">
-              <div className="text-3xl font-bold text-green-500">+8.4 egység</div>
-              <p className="text-slate-500 text-xs">Napi Profit Index</p>
-            </div>
-          </div>
-
-          {/* TÁBLÁZAT */}
-          <div className="bg-[#0f172a] border border-white/10 rounded-xl overflow-hidden shadow-2xl">
-            <div className="grid grid-cols-4 bg-white/5 p-4 text-xs font-bold text-slate-400 uppercase tracking-wider">
-              <div className="col-span-2">Mérkőzés / Esemény</div>
-              <div className="text-center">Odds</div>
-              <div className="text-right">Eredmény</div>
-            </div>
-            
-            {/* Sor 1 */}
-            <ResultRow 
-              match="Rukh Lviv vs Austria Klagenfurt" 
-              time="75. perc - Sniper Signal" 
-              odds="1.85" 
-              status="WIN" 
-            />
-            {/* Sor 2 */}
-            <ResultRow 
-              match="Düzcespor vs Zonguldak" 
-              time="82. perc - Sniper Signal" 
-              odds="2.10" 
-              status="WIN" 
-            />
-            {/* Sor 3 */}
-            <ResultRow 
-              match="Sheger Ketema vs Suhul Shire" 
-              time="76. perc - Sniper Signal" 
-              odds="1.75" 
-              status="LOSS" 
-            />
-            {/* Sor 4 */}
-            <ResultRow 
-              match="Santos vs Flamengo" 
-              time="78. perc - Sniper Signal" 
-              odds="1.95" 
-              status="WIN" 
-            />
-             {/* Sor 5 */}
-            <div className="p-4 text-center text-xs text-slate-500 bg-white/5">
-              ... További 12 mérkőzés a zárt csoportban ...
-            </div>
-          </div>
+      <main className="relative z-10 pt-32 pb-20 px-6">
+        
+        {/* --- HERO SECTION --- */}
+        <div className="max-w-4xl mx-auto text-center mb-20">
           
-          <p className="text-center text-xs text-slate-500 mt-6">
-            *A táblázat az Onyx AI V4 algoritmus által generált valós jelzéseket tartalmazza. A múltbeli eredmények nem garantálják a jövőt.
+          {/* LIMITÁLT HELYEK FIGYELMEZTETÉS (Piros/Narancs) */}
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-orange-500/10 border border-orange-500/20 text-orange-400 text-xs font-bold mb-8 animate-pulse">
+            <AlertTriangle size={14} />
+            FIGYELEM: A BÉTA TESZT ALATT MÉG INGYENES!
+          </div>
+
+          <h1 className="text-5xl md:text-7xl font-extrabold text-white mb-6 leading-tight">
+            A Sportfogadás <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-fuchsia-400 to-blue-400">
+              Forradalma.
+            </span>
+          </h1>
+          
+          <p className="text-lg md:text-xl text-gray-400 mb-8 max-w-2xl mx-auto leading-relaxed">
+            2 év fejlesztés. Python alapú neurális háló. <br className="hidden md:block"/>
+            Az Onyx AI valós időben vadássza le a hibás oddsokat, mielőtt a fogadóiroda észbe kapna.
           </p>
-        </div>
-      </section>
 
-      {/* --- RÓLUNK / SZTORI --- */}
-      <section id="about" className="py-20 px-6 max-w-4xl mx-auto">
-        <h2 className="text-3xl font-bold mb-8">Nem hiszünk a szerencsében.</h2>
-        <div className="grid md:grid-cols-2 gap-12 text-slate-400 leading-relaxed">
-          <div className="space-y-4">
-            <p>
-              A sportfogadás 98%-a veszteséges. Miért? Mert az emberek érzelemből döntenek. Fáradtak. Kapzsiak. A fogadóirodák erre építenek.
-            </p>
-            <p>
-              Mi szoftverfejlesztők vagyunk, nem szerencsejátékosok. Évekig elemeztük a piacot, mire rájöttünk: <strong>Az élő fogadásban van egy 30-60 másodperces késés</strong> a valós események és az oddsok frissülése között.
-            </p>
+          <div className="bg-white/5 border border-white/10 p-4 rounded-xl max-w-lg mx-auto mb-8 text-sm text-left flex items-start gap-3">
+             <div className="p-2 bg-red-500/20 rounded-lg text-red-400 shrink-0">
+               <Lock size={16} />
+             </div>
+             <div>
+               <p className="text-white font-bold mb-1">Siess! A limitált helyek fogynak.</p>
+               <p className="text-gray-400">Ha elérjük a felhasználói limitet, a szolgáltatás havi előfizetéses lesz (99 EUR/hó). Aki most csatlakozik, annak örökre ingyenes marad.</p>
+             </div>
           </div>
-          <div className="space-y-4">
-            <p>
-              Az Onyx AI ezt a rést használja ki. A szoftverünk másodpercenként 140+ meccset figyel. Amikor egy meccs statisztikája (nyomás, lövések, szögletek) átlép egy kritikus szintet a 75. percben, a gép jelez.
-            </p>
-            <div className="flex items-center gap-2 text-white font-bold">
-              <Check className="text-blue-500" />
-              <span>Nincs érzelem. Csak matematika.</span>
-            </div>
+
+          <div className="flex flex-col sm:flex-row justify-center gap-4">
+            <a href="https://t.me/SHANNA444" target="_blank" className="bg-white text-black px-8 py-4 rounded-full font-bold text-lg hover:bg-purple-50 transition-all flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(255,255,255,0.2)]">
+              Ingyenes Csatlakozás <ArrowRight size={20} />
+            </a>
           </div>
         </div>
-      </section>
 
-      {/* --- JOGI LÁBLÉC --- */}
-      <footer className="border-t border-white/5 bg-slate-900 pt-16 pb-8 text-xs text-slate-500">
-        <div className="max-w-6xl mx-auto px-6 grid md:grid-cols-4 gap-8 mb-12">
-          <div className="col-span-2">
-            <h3 className="text-white font-bold mb-4">ONYX FINANCIAL</h3>
-            <p className="max-w-xs">
-              Professzionális adatelemző szoftverek sportpiaci befektetőknek.
-            </p>
+        {/* --- EREDMÉNYEK (RESULTS TABLE) --- */}
+        <div className="max-w-3xl mx-auto mb-24">
+          <div className="flex items-center justify-between mb-4 px-2">
+            <h2 className="text-xl font-bold flex items-center gap-2">
+              <Clock className="text-purple-500" size={20} />
+              Onyx Előző Napi Eredmények
+            </h2>
+            <span className="text-xs font-mono text-purple-400 bg-purple-500/10 px-2 py-1 rounded border border-purple-500/20">
+              ZÁRÁS: {LAST_UPDATE}
+            </span>
           </div>
-          <div>
-            <h4 className="text-white font-bold mb-4">Jogi Tájékoztatás</h4>
-            <ul className="space-y-2">
-              <li>Adatvédelmi Irányelvek</li>
-              <li>Felhasználási Feltételek</li>
-              <li>Kockázati Figyelmeztetés</li>
+
+          <div className="bg-[#05050A] border border-white/10 rounded-2xl overflow-hidden shadow-2xl">
+             <div className="grid grid-cols-12 bg-white/5 p-3 text-xs font-bold text-gray-500 uppercase">
+                <div className="col-span-6">Mérkőzés / Esemény</div>
+                <div className="col-span-3 text-center">Időpont</div>
+                <div className="col-span-3 text-right">Eredmény</div>
+             </div>
+             
+             {/* Eredmény sorok generálása */}
+             {MATCHES.map((match, index) => (
+               <div key={index} className="grid grid-cols-12 p-4 border-b border-white/5 items-center hover:bg-white/5 transition-colors group">
+                  <div className="col-span-6">
+                     <div className="font-bold text-white group-hover:text-purple-300 transition-colors">{match.name}</div>
+                     <div className="text-[10px] text-gray-500">{match.type} Algorithm v4.0</div>
+                  </div>
+                  <div className="col-span-3 text-center text-xs text-gray-400 font-mono">
+                     {match.time}
+                  </div>
+                  <div className="col-span-3 text-right">
+                     <span className={`px-2 py-1 rounded text-xs font-bold ${match.result.includes('WIN') ? 'bg-green-500/20 text-green-400 border border-green-500/30' : 'bg-red-500/20 text-red-400 border border-red-500/30'}`}>
+                        {match.result}
+                     </span>
+                  </div>
+               </div>
+             ))}
+             
+             <div className="p-3 text-center text-xs text-gray-600 bg-white/[0.02]">
+                Adatok forrása: Onyx Manager Module (Verified)
+             </div>
+          </div>
+        </div>
+
+        {/* --- TECHNOLÓGIA (Rövid leírás) --- */}
+        <div className="grid md:grid-cols-2 gap-12 max-w-5xl mx-auto items-center mb-24">
+          <div className="space-y-6">
+            <h2 className="text-3xl font-bold">Nem Tippmix. <br/><span className="text-purple-500">Adatbányászat.</span></h2>
+            <p className="text-gray-400 leading-relaxed">
+              Az emberek 98%-a veszít, mert érzelemből játszik. Mi kivettük az embert a rendszerből. 
+              Az Onyx szerverei Frankfurtban futnak, és milliszekundumok alatt elemzik a beérkező adatokat a pályáról.
+            </p>
+            <ul className="space-y-3">
+              <li className="flex items-center gap-3 text-gray-300">
+                <CheckCircle2 className="text-purple-500" size={18} />
+                <span>Arbitrázs és Value Betting technológia</span>
+              </li>
+              <li className="flex items-center gap-3 text-gray-300">
+                <CheckCircle2 className="text-purple-500" size={18} />
+                <span>Automatikus kockázatkezelés</span>
+              </li>
             </ul>
           </div>
-          <div>
-            <h4 className="text-white font-bold mb-4">Felelősségteljes Játék</h4>
-            <p className="mb-2">18+ | A sportfogadás kockázatos.</p>
-            <p>Ha problémád van a szerencsejátékkal, kérj segítséget.</p>
+          {/* Glass Card Visual */}
+          <div className="bg-gradient-to-br from-purple-900/20 to-blue-900/20 border border-white/10 rounded-3xl p-8 backdrop-blur-md relative overflow-hidden">
+             <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/30 rounded-full blur-[50px]"></div>
+             <div className="font-mono text-sm space-y-4 relative z-10">
+                <div className="text-gray-500"># Connecting to Neural Network...</div>
+                <div className="flex justify-between items-center bg-black/40 p-3 rounded-lg border border-white/5">
+                   <span className="text-purple-300">Analyzing:</span>
+                   <span className="text-white">J-League Div 2</span>
+                </div>
+                <div className="flex justify-between items-center bg-green-900/20 p-3 rounded-lg border border-green-500/30">
+                   <span className="text-green-400 flex items-center gap-2"><Zap size={12}/> OPPORTUNITY</span>
+                   <span className="text-white font-bold">Odds: 1.85</span>
+                </div>
+             </div>
           </div>
         </div>
-        <div className="text-center border-t border-white/5 pt-8">
-          © 2026 Onyx AI Systems. Minden jog fenntartva.
+
+        {/* --- EMAIL HÍRLEVÉL (Lottózó Robbantás) --- */}
+        <div className="max-w-2xl mx-auto text-center bg-[#0A0A10] border border-white/10 rounded-3xl p-8 md:p-12 relative overflow-hidden">
+           <div className="absolute inset-0 bg-gradient-to-r from-purple-500/5 to-blue-500/5"></div>
+           <div className="relative z-10">
+              <div className="w-12 h-12 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-6 text-white">
+                <Mail size={24} />
+              </div>
+              <h2 className="text-2xl font-bold text-white mb-2">Technológiai Hírlevél</h2>
+              <p className="text-gray-400 mb-8 text-sm">
+                Ne maradj le a "Lottózó Robbantó" frissítésekről. Értesítünk, ha az AI új mintázatot talál a piacon.
+              </p>
+              
+              <div className="flex flex-col sm:flex-row gap-2">
+                 <input 
+                   type="email" 
+                   placeholder="Írd be az email címed..." 
+                   className="flex-1 bg-black border border-white/20 text-white px-5 py-3 rounded-xl focus:outline-none focus:border-purple-500 transition-colors placeholder:text-gray-600"
+                 />
+                 <button className="bg-purple-600 hover:bg-purple-500 text-white font-bold px-6 py-3 rounded-xl transition-colors">
+                   FELIRATKOZÁS
+                 </button>
+              </div>
+           </div>
+        </div>
+
+      </main>
+
+      {/* --- FOOTER --- */}
+      <footer className="border-t border-white/5 bg-[#000212] pt-12 pb-8 text-center">
+        <p className="text-gray-600 text-xs mb-4">
+          © 2026 Onyx AI Systems. Minden jog fenntartva. <br/>
+          A rendszer fejlesztői nem vállalnak felelősséget a fogadási veszteségekért.
+        </p>
+        <div className="flex justify-center gap-4 text-xs font-bold text-gray-500">
+           <a href="#" className="hover:text-white">ÁSZF</a>
+           <span>•</span>
+           <a href="#" className="hover:text-white">Adatvédelem</a>
         </div>
       </footer>
-    </div>
-  );
-}
 
-// Komponens a táblázat soraihoz (Hogy tiszta maradjon a kód)
-function ResultRow({ match, time, odds, status }) {
-  const isWin = status === 'WIN';
-  return (
-    <div className="grid grid-cols-4 p-4 border-b border-white/5 hover:bg-white/5 transition-colors items-center">
-      <div className="col-span-2">
-        <div className="font-bold text-white text-sm">{match}</div>
-        <div className="text-xs text-slate-500">{time}</div>
-      </div>
-      <div className="text-center font-mono text-slate-300">{odds}</div>
-      <div className="text-right">
-        <span className={`px-2 py-1 rounded text-xs font-bold ${isWin ? 'bg-green-500/10 text-green-400' : 'bg-red-500/10 text-red-400'}`}>
-          {status}
-        </span>
-      </div>
     </div>
   );
 }
