@@ -1,69 +1,14 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Manrope:wght@200;400;600;800&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  /* Luxus Színpaletta */
-  --gold-primary: #C5A059; /* Elegánsabb, pezsgő arany */
-  --gold-light: #E5C585;
-  --bg-deep: #02040a; /* Mélykék-fekete */
-  --glass-border: rgba(255, 255, 255, 0.08);
+  --foreground-rgb: 255, 255, 255;
+  --background-start-rgb: 5, 5, 5;
+  --background-end-rgb: 0, 0, 0;
 }
 
 body {
-  background-color: var(--bg-deep);
-  background-image: radial-gradient(circle at 50% 0%, #0f1623 0%, #02040a 100%);
-  color: #e2e8f0;
-  font-family: 'Manrope', sans-serif;
-}
-
-/* Címsorok */
-.font-display { font-family: 'Playfair Display', serif; }
-
-/* Arany Gradiens Szöveg */
-.text-gold-gradient {
-  background: linear-gradient(to bottom right, #F3E3C3, #C5A059, #8A6E36);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-/* Üveg Kártyák (Glassmorphism 2.0) */
-.glass-panel {
-  background: rgba(15, 23, 42, 0.6);
-  backdrop-filter: blur(16px);
-  border: 1px solid var(--glass-border);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
-}
-
-/* Hír Kártya Hover Effekt */
-.news-card-hover:hover {
-  border-color: var(--gold-primary);
-  transform: translateY(-4px);
-  box-shadow: 0 10px 40px -10px rgba(197, 160, 89, 0.2);
-}
-
-/* Ticker Animációk */
-.ticker-wrap { width: 100%; overflow: hidden; white-space: nowrap; }
-.ticker-move { display: inline-block; animation: ticker 40s linear infinite; }
-@keyframes ticker { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
-
-/* Button Shine Effect */
-.btn-luxury {
-  background: linear-gradient(45deg, #C5A059, #E5C585);
-  color: #000;
-  position: relative;
-  overflow: hidden;
-  transition: all 0.3s;
-}
-.btn-luxury:hover {
-  filter: brightness(1.1);
-  box-shadow: 0 0 20px rgba(197, 160, 89, 0.4);
-}
-
-/* Modal Overlay */
-.modal-overlay {
-  background: rgba(0,0,0,0.85);
-  backdrop-filter: blur(8px);
+  color: rgb(var(--foreground-rgb));
+  background: #050505;
 }
