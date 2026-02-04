@@ -4,28 +4,54 @@
 
 :root {
   --foreground-rgb: 255, 255, 255;
-  --background-start-rgb: 5, 5, 5;
+  --background-start-rgb: 0, 0, 0;
   --background-end-rgb: 0, 0, 0;
 }
 
 body {
   color: rgb(var(--foreground-rgb));
-  background: #050505;
-  /* Simább görgetés */
-  scroll-behavior: smooth; 
+  background: #000;
+  overflow-x: hidden;
 }
 
-/* Egyedi Scrollbar, hogy profi legyen */
+/* --- WARP SPEED STARFIELD EFFECT --- */
+.stars {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  background: transparent;
+  z-index: 0;
+}
+
+.star {
+  position: absolute;
+  background: white;
+  border-radius: 50%;
+  opacity: 0;
+  animation: warp 3s linear infinite;
+}
+
+@keyframes warp {
+  0% {
+    transform: translateZ(0) scale(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateZ(1000px) scale(3);
+    opacity: 0;
+    top: 50%; /* Moves towards center feeling */
+    left: 50%;
+  }
+}
+
+/* Görgősáv eltüntetése a tiszta dizájnért */
 ::-webkit-scrollbar {
-  width: 8px;
-}
-::-webkit-scrollbar-track {
-  background: #050505; 
-}
-::-webkit-scrollbar-thumb {
-  background: #333; 
-  border-radius: 4px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #22c55e; 
+  width: 0px;
+  background: transparent;
 }
