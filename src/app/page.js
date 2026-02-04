@@ -124,15 +124,15 @@ export default function OnyxObsidian() {
               </div>
               
               <div className="p-4 bg-emerald-900/10 border border-emerald-500/20 rounded-2xl">
-                 <div className="text-emerald-400 font-mono text-xs mb-2">> SYSTEM_LOG</div>
+                 <div className="text-emerald-400 font-mono text-xs mb-2">{'>'} SYSTEM_LOG</div>
                  <div className="text-gray-500 font-mono text-xs">Scanning Japan J2... No signal.</div>
                  <div className="text-gray-500 font-mono text-xs">Scanning Brazil Serie B... No signal.</div>
-                 <div className="text-white font-mono text-xs mt-1">Found: Rukh Lviv (Odds: 2.10) -> Signal Sent.</div>
+                 <div className="text-white font-mono text-xs mt-1">Found: Rukh Lviv (Odds: 2.10) -{'>'} Signal Sent.</div>
               </div>
             </div>
           )}
 
-          {/* 3. JOGI (LEGAL) - AMIT SZERETTÉL */}
+          {/* 3. JOGI (LEGAL) */}
           {activeTab === 'legal' && (
             <div className="space-y-6">
               <h2 className="text-2xl font-bold">Jogi Nyilatkozat</h2>
@@ -167,7 +167,6 @@ export default function OnyxObsidian() {
       </main>
 
       {/* --- LEBEGŐ MENÜ (FLOATING DOCK) --- */}
-      {/* Ez a kulcs a modern hatáshoz! */}
       <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-50">
         <div className="flex items-center gap-1 bg-white/10 backdrop-blur-xl border border-white/10 p-2 rounded-full shadow-2xl">
           
