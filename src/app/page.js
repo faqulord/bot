@@ -98,9 +98,9 @@ export default function LandingPage() {
               <div className="text-gray-400">Success. Monitoring 142 live matches.</div>
               <div className="text-blue-400">Scanning: Japan J2 League... [NO SIGNAL]</div>
               <div className="text-blue-400">Scanning: Brazil Serie B... [NO SIGNAL]</div>
-              <div className="text-yellow-500 font-bold">> ALERT FOUND: Rukh Lviv vs Austria Klagenfurt</div>
+              <div className="text-yellow-500 font-bold">{'>'} ALERT FOUND: Rukh Lviv vs Austria Klagenfurt</div>
               <div className="pl-4 text-gray-300">Condition: 82. min | High Pressure | Odds: 2.40</div>
-              <div className="pl-4 text-green-400">>> Sending Signal to Telegram Group... [SENT]</div>
+              <div className="pl-4 text-green-400">{'>'}{'>'} Sending Signal to Telegram Group... [SENT]</div>
               <div className="text-gray-500 animate-pulse">_</div>
             </div>
           </div>
